@@ -1822,7 +1822,7 @@ function confirmChallengePayment() {
     userState.challengeSubscribed = true;
     closeModal("modal-payment");
     
-    alert("🎉 Inscrição Confirmada! Você acaba de entrar no Desafio Core: 21 Dias de Disciplina. Vamos transformar nossos hábitos juntas!");
+    alert("🎉 Inscrição Confirmada! Você acaba de entrar no Desafio Core: 10 Dias de Disciplina. Vamos transformar nossos hábitos juntas!");
     
     renderChallengeUI();
     saveStateToStorage();
