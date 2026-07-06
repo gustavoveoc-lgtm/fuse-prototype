@@ -1057,74 +1057,207 @@ function completeWorkoutAction() {
     updateProgressUI();
 }
 
-function abortWorkoutAction() {
-    if (confirm("Deseja realmente abandonar o treino em andamento? Seu progresso de hoje não será salvo.")) {
-        clearInterval(activeWorkoutState.timerInterval);
-        closeModal("modal-workout-player");
-    }
-}
-
-// 6. ABA DE ALIMENTAÇÃO E DIETA (CÁLCULOS E FILTROS DINÂMICOS)
-
-// Dicionário procedural para geração de receitas 100% compatíveis
 const recipeTemplates = {
     "Café da Manhã": {
-        all: { title: "Tapioca Funcional com Frango e Queijo", time: 10, ingredients: ["3 colheres de tapioca", "60g de frango desfiado", "30g de queijo cottage", "Orégano a gosto"], prep: "Aqueça a tapioca na frigideira, recheie com o frango desfiado e queijo cottage. Feche e doure por 1 minuto." },
-        rapidas: { title: "Copo de Iogurte Grego com Granola Fit", time: 5, ingredients: ["150g de iogurte grego desnatado", "30g de granola sem açúcar", "5 morangos frescos"], prep: "Em um copo alto, intercale camadas de iogurte, morangos fatiados e granola. Sirva imediatamente." },
-        vegana: { title: "Mingau de Aveia com Leite de Amêndoas e Cacau", time: 8, ingredients: ["200ml de leite de amêndoas", "3 colheres de sopa de aveia", "1 colher de sobremesa de cacau 70%", "1 colher de chá de melado"], prep: "Misture tudo em fogo baixo até engrossar. Adoce com melado e salpique cacau por cima." },
-        vegetariana: { title: "Crepioca de Espinafre com Queijo", time: 8, ingredients: ["1 ovo inteiro", "2 colheres de tapioca", "Punhado de espinafre picado", "30g de queijo minas"], prep: "Bata o ovo, a tapioca e o espinafre no garfo. Cozinhe na frigideira untada e recheie com o queijo." },
-        "sem-lactose": { title: "Panqueca de Banana e Farelo de Aveia", time: 8, ingredients: ["1 banana média", "1 ovo", "2 colheres de farelo de aveia", "Canela em pó"], prep: "Esmague a banana, misture com o ovo e a aveia. Cozinhe em fogo baixo dos dois lados." },
-        "sem-gluten": { title: "Crepioca de Frango com Linhaça", time: 10, ingredients: ["1 ovo", "2 colheres de tapioca (sem glúten)", "1 colher de semente de linhaça", "60g de frango desfiado"], prep: "Misture a massa com linhaça. Doure na frigideira e recheie com o frango cozido." },
-        economica: { title: "Ovos Mexidos Cremosos com Pão Francês", time: 6, ingredients: ["2 ovos de granja", "1 colher de chá de manteiga", "1 pão francês sem miolo"], prep: "Bata os ovos e cozinhe em fogo brando mexendo sempre para dar cremosidade. Sirva com o pão." }
+        tradicional: { title: "Pão de Forma Integral com Ovos Mexidos", time: 8, ingredients: ["2 fatias Pão Integral", "2 unidades Ovos Caipiras", "10g Manteiga", "1 xícara Café sem açúcar"], prep: "Doure o pão integral. Prepare os ovos mexidos na frigideira com manteiga e sirva com café quente." },
+        rapidas: { title: "Iogurte Natural com Banana e Aveia", time: 4, ingredients: ["200g Iogurte Natural", "1 unidade Banana Prata", "30g Aveia em Flocos"], prep: "Fatie a banana sobre o iogurte e salpique com farelo de aveia." },
+        economica: { title: "Tapioca com Margarina e Ovos Mexidos", time: 7, ingredients: ["80g Goma de Tapioca", "2 unidades Ovos", "10g Margarina"], prep: "Peneire a goma na frigideira bem quente, monte o disco e recheie com ovos mexidos e margarina." },
+        vegetariana: { title: "Crepioca de Queijo com Tomate e Orégano", time: 8, ingredients: ["1 unidade Ovo", "40g Goma de Tapioca", "30g Queijo Minas", "1 unidade Tomate fatiado"], prep: "Bata o ovo e a tapioca com garfo, cozinhe o disco na chapa e recheie com queijo minas e tomate." },
+        vegana: { title: "Torrada de Abacate com Sementes de Gergelim", time: 6, ingredients: ["2 fatias Pão de Forma", "50g Abacate", "10g Semente de Gergelim"], prep: "Toste o pão. Amasse o abacate sobre a torrada com sal, pimenta e finalize com gergelim." },
+        "sem-lactose": { title: "Panqueca de Banana Funcional", time: 8, ingredients: ["1 unidade Banana", "1 unidade Ovo", "20g Farelo de Aveia", "Canela em pó"], prep: "Amasse a banana, misture com o ovo e a aveia. Grelhe a massa na frigideira." },
+        "sem-gluten": { title: "Tapioca com Frango Desfiado", time: 10, ingredients: ["80g Goma de Tapioca", "60g Peito de Frango Desfiado", "20g Requeijão zero glúten"], prep: "Monte a tapioca na frigideira e recheie com o peito de frango temperado e requeijão." },
+        "alto-prot": { title: "Super Omelete Protéico com Peito de Peru", time: 8, ingredients: ["3 unidades Ovos inteiros", "40g Peito de Peru picado", "30g Queijo Cottage"], prep: "Bata os ovos vigorosamente, adicione o peito de peru e queijo cottage e cozinhe na frigideira untada." },
+        "baixo-carb": { title: "Ovos Estalados no Azeite com Bacon e Queijo", time: 6, ingredients: ["3 unidades Ovos caipiras", "20g Bacon picado", "30g Queijo Prato"], prep: "Frite o bacon no azeite, jogue os ovos e cubra com fatias de queijo prato até derreter." }
     },
     "Lanche da Manhã": {
-        all: { title: "Porção de Mix de Castanhas e Damascos", time: 3, ingredients: ["15g de castanha de caju", "15g de amêndoas", "2 damascos secos"], prep: "Consumir diretamente. Excelente opção prática rica em gorduras boas para o cérebro." },
-        rapidas: { title: "Maçã Fatiada com Pasta de Amendoim", time: 3, ingredients: ["1 maçã média", "1 colher de sopa de pasta de amendoim integral"], prep: "Fatie a maçã e consuma passando as fatias na pasta de amendoim." },
-        vegana: { title: "Mix de Sementes de Girassol e Abóbora", time: 2, ingredients: ["20g de sementes de girassol tostadas", "20g de sementes de abóbora"], prep: "Misture as sementes tostadas com uma pitada de sal rosa. Prático e rico em minerais." },
-        vegetariana: { title: "Iogurte Natural com Mel", time: 2, ingredients: ["150g de iogurte natural desnatado", "1 colher de chá de mel de abelha"], prep: "Misture o mel ao iogurte grego gelado." },
-        "sem-lactose": { title: "Copo de Salada de Frutas com Linhaça", time: 5, ingredients: ["80g de mamão picado", "80g de melão picado", "1 colher de sopa de sementes de linhaça"], prep: "Misture as frutas picadas em um pote e salpique linhaça por cima." },
-        "sem-gluten": { title: "Smoothie de Morango e Água de Coco", time: 4, ingredients: ["6 morangos congelados", "200ml de água de coco natural", "10g de chia"], prep: "Bata tudo no liquidificador até homogeneizar e consuma bem gelado." },
-        economica: { title: "Banana Prata com Aveia em Flocos", time: 2, ingredients: ["1 banana prata", "1 colher de sopa de aveia em flocos grossos"], prep: "Descasque a banana, amasse levemente no prato e salpique a aveia." }
+        tradicional: { title: "Mix de Frutas da Estação", time: 4, ingredients: ["100g Mamão Formosa", "100g Melão Picado", "10g Sementes de Linhaça"], prep: "Corte as frutas em cubos e salpique linhaça por cima." },
+        rapidas: { title: "Punhado de Castanhas de Caju", time: 1, ingredients: ["30g Castanhas de Caju", "2 unidades Damascos Secos"], prep: "Consumir diretamente. Excelente lanche rápido." },
+        economica: { title: "Banana Prata com Canela", time: 2, ingredients: ["1 unidade Banana Prata", "Canela em pó"], prep: "Descasque a banana, corte em rodelas e adicione canela a gosto." },
+        vegetariana: { title: "Iogurte Grego com Fio de Mel", time: 2, ingredients: ["150g Iogurte Grego", "10g Mel de Abelha"], prep: "Misture o mel no iogurte gelado." },
+        vegana: { title: "Mix de Sementes Tostadas", time: 3, ingredients: ["20g Semente de Girassol", "20g Semente de Abóbora"], prep: "Toste levemente as sementes na frigideira com uma pitada de sal." },
+        "sem-lactose": { title: "Salada de Frutas sem Leite", time: 4, ingredients: ["80g Banana picada", "80g Maçã picada", "10g Sementes de Chia"], prep: "Misture os pedaços de frutas frescas com as sementes." },
+        "sem-gluten": { title: "Smoothie de Morango com Água de Coco", time: 5, ingredients: ["6 unidades Morangos congelados", "200ml Água de Coco"], prep: "Bata as frutas congeladas com água de coco no liquidificador." },
+        "alto-prot": { title: "Whey Protein 80% batido com Água", time: 2, ingredients: ["30g Whey Protein", "200ml Água mineral"], prep: "Bata o whey protein na coqueteleira com água gelada." },
+        "baixo-carb": { title: "Castanhas do Pará e Nozes", time: 1, ingredients: ["20g Castanha do Pará", "20g Nozes descascadas"], prep: "Consumir as oleaginosas frescas." }
     },
     "Almoço": {
-        all: { title: "Bowl de Frango Grelhado, Arroz Integral e Brócolis", time: 20, ingredients: ["120g de peito de frango", "100g de arroz integral cozido", "100g de brócolis no vapor", "Azeite de oliva"], prep: "Grelhe o frango temperado com ervas. Monte o prato com o arroz integral quente e brócolis." },
-        rapidas: { title: "Wrap de Atum com Rap10 Integral", time: 8, ingredients: ["1 folha de tortilha integral", "1 lata de atum ralado em água", "Alface picada", "Tomate fresco"], prep: "Aqueça a tortilha rapidamente na frigideira, recheie com atum temperado, alface e tomate." },
-        vegana: { title: "Estrogonofe de Grão de Bico com Leite de Aveia", time: 18, ingredients: ["120g de grão de bico cozido", "80ml de leite de aveia culinário", "Molho de tomate caseiro", "Cogumelos Paris"], prep: "Refogue os cogumelos e o grão de bico. Adicione o molho de tomate e finalize com o leite de aveia." },
-        vegetariana: { title: "Bowl de Quinoa Cozida, Tofu Grelhado e Aspargos", time: 15, ingredients: ["100g de quinoa cozida", "100g de tofu firme grelhado", "80g de aspargos frescos"], prep: "Grelhe o tofu temperado com cúrcuma. Sirva com quinoa morna e aspargos salteados no azeite." },
-        "sem-lactose": { title: "Patinho Moído Grelhado com Purê de Mandioquinha", time: 20, ingredients: ["120g de patinho moído grelhado", "120g de purê de mandioquinha (sem leite)", "Couve refogada"], prep: "Grelhe o patinho com cebola e alho. Sirva com purê feito com água do cozimento e couve." },
-        "sem-gluten": { title: "Filé de Tilápia com Batata Doce Assada", time: 22, ingredients: ["140g de filé de tilápia grelhado", "120g de batata doce assada em rodelas", "Rúcula e tomate"], prep: "Grelhe o peixe na chapa. Asse a batata com alecrim e sirva com salada fresca." },
-        economica: { title: "Prato Feito Tradicional: Arroz, Feijão e Sobrecoxa", time: 25, ingredients: ["100g de arroz branco", "80g de feijão carioca cozido", "120g de sobrecoxa de frango assada"], prep: "Asse o frango com alho e colorau. Monte com feijão temperado por cima do arroz quente." }
+        tradicional: { title: "Prato Feito: Arroz, Feijão Carioca e Bife de Patinho", time: 25, ingredients: ["100g Arroz Branco", "80g Feijão Carioca", "120g Bife de Patinho", "100g Salada de Alface e Tomate"], prep: "Monte seu prato com arroz, feijão por cima, bife grelhado acebolado e salada fresca." },
+        rapidas: { title: "Wrap Integral de Atum e Salada", time: 8, ingredients: ["1 fatia Tortilha Integral", "100g Atum em lata", "40g Alface picada", "30g Tomate"], prep: "Recheie a tortilha com atum temperado com azeite, alface picada e tomate." },
+        economica: { title: "Sobrecoxa de Frango Assada com Arroz e Feijão", time: 30, ingredients: ["120g Sobrecoxa de Frango", "100g Arroz Branco", "80g Feijão"], prep: "Asse a sobrecoxa de frango temperada no forno. Acompanhe com arroz e feijão quente." },
+        vegetariana: { title: "Arroz com Feijão, Ovos Fritos e Legumes no Vapor", time: 18, ingredients: ["100g Arroz", "80g Feijão", "2 unidades Ovos", "80g Brócolis no vapor"], prep: "Sirva arroz e feijão carioca com dois ovos fritos no azeite de oliva e brócolis cozido." },
+        vegana: { title: "Arroz, Feijão, Grão-de-Bico Refogado e Brócolis", time: 20, ingredients: ["100g Arroz Integral", "80g Feijão", "100g Grão-de-Bico", "80g Brócolis"], prep: "Refogue o grão-de-bico com cebola e alho. Sirva acompanhado com arroz, feijão e legumes." },
+        "sem-lactose": { title: "Patinho Moído Grelhado com Purê de Mandioquinha", time: 22, ingredients: ["120g Patinho Moído", "120g Mandioquinha", "80g Couve Refogada"], prep: "Prepare o patinho moído temperado. Amasse as mandioquinhas cozidas sem leite e acompanhe com couve." },
+        "sem-gluten": { title: "Filé de Tilápia Grelhado com Purê de Batata e Vagem", time: 22, ingredients: ["130g Filé de Tilápia", "100g Purê de Batata", "80g Vagem"], prep: "Grelhe o peixe na chapa. Sirva com purê tradicional (sem trigo) e vagem refogada no alho." },
+        "alto-prot": { title: "Peito de Frango Grelhado Duplo com Arroz Integral e Legumes", time: 20, ingredients: ["160g Peito de Frango", "120g Arroz Integral", "100g Brócolis e Cenoura"], prep: "Grelhe os bifes de frango generosos. Acompanhe com arroz integral cozido e mix de vegetais." },
+        "baixo-carb": { title: "Bife de Patinho Grelhado com Couve-Flor Gratinada", time: 25, ingredients: ["140g Bife de Patinho", "150g Couve-Flor", "30g Queijo Parmesão"], prep: "Grelhe o bife. Cozinhe a couve-flor no vapor, cubra com queijo parmesão ralado e doure no forno." }
     },
     "Lanche da Tarde": {
-        all: { title: "Torrada de Pão Integral com Abacate e Ovo", time: 8, ingredients: ["1 fatia de pão integral de sementes", "30g de abacate amassado", "1 ovo cozido"], prep: "Toste o pão. Espalhe o abacate temperado com limão e sal, coloque o ovo fatiado por cima." },
-        rapidas: { title: "Shake de Whey de Morango e Iogurte", time: 3, ingredients: ["30g de whey protein", "100g de iogurte grego desnatado", "100ml de água gelada"], prep: "Misture vigorosamente na coqueteleira até obter uma consistência espumosa e cremosa." },
-        vegana: { title: "Palitos de Cenoura e Pepino com Homus", time: 6, ingredients: ["1 cenoura média em palitos", "1 pepino pequeno", "2 colheres de sopa de pasta homus (grão de bico)"], prep: "Corte os vegetais em tiras finas e sirva acompanhados com a pasta de homus." },
-        vegetariana: { title: "Muffin de Caneca Protéico de Cacau", time: 5, ingredients: ["1 ovo", "2 colheres de aveia", "1 colher de cacau 100%", "1 colher de chá de mel"], prep: "Bata os ingredientes em uma caneca com garfo. Cozinhe no micro-ondas por 1m30s." },
-        "sem-lactose": { title: "Tapioca com Pasta de Amendoim", time: 7, ingredients: ["3 colheres de tapioca", "1 colher de sopa de pasta de amendoim integral"], prep: "Prepare o disco de tapioca na frigideira e recheie com a pasta de amendoim morna." },
-        "sem-gluten": { title: "Bolachas de Arroz com Abacate e Chia", time: 4, ingredients: ["3 bolachas de arroz integral", "40g de abacate amassado", "Sementes de chia"], prep: "Espalhe o abacate temperado sobre as bolachas e salpique chia." },
-        economica: { title: "Pão de Forma com Queijo Minas Grelhado", time: 5, ingredients: ["2 fatias de pão de forma comum", "40g de queijo minas padrão"], prep: "Monte o sanduíche e doure na frigideira untada em fogo baixo até derreter o queijo." }
+        tradicional: { title: "Sanduíche Integral de Peito de Peru e Requeijão", time: 6, ingredients: ["2 fatias Pão Integral", "40g Peito de Peru", "20g Requeijão light"], prep: "Passe requeijão no pão integral de sementes e monte com o peito de peru defumado." },
+        rapidas: { title: "Shake Protéico de Whey e Iogurte", time: 3, ingredients: ["30g Whey Protein", "120g Iogurte Natural"], prep: "Bata o whey com iogurte grego na coqueteleira até atingir ponto de mousse." },
+        economica: { title: "Pão de Forma com Queijo Prato Grelhado", time: 5, ingredients: ["2 fatias Pão de Forma", "30g Queijo Prato"], prep: "Monte o sanduíche e doure na sanduicheira comum até o queijo derreter completamente." },
+        vegetariana: { title: "Pão Integral com Queijo Cottage e Mel", time: 5, ingredients: ["2 fatias Pão Integral", "40g Queijo Cottage", "5g Mel"], prep: "Espalhe o cottage fresco sobre as torradas e finalize com fio de mel." },
+        vegana: { title: "Bolacha de Arroz com Homus", time: 4, ingredients: ["3 unidades Bolachas de Arroz", "40g Homus de Grão de Bico"], prep: "Espalhe a pasta de grão de bico sobre as bolachas de arroz salpicadas com sal." },
+        "sem-lactose": { title: "Maçã com Pasta de Amendoim Integral", time: 3, ingredients: ["1 unidade Maçã média", "20g Pasta de Amendoim"], prep: "Fatie a maçã fresca e passe as tiras na pasta de amendoim integral." },
+        "sem-gluten": { title: "Tapioca com Pasta de Amendoim", time: 7, ingredients: ["80g Goma de Tapioca", "20g Pasta de Amendoim"], prep: "Faça o disco de tapioca e recheie com pasta de amendoim levemente aquecida." },
+        "alto-prot": { title: "Sanduíche de Frango Desfiado Fit", time: 8, ingredients: ["2 fatias Pão Integral", "80g Peito de Frango Desfiado", "20g Creme de Ricota"], prep: "Misture o frango desfiado com creme de ricota para fazer um patê e monte no pão." },
+        "baixo-carb": { title: "Enroladinho de Presunto e Queijo", time: 3, ingredients: ["40g Presunto Cozido", "40g Queijo Prato", "1 unidade Tomate cereja"], prep: "Enrole fatias de queijo dentro das de presunto e fixe com palitos e tomate." }
     },
     "Jantar": {
-        all: { title: "Salmão Grelhado com Purê de Batata e Vagem", time: 25, ingredients: ["120g de lombo de salmão", "100g de purê de batata inglesa", "80g de vagem refogada"], prep: "Grelhe o salmão na pele. Sirva com purê de batata quente e vagem cozida salteada." },
-        rapidas: { title: "Omelete de Tomate e Manjericão Express", time: 8, ingredients: ["3 ovos caipiras", "5 tomates cereja cortados", "Folhas frescas de manjericão"], prep: "Bata os ovos, jogue na frigideira quente. Adicione tomates, manjericão, dobre e sirva." },
-        vegana: { title: "Sopa Nutritiva de Lentilhas e Legumes", time: 20, ingredients: ["120g de lentilhas cozidas", "Cenoura, abobrinha e chuchu picados", "Caldo de legumes caseiro"], prep: "Cozinhe os legumes no caldo com as lentilhas cozidas. Tempere com coentro e azeite." },
-        vegetariana: { title: "Shakshuka (Ovos no Molho de Tomate Rústico)", time: 18, ingredients: ["2 ovos inteiros", "150g de tomate pelado cozido", "Pimentão vermelho e cebola"], prep: "Refogue pimentão e cebola. Adicione o molho de tomates. Quebre os ovos por cima, tampe e deixe cozinhar." },
-        "sem-lactose": { title: "Frango Grelhado com Salada Verde e Abacate", time: 15, ingredients: ["130g de peito de frango", "Mix de rúcula e alface à vontade", "50g de abacate em fatias"], prep: "Grelhe o frango em tiras. Monte a salada, regue com azeite, limão e adicione as fatias de abacate." },
-        "sem-gluten": { title: "Escondidinho de Mandioca com Carne Moída", time: 25, ingredients: ["100g de mandioca cozida e espremida", "120g de patinho moído cozido", "Tempero verde"], prep: "Forre o refratário com carne moída temperada, cubra com o purê de mandioca e leve para gratinar." },
-        economica: { title: "Arroz com Lentilha e Ovos Estalados", time: 20, ingredients: ["100g de arroz cozido", "80g de lentilhas cozidas", "2 ovos fritos no azeite"], prep: "Misture o arroz com a lentilha e sirva com os dois ovos estalados no topo." }
+        tradicional: { title: "Arroz Branco, Feijão Carioca, Sobrecoxa e Couve", time: 25, ingredients: ["100g Arroz Branco", "80g Feijão", "120g Sobrecoxa de Frango", "80g Couve refogada"], prep: "Monte o prato tradicional quente com arroz, feijão, frango assado e couve refogada na manteiga." },
+        rapidas: { title: "Crepioca Rápida de Frango Desfiado", time: 8, ingredients: ["1 unidade Ovo", "40g Goma de Tapioca", "80g Peito de Frango Desfiado"], prep: "Bata o ovo com a tapioca. Faça a panqueca na chapa e recheie com peito de frango." },
+        economica: { title: "Ovos Mexidos Cremosos com Arroz e Tomate", time: 10, ingredients: ["3 unidades Ovos caipiras", "100g Arroz Branco", "1 unidade Tomate"], prep: "Mexa os ovos na frigideira com alho e tomate picado. Sirva quente misturado com arroz." },
+        vegetariana: { title: "Macarrão Integral com Molho Pesto e Cottage", time: 18, ingredients: ["100g Macarrão Integral", "20g Molho Pesto", "40g Queijo Cottage"], prep: "Cozinhe a massa integral al dente, envolva com pesto e decore com queijo cottage." },
+        vegana: { title: "Salada de Lentilha com Legumes e Arroz Integral", time: 20, ingredients: ["100g Lentilha cozida", "100g Arroz Integral", "80g Abobrinha refogada"], prep: "Misture lentilhas temperadas com alho e abobrinha. Sirva morno com arroz integral." },
+        "sem-lactose": { title: "Iscas de Carne de Patinho com Mandioca Cozida", time: 22, ingredients: ["120g Carne de Patinho", "120g Mandioca Cozida", "80g Brócolis salteado"], prep: "Grelhe as tiras de patinho com cebola. Acompanhe com mandioca cozida com sal e brócolis." },
+        "sem-gluten": { title: "Escondidinho de Batata Doce com Frango", time: 25, ingredients: ["100g Batata Doce", "120g Peito de Frango Desfiado", "30g Queijo sem glúten"], prep: "Forre o refratário com frango desfiado temperado, cubra com purê de batata doce e queijo e gratine." },
+        "alto-prot": { title: "Bife de Patinho Grelhado com Arroz Integral e Brócolis", time: 22, ingredients: ["140g Bife de Patinho", "120g Arroz Integral", "100g Brócolis cozido"], prep: "Grelhe o bife de carne magra. Monte com arroz integral quente e brócolis temperados com azeite." },
+        "baixo-carb": { title: "Filé de Tilápia Grelhado com Abobrinha Espaguete", time: 18, ingredients: ["140g Filé de Tilápia", "150g Abobrinha ralada", "10g Azeite de oliva"], prep: "Grelhe o peixe. Refogue as tiras de abobrinha no azeite com alho e sirva como base." }
     },
     "Ceia": {
-        all: { title: "Chá de Camomila e Amêndoas", time: 4, ingredients: ["Sachê de camomila orgânica", "200ml de água quente", "10 unidades de amêndoas"], prep: "Faça a infusão do chá por 5 minutos. Beba morno acompanhado das amêndoas." },
-        rapidas: { title: "Leite de Amêndoas Morno com Canela", time: 3, ingredients: ["180ml de leite de amêndoas", "Canela em pó a gosto"], prep: "Aqueça o leite vegetal rapidamente no micro-ondas e polvilhe canela para relaxar." },
-        vegana: { title: "Chá de Capim Limão com Castanhas", time: 4, ingredients: ["Infusão de capim limão fresca", "3 castanhas-do-pará"], prep: "Prepare o chá e consuma com as castanhas ricas em selênio e gorduras protetoras." },
-        vegetariana: { title: "Copo de Leite Morno com Mel", time: 3, ingredients: ["150ml de leite integral ou desnatado", "1 colher de chá de mel"], prep: "Aqueça o leite morno e adoce com o mel. Ajuda a melhorar a qualidade do sono." },
-        "sem-lactose": { title: "Coco Seco em Fatias e Infusão de Erva Doce", time: 4, ingredients: ["30g de coco seco fatiado", "Chá de erva doce morno"], prep: "Mastigue as fatias de coco seco devagar acompanhadas do chá quentinho antes de dormir." },
-        "sem-gluten": { title: "Pera Cozida com Canela", time: 10, ingredients: ["1 pera média cozida com casca", "Canela em pó"], prep: "Cozinhe a pera na água por alguns minutos até amolecer levemente. Salpique canela." },
-        economica: { title: "Banana Prata Assada no Micro-ondas com Canela", time: 3, ingredients: ["1 banana prata", "Canela em pó"], prep: "Corte a banana ao meio, coloque no prato, aqueça por 40 segundos e finalize com canela." }
+        tradicional: { title: "Chá de Erva Doce com Biscoito Integral", time: 4, ingredients: ["200ml Chá de Erva Doce", "3 unidades Biscoito de Maizena"], prep: "Prepare a infusão do chá morno. Consuma acompanhado dos biscoitos simples." },
+        rapidas: { title: "Copo de Leite Desnatado Morno", time: 3, ingredients: ["200ml Leite Desnatado", "Canela em pó"], prep: "Aqueça o leite desnatado no micro-ondas por 40 segundos e adicione canela." },
+        economica: { title: "Banana Prata com Aveia", time: 2, ingredients: ["1 unidade Banana Prata", "15g Aveia em Flocos"], prep: "Amasse a banana levemente e salpique com farelo de aveia." },
+        vegetariana: { title: "Copo de Iogurte Integral", time: 2, ingredients: ["150g Iogurte Natural"], prep: "Consumir o iogurte grego natural fresco." },
+        vegana: { title: "Punhado de Amêndoas Cruas", time: 1, ingredients: ["20g Amêndoas"], prep: "Consumir as amêndoas diretamente antes de dormir." },
+        "sem-lactose": { title: "Pera Cozida com Canela", time: 10, ingredients: ["1 unidade Pera", "Canela em pó"], prep: "Cozinhe a pera inteira na água por 6 minutos. Salpique canela e coma morna." },
+        "sem-gluten": { title: "Copo de Leite de Amêndoas com Canela", time: 3, ingredients: ["200ml Leite de Amêndoas", "Canela em pó"], prep: "Aqueça o leite vegetal e finalize com uma pitada de canela." },
+        "alto-prot": { title: "Mingau de Whey com Aveia", time: 5, ingredients: ["15g Whey Protein", "15g Aveia em Flocos", "100ml Água"], prep: "Misture a aveia e água, cozinhe no micro-ondas por 40s. Misture o whey vigorosamente." },
+        "baixo-carb": { title: "Gelatina Fit sem Açúcar", time: 2, ingredients: ["150g Gelatina Diet zero açúcar"], prep: "Consumir gelatina gelada antes do sono para controle metabólico." }
     }
 };
 
-// Modificação das configurações de dieta (Aba Nutrir)
+// Substituições Inteligentes Database (Calculadora)
+const substitutionsDB = {
+    "arroz": {
+        name: "Arroz Branco Cozido (100g)",
+        kcal: 130, carb: 28, prot: 2.5, fat: 0.2,
+        options: [
+            { name: "Batata Doce Cozida", portion: "100g", kcal: 112, carb: 26, prot: 2, fat: 0.1, icon: "🍠" },
+            { name: "Mandioca Cozida", portion: "80g", kcal: 125, carb: 30, prot: 1, fat: 0.2, icon: "🥔" },
+            { name: "Macarrão de Sêmola Cozido", portion: "80g", kcal: 110, carb: 24, prot: 3, fat: 0.5, icon: "🍝" },
+            { name: "Aveia em Flocos", portion: "35g", kcal: 120, carb: 22, prot: 5, fat: 2.2, icon: "🥣" },
+            { name: "Pão de Forma Integral", portion: "2 fatias (50g)", kcal: 120, carb: 24, prot: 5, fat: 1.5, icon: "🍞" }
+        ]
+    },
+    "frango": {
+        name: "Frango Grelhado (100g)",
+        kcal: 159, carb: 0, prot: 32, fat: 2.5,
+        options: [
+            { name: "Patinho Moído Grelhado", portion: "100g", kcal: 219, carb: 0, prot: 32, fat: 7.5, icon: "🥩" },
+            { name: "Filé de Tilápia Grelhado", portion: "130g", kcal: 140, carb: 0, prot: 28, fat: 2, icon: "🐟" },
+            { name: "Ovos Inteiros Cozidos", portion: "4 unidades", kcal: 280, carb: 2, prot: 24, fat: 20, icon: "🍳" },
+            { name: "Atum Enlatado ao Natural", portion: "120g", kcal: 135, carb: 0, prot: 30, fat: 1, icon: "🐟" },
+            { name: "Queijo Coalho Grelhado", portion: "90g", kcal: 290, carb: 2, prot: 26, fat: 20, icon: "🧀" }
+        ]
+    },
+    "ovo": {
+        name: "Ovo Inteiro Cozido (2 unidades)",
+        kcal: 140, carb: 1, prot: 12, fat: 10,
+        options: [
+            { name: "Omelete Simples (2 ovos)", portion: "2 unidades", kcal: 140, carb: 1, prot: 12, fat: 10, icon: "🍳" },
+            { name: "Queijo Minas Frescal", portion: "70g", kcal: 150, carb: 2, prot: 12, fat: 10, icon: "🧀" },
+            { name: "Whey Protein 80%", portion: "1 scoop (30g) + 5g Castanhas", kcal: 150, carb: 3, prot: 24, fat: 3.5, icon: "🥛" },
+            { name: "Peito de Frango Grelhado + Azeite", portion: "50g + 1 colher chá azeite", kcal: 130, carb: 0, prot: 16, fat: 7, icon: "🍗" }
+        ]
+    },
+    "iogurte": {
+        name: "Iogurte Natural Integral (200g)",
+        kcal: 130, carb: 9, prot: 7, fat: 7,
+        options: [
+            { name: "Kefir de Leite Natural", portion: "200g", kcal: 110, carb: 8, prot: 7, fat: 5, icon: "🥛" },
+            { name: "Iogurte Desnatado + Pasta Amendoim", portion: "200g + 10g pasta", kcal: 145, carb: 9, prot: 11, fat: 7, icon: "🥜" },
+            { name: "Leite Semidesnatado", portion: "250ml", kcal: 115, carb: 12, prot: 8, fat: 3, icon: "🥛" }
+        ]
+    },
+    "batata": {
+        name: "Batata Doce Cozida (100g)",
+        kcal: 112, carb: 26, prot: 2, fat: 0.1,
+        options: [
+            { name: "Arroz Integral Cozido", portion: "100g", kcal: 120, carb: 25, prot: 2.6, fat: 1, icon: "🍚" },
+            { name: "Batata Inglesa Cozida", portion: "150g", kcal: 125, carb: 28, prot: 3, fat: 0.2, icon: "🥔" },
+            { name: "Abóbora Cabotiá Cozida", portion: "250g", kcal: 100, carb: 24, prot: 2.5, fat: 0.5, icon: "🎃" },
+            { name: "Inhame Cozido", portion: "100g", kcal: 116, carb: 27, prot: 1.5, fat: 0.2, icon: "🍠" }
+        ]
+    }
+};
+
+function switchNutritionSubTab(subTabId) {
+    const dietContainer = document.getElementById("nut-diet-container");
+    const subsContainer = document.getElementById("nut-subs-container");
+    const dietBtn = document.getElementById("btn-nut-tab-diet");
+    const subsBtn = document.getElementById("btn-nut-tab-subs");
+    
+    if (subTabId === "diet") {
+        dietContainer.style.display = "block";
+        subsContainer.style.display = "none";
+        dietBtn.classList.add("active");
+        subsBtn.classList.remove("active");
+        dietBtn.style.color = "#fff";
+        subsBtn.style.color = "var(--text-secondary)";
+    } else {
+        dietContainer.style.display = "none";
+        subsContainer.style.display = "block";
+        dietBtn.classList.remove("active");
+        subsBtn.classList.add("active");
+        dietBtn.style.color = "var(--text-secondary)";
+        subsBtn.style.color = "#fff";
+        updateSubstitutionsGrid();
+    }
+}
+
+function updateSubstitutionsGrid() {
+    const key = document.getElementById("select-sub-food").value;
+    const data = substitutionsDB[key];
+    if (!data) return;
+
+    // Popula cabeçalho de estatísticas do alimento de origem
+    const statsBox = document.getElementById("sub-source-stats");
+    statsBox.innerHTML = `
+        <div style="flex: 1; text-align: center;">
+            <span style="font-size:16px; font-weight:700; color:var(--text-primary); display:block;">${data.kcal}</span>
+            <span style="font-size:9px; color:var(--text-secondary); text-transform:uppercase;">Calorias</span>
+        </div>
+        <div style="flex: 1; text-align: center; border-left: 1px solid rgba(255,255,255,0.05);">
+            <span style="font-size:16px; font-weight:700; color:#ffb3a7; display:block;">${data.carb}g</span>
+            <span style="font-size:9px; color:var(--text-secondary); text-transform:uppercase;">Carbos</span>
+        </div>
+        <div style="flex: 1; text-align: center; border-left: 1px solid rgba(255,255,255,0.05);">
+            <span style="font-size:16px; font-weight:700; color:#a2e0c9; display:block;">${data.prot}g</span>
+            <span style="font-size:9px; color:var(--text-secondary); text-transform:uppercase;">Proteínas</span>
+        </div>
+        <div style="flex: 1; text-align: center; border-left: 1px solid rgba(255,255,255,0.05);">
+            <span style="font-size:16px; font-weight:700; color:#ffdca3; display:block;">${data.fat}g</span>
+            <span style="font-size:9px; color:var(--text-secondary); text-transform:uppercase;">Gorduras</span>
+        </div>
+    `;
+
+    // Popula as opções equivalentes
+    const grid = document.getElementById("subs-equivalents-grid");
+    grid.innerHTML = "";
+    data.options.forEach(opt => {
+        const card = document.createElement("div");
+        card.style.background = "rgba(255,255,255,0.01)";
+        card.style.border = "1px solid rgba(255,255,255,0.03)";
+        card.style.borderRadius = "var(--radius-sm)";
+        card.style.padding = "12px";
+        card.style.display = "flex";
+        card.style.alignItems = "center";
+        card.style.gap = "12px";
+
+        card.innerHTML = `
+            <div style="font-size: 24px; width: 44px; height: 44px; border-radius: 50%; background: rgba(232, 165, 152, 0.05); display:flex; align-items:center; justify-content:center; color: var(--accent-rose);">
+                ${opt.icon}
+            </div>
+            <div style="flex: 1;">
+                <h4 style="font-size: 13px; font-weight:600; color:var(--text-primary); margin-bottom:2px;">${opt.name}</h4>
+                <p style="font-size: 11px; color:var(--text-secondary);">Porção sugerida: <strong style="color:var(--accent-rose);">${opt.portion}</strong></p>
+                <p style="font-size: 10px; color:rgba(255,255,255,0.4); margin-top:2px;">${opt.kcal} kcal • Carb: ${opt.carb}g | Prot: ${opt.prot}g | Gord: ${opt.fat}g</p>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
 function changeNutritionConfig() {
     const selectedGoal = document.getElementById("nut-select-goal").value;
     const selectedStyle = document.getElementById("nut-select-style").value;
@@ -1152,9 +1285,18 @@ function changeNutritionConfig() {
     } else if (selectedGoal === "massa") {
         targetKcal = getd * 1.1;
         ratios = { prot: 0.25, carb: 0.50, fat: 0.25 };
-    } else if (selectedGoal === "ganhar-peso") {
-        targetKcal = getd * 1.15;
-        ratios = { prot: 0.20, carb: 0.55, fat: 0.25 };
+    } else if (selectedGoal === "definicao") {
+        targetKcal = getd * 0.9;
+        ratios = { prot: 0.30, carb: 0.45, fat: 0.25 };
+    } else if (selectedGoal === "hipertrofia-gluteos") {
+        targetKcal = getd * 1.12;
+        ratios = { prot: 0.25, carb: 0.50, fat: 0.25 };
+    } else if (selectedGoal === "alta-proteina") {
+        targetKcal = getd;
+        ratios = { prot: 0.35, carb: 0.35, fat: 0.30 };
+    } else if (selectedGoal === "saudavel" || selectedGoal === "tradicional") {
+        targetKcal = getd;
+        ratios = { prot: 0.20, carb: 0.50, fat: 0.30 };
     }
 
     userState.targetCalories = Math.round(targetKcal);
@@ -1180,10 +1322,19 @@ function generateDynamicCardapio(goal, style) {
     const mealCategories = ["Café da Manhã", "Lanche da Manhã", "Almoço", "Lanche da Tarde", "Jantar", "Ceia"];
     userState.currentMeals = [];
 
+    // Determina o estilo padrão baseado no objetivo nutricional se o filtro for "all"
+    let targetStyle = style;
+    if (style === "all") {
+        if (goal === "alta-proteina") targetStyle = "alto-prot";
+        else if (goal === "tradicional") targetStyle = "tradicional";
+        else if (goal === "emagrecer") targetStyle = "baixo-carb";
+        else if (goal === "massa" || goal === "hipertrofia-gluteos") targetStyle = "alto-prot";
+        else targetStyle = "tradicional";
+    }
+
     mealCategories.forEach((cat, idx) => {
-        // Encontra o template correspondente ao Estilo. Se não achar, usa 'all'
         const styleTemplates = recipeTemplates[cat];
-        let template = styleTemplates[style] || styleTemplates["all"];
+        let template = styleTemplates[targetStyle] || styleTemplates["tradicional"] || styleTemplates["all"];
         
         // Fatores de caloria baseados na refeição
         const mealPct = {
@@ -1196,10 +1347,32 @@ function generateDynamicCardapio(goal, style) {
         };
 
         const mealKcal = Math.round(userState.targetCalories * mealPct[cat]);
-        // Calcula macros proporcionais fictícios reais
-        const prot = Math.round((mealKcal * 0.25) / 4);
-        const carb = Math.round((mealKcal * 0.50) / 4);
-        const fat = Math.round((mealKcal * 0.25) / 9);
+        
+        // Calcula macros proporcionais baseados no objetivo
+        let pFactor = 0.25, cFactor = 0.50, fFactor = 0.25;
+        if (goal === "alta-proteina") {
+            pFactor = 0.35; cFactor = 0.35; fFactor = 0.30;
+        } else if (goal === "emagrecer" || goal === "definicao") {
+            pFactor = 0.30; cFactor = 0.40; fFactor = 0.30;
+        }
+
+        const prot = Math.round((mealKcal * pFactor) / 4);
+        const carb = Math.round((mealKcal * cFactor) / 4);
+        const fat = Math.round((mealKcal * fFactor) / 9);
+
+        // Ajusta quantidades sugeridas dinamicamente baseada no peso / Kcal calculada
+        const portionAdjuster = mealKcal / 300; // Normalizado para porção base de 300 Kcal
+        const adjustedIngredients = template.ingredients.map(ing => {
+            const match = ing.match(/^(\d+(?:\.\d+)?)(g|ml| fatias?| colheres?| unidades?) (.*)/i);
+            if (match) {
+                const qty = parseFloat(match[1]);
+                const unit = match[2];
+                const restText = match[3];
+                const adjustedQty = Math.round(qty * portionAdjuster * 10) / 10;
+                return `${adjustedQty}${unit} ${restText}`;
+            }
+            return ing;
+        });
 
         userState.currentMeals.push({
             id: `dyn-${idx}`,
@@ -1209,7 +1382,7 @@ function generateDynamicCardapio(goal, style) {
             prot: prot,
             carb: carb,
             fat: fat,
-            ingredients: [...template.ingredients],
+            ingredients: adjustedIngredients,
             prep: template.prep,
             time: template.time,
             isFavorite: false

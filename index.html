@@ -440,73 +440,115 @@
                     <p class="tab-subheading">Menu estruturado sem restrições. Alimente seu corpo com leveza.</p>
                 </div>
 
-                <!-- Configuração de Plano Alimentar -->
-                <div class="section-card nutrition-config-card">
-                    <h3 class="card-title">Configurar Plano</h3>
-                    <div class="config-grid">
-                        <div class="config-item">
-                            <label for="nut-select-goal">Objetivo Nutricional</label>
-                            <select id="nut-select-goal" onchange="changeNutritionConfig()">
-                                <option value="emagrecer">Emagrecer</option>
-                                <option value="massa">Ganhar massa muscular</option>
-                                <option value="manter">Manter o peso</option>
-                                <option value="ganhar-peso">Ganhar peso</option>
-                            </select>
-                        </div>
-                        <div class="config-item">
-                            <label for="nut-select-style">Estilo do Cardápio</label>
-                            <select id="nut-select-style" onchange="changeNutritionConfig()">
-                                <option value="all">Todas as receitas</option>
-                                <option value="rapidas">Receitas rápidas</option>
-                                <option value="vegana">Receitas veganas</option>
-                                <option value="vegetariana">Receitas vegetarianas</option>
-                                <option value="sem-lactose">Receitas sem lactose</option>
-                                <option value="sem-gluten">Receitas sem glúten</option>
-                                <option value="economica">Receitas econômicas</option>
-                            </select>
-                        </div>
-                    </div>
+                <!-- Configuração de Abas de Alimentação -->
+                <div class="nutrition-tabs-header" style="display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">
+                    <button class="nut-tab-btn active" id="btn-nut-tab-diet" onclick="switchNutritionSubTab('diet')" style="background:rgba(232, 165, 152, 0.1); border:1px solid rgba(232, 165, 152, 0.2); color:#fff; font-size:12px; font-weight:600; padding:6px 12px; cursor:pointer; border-radius:15px; transition:all 0.2s ease;">📋 Plano Alimentar</button>
+                    <button class="nut-tab-btn" id="btn-nut-tab-subs" onclick="switchNutritionSubTab('subs')" style="background:none; border:none; color:var(--text-secondary); font-size:12px; font-weight:600; padding:6px 12px; cursor:pointer; border-radius:15px; transition:all 0.2s ease;">🔄 Substituições Inteligentes</button>
                 </div>
 
-                <!-- Target Macros Widget -->
-                <div class="section-card nutrition-summary-card">
-                    <div class="calories-goal-row">
-                        <div class="kcal-display">
-                            <span class="kcal-num" id="nut-target-kcal">1840</span>
-                            <span class="kcal-label">kcal / dia</span>
-                        </div>
-                        <div class="macros-bars-grid">
-                            <div class="macro-progress-item">
-                                <div class="macro-label-row"><span>Proteínas</span><span id="macro-prot-txt">138g</span></div>
-                                <div class="macro-bar"><div class="macro-fill prot" style="width: 100%"></div></div>
+                <div id="nut-diet-container">
+                    <!-- Configuração de Plano Alimentar -->
+                    <div class="section-card nutrition-config-card">
+                        <h3 class="card-title">Configurar Plano</h3>
+                        <div class="config-grid">
+                            <div class="config-item">
+                                <label for="nut-select-goal">Objetivo Nutricional</label>
+                                <select id="nut-select-goal" onchange="changeNutritionConfig()">
+                                    <option value="emagrecer">🔥 Emagrecimento</option>
+                                    <option value="massa">💪 Ganho de massa muscular</option>
+                                    <option value="definicao">✨ Definição muscular</option>
+                                    <option value="manter">⚖️ Manutenção do peso</option>
+                                    <option value="hipertrofia-gluteos">🍑 Hipertrofia de glúteos e pernas</option>
+                                    <option value="saudavel">❤️ Alimentação saudável</option>
+                                    <option value="alta-proteina">⚡ Alta proteína</option>
+                                    <option value="tradicional">🥩 Dieta tradicional</option>
+                                </select>
                             </div>
-                            <div class="macro-progress-item">
-                                <div class="macro-label-row"><span>Carboidratos</span><span id="macro-carb-txt">184g</span></div>
-                                <div class="macro-bar"><div class="macro-fill carb" style="width: 100%"></div></div>
-                            </div>
-                            <div class="macro-progress-item">
-                                <div class="macro-label-row"><span>Gorduras</span><span id="macro-fat-txt">61g</span></div>
-                                <div class="macro-bar"><div class="macro-fill fat" style="width: 100%"></div></div>
+                            <div class="config-item">
+                                <label for="nut-select-style">Filtros do Cardápio</label>
+                                <select id="nut-select-style" onchange="changeNutritionConfig()">
+                                    <option value="all">Todas as opções</option>
+                                    <option value="rapidas">Receitas rápidas</option>
+                                    <option value="economica">Econômicas</option>
+                                    <option value="vegetariana">Vegetarianas</option>
+                                    <option value="vegana">Veganas</option>
+                                    <option value="sem-lactose">Sem lactose</option>
+                                    <option value="sem-gluten">Sem glúten</option>
+                                    <option value="alto-prot">Alto teor de proteínas</option>
+                                    <option value="baixo-carb">Baixo carboidrato</option>
+                                </select>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Target Macros Widget -->
+                    <div class="section-card nutrition-summary-card">
+                        <div class="calories-goal-row">
+                            <div class="kcal-display">
+                                <span class="kcal-num" id="nut-target-kcal">1840</span>
+                                <span class="kcal-label">kcal / dia</span>
+                            </div>
+                            <div class="macros-bars-grid">
+                                <div class="macro-progress-item">
+                                    <div class="macro-label-row"><span>Proteínas</span><span id="macro-prot-txt">138g</span></div>
+                                    <div class="macro-bar"><div class="macro-fill prot" style="width: 100%"></div></div>
+                                </div>
+                                <div class="macro-progress-item">
+                                    <div class="macro-label-row"><span>Carboidratos</span><span id="macro-carb-txt">184g</span></div>
+                                    <div class="macro-bar"><div class="macro-fill carb" style="width: 100%"></div></div>
+                                </div>
+                                <div class="macro-progress-item">
+                                    <div class="macro-label-row"><span>Gorduras</span><span id="macro-fat-txt">61g</span></div>
+                                    <div class="macro-bar"><div class="macro-fill fat" style="width: 100%"></div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pesquisa de Receitas -->
+                    <div class="search-bar-box">
+                        <input type="text" id="recipe-search-input" placeholder="🔍 Pesquisar receitas no plano..." onkeyup="searchNutritionRecipes()">
+                    </div>
+
+                    <div class="cardapio-actions-row">
+                        <button class="btn-cardapio-save" onclick="saveCardapioAction()">
+                            <i data-lucide="bookmark"></i> Salvar Cardápio
+                        </button>
+                    </div>
+
+                    <!-- Meals Stack (Café, Lanche M, Almoço, Lanche T, Jantar, Ceia) -->
+                    <h3 class="section-subtitle">Cardápio do Dia</h3>
+                    <div class="meals-list" id="meals-list-container">
+                        <!-- Populated dynamically -->
+                    </div>
                 </div>
 
-                <!-- Pesquisa de Receitas -->
-                <div class="search-bar-box">
-                    <input type="text" id="recipe-search-input" placeholder="🔍 Pesquisar receitas no plano..." onkeyup="searchNutritionRecipes()">
-                </div>
+                <!-- Substituições Inteligentes sub-tab (Hidden by default) -->
+                <div id="nut-subs-container" style="display: none;">
+                    <div class="section-card">
+                        <h3 class="card-title">🔄 Tabela de Substituições Equivalentes</h3>
+                        <p class="card-subtitle" style="margin-bottom: 12px;">Selecione o alimento de base para visualizar as opções equivalentes calculadas para a sua dieta.</p>
+                        
+                        <div class="input-group" style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 16px;">
+                            <label style="font-size:10px; color: var(--text-secondary); text-transform: uppercase; font-weight:600;">Substituir Alimento:</label>
+                            <select id="select-sub-food" onchange="updateSubstitutionsGrid()" style="width:100%; padding:10px; border-radius:8px; background: #1a0f15; border:1px solid rgba(255,255,255,0.08); color:#fff; font-size: 13px; outline: none;">
+                                <option value="arroz">🍚 Arroz Branco Cozido (100g)</option>
+                                <option value="frango">🍗 Frango Grelhado (100g)</option>
+                                <option value="ovo">🍳 Ovo Inteiro Cozido (2 unidades)</option>
+                                <option value="iogurte">🥛 Iogurte Natural Integral (200g)</option>
+                                <option value="batata">🍠 Batata Doce Cozida (100g)</option>
+                            </select>
+                        </div>
 
-                <div class="cardapio-actions-row">
-                    <button class="btn-cardapio-save" onclick="saveCardapioAction()">
-                        <i data-lucide="bookmark"></i> Salvar Cardápio
-                    </button>
-                </div>
+                        <div class="recipe-macros-row" id="sub-source-stats" style="margin-bottom: 16px; background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; border: 1px dashed rgba(255,255,255,0.05); display: flex;">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
 
-                <!-- Meals Stack (Café, Lanche M, Almoço, Lanche T, Jantar, Ceia) -->
-                <h3 class="section-subtitle">Cardápio do Dia</h3>
-                <div class="meals-list" id="meals-list-container">
-                    <!-- Populated dynamically -->
+                    <h3 class="section-subtitle">Opções Equivalentes Sugeridas</h3>
+                    <div style="display: flex; flex-direction: column; gap: 10px; padding-bottom: 24px;" id="subs-equivalents-grid">
+                        <!-- Populated dynamically -->
+                    </div>
                 </div>
 
                 <!-- Real-time Shopping List Section -->
