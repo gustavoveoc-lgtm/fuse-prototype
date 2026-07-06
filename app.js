@@ -147,7 +147,7 @@ const defaultState = {
     currentMeals: [],
     hasLoggedIn: false,
     
-    // Configurações do Desafio Core R$ 9,99
+    // Configurações do Desafio Core R$ 19,99
     challengeSubscribed: false,
     challengeTasksCompleted: [false, false, false, false, false, false],
     challengePoints: 210
@@ -1634,7 +1634,7 @@ function updateWeightModal() {
     }
 }
 
-// 9. SISTEMA DE DESAFIOS GAMIFICADOS (TAXA R$ 9,99)
+// 9. SISTEMA DE DESAFIOS GAMIFICADOS (TAXA R$ 19,99)
 
 function renderChallengeUI() {
     if (userState.challengeSubscribed) {
