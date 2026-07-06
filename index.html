@@ -973,6 +973,62 @@
         </div>
     </div>
 
+    <!-- Modal 2B: Guia de Execução do Exercício (BottomSheet) -->
+    <div class="modal-backdrop" id="modal-exercise-guide" style="z-index: 110;">
+        <div class="modal-content bottom-sheet" style="max-height: 85%;">
+            <div class="drag-handle"></div>
+            
+            <span class="recipe-sheet-tag" id="ex-guide-target">Músculos Trabalhados</span>
+            <h2 class="modal-title" id="ex-guide-name" style="margin-top: 2px;">Agachamento Livre</h2>
+            
+            <div class="scrollable-sheet-content" style="padding-bottom: 20px;">
+                <!-- Player de Vídeo em Loop -->
+                <div class="exercise-video-wrapper">
+                    <video id="ex-guide-video" loop muted autoplay playsinline>
+                        <source src="" type="video/mp4">
+                    </video>
+                    <button class="btn-video-control" onclick="toggleGuideVideo()">
+                        <i data-lucide="pause" id="ex-guide-video-icon"></i>
+                    </button>
+                </div>
+
+                <div class="recipe-macros-row" style="margin-bottom: 16px;">
+                    <div class="recipe-macro-stat">
+                        <span class="macro-stat-val" id="ex-guide-sets">3 séries</span>
+                        <span class="macro-stat-lbl">Volume</span>
+                    </div>
+                    <div class="recipe-macro-stat">
+                        <span class="macro-stat-val" id="ex-guide-reps">15 repetições</span>
+                        <span class="macro-stat-lbl">Esforço</span>
+                    </div>
+                    <div class="recipe-macro-stat">
+                        <span class="macro-stat-val" id="ex-guide-rest">45s rest</span>
+                        <span class="macro-stat-lbl">Intervalo</span>
+                    </div>
+                </div>
+
+                <h3 class="guide-section-title">📖 Como Executar</h3>
+                <p class="guide-text-content" id="ex-guide-instructions">
+                    Fique em pé, com os pés afastados na largura dos ombros. Flexione os joelhos e empurre os quadris para trás, descendo como se fosse sentar em uma cadeira. Mantenha o peito aberto e os joelhos alinhados com as pontas dos pés.
+                </p>
+
+                <h3 class="guide-section-title" style="color: #ffb3a7;">⚠️ Principais Erros para Evitar</h3>
+                <div class="guide-warning-box">
+                    <p id="ex-guide-errors">
+                        Evite tirar os calcanhares do chão ou permitir que os joelhos entrem em valgo (fechem para dentro). Não curve a coluna lombar durante a descida.
+                    </p>
+                </div>
+
+                <h3 class="guide-section-title">💡 Dicas de Postura e Respiração</h3>
+                <p class="guide-text-content" id="ex-guide-tips">
+                    Inspire ao descer (fase excêntrica) e expire forte ao subir (fase concêntrica). Mantenha o core sempre contraído para proteger a região lombar.
+                </p>
+            </div>
+            
+            <button class="btn-modal-cancel" onclick="closeModal('modal-exercise-guide')" style="margin-top: 8px;">Voltar à Ficha</button>
+        </div>
+    </div>
+
     <!-- Modal 3: Active Workout Timer Player -->
     <div class="modal-backdrop" id="modal-workout-player">
         <div class="modal-content player-modal text-center">

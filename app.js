@@ -650,6 +650,170 @@ let activeWorkoutState = {
     timerInterval: null
 };
 
+// Banco de Dados de Detalhes dos Exercícios (Guia FUSE)
+const exercisesGuideDB = {
+    "Agachamento Livre": {
+        video: "https://videos.pexels.com/video-files/4754020/4754020-sd_360_640_30fps.mp4",
+        muscles: "Quadríceps, Glúteos, Posterior de Coxa, Core",
+        instructions: "Fique em pé com os pés na largura dos ombros. Agache projetando os quadris para trás, mantendo a coluna alinhada e descendo até as coxas ficarem paralelas ao chão.",
+        errors: "Evite curvar as costas, levantar os calcanhares ou deixar os joelhos entrarem para dentro (valgo dinâmico).",
+        tips: "Inspire ao descer e expire forte ao subir. Mantenha o peso distribuído no calcanhar.",
+        rest: "45 segundos"
+    },
+    "Elevação Pélvica": {
+        video: "https://videos.pexels.com/video-files/4754020/4754020-sd_360_640_30fps.mp4",
+        muscles: "Glúteo Máximo, Posteriores de Coxa, Core",
+        instructions: "Deite de costas com os joelhos dobrados e os pés apoiados no chão. Contraia os glúteos e eleve os quadris até que o corpo forme uma linha reta dos ombros aos joelhos.",
+        errors: "Não force a coluna lombar arquivando excessivamente as costas no topo do movimento.",
+        tips: "Pressione os calcanhares contra o chão e aperte os glúteos por 2 segundos no topo.",
+        rest: "45 segundos"
+    },
+    "Quatro Apoios Unilateral": {
+        video: "https://videos.pexels.com/video-files/4753995/4753995-sd_360_640_30fps.mp4",
+        muscles: "Glúteo Médio e Máximo, Core",
+        instructions: "Na posição de quatro apoios, eleve uma das pernas dobrada a 90 graus até que a coxa fique alinhada com o tronco, mantendo a sola do pé apontada para o teto.",
+        errors: "Não balance o quadril lateralmente e evite arquear excessivamente a coluna lombar.",
+        tips: "Mantenha o abdômen travado e controle a descida lenta do movimento.",
+        rest: "30 segundos"
+    },
+    "Ponte Glúteos Isometrica": {
+        video: "https://videos.pexels.com/video-files/4754020/4754020-sd_360_640_30fps.mp4",
+        muscles: "Glúteos, Isquiotibiais, Core",
+        instructions: "Mantenha o quadril elevado na posição de ponte e segure a contração estática sem descer pelo tempo recomendado na ficha.",
+        errors: "Deixar o quadril ceder com o tempo ou esquecer de contrair fortemente os glúteos.",
+        tips: "Mantenha a respiração contínua e concentre-se na ativação glútea profunda.",
+        rest: "30 segundos"
+    },
+    "Agachamento com Halteres": {
+        video: "https://videos.pexels.com/video-files/4754020/4754020-sd_360_640_30fps.mp4",
+        muscles: "Quadríceps, Glúteos, Core",
+        instructions: "Segure dois halteres ao lado do corpo. Agache mantendo a postura ereta, peito estufado e o calcanhar firme no chão.",
+        errors: "Olhar para o chão ou inclinar o tronco excessivamente para a frente jogando a carga na lombar.",
+        tips: "Mantenha o peito aberto e empurre o chão com força ao subir.",
+        rest: "60 segundos"
+    },
+    "Cadeira Extensora": {
+        video: "https://videos.pexels.com/video-files/4754020/4754020-sd_360_640_30fps.mp4",
+        muscles: "Quadríceps (Foco frontal)",
+        instructions: "Ajuste o rolo de espuma sobre os tornozelos. Estenda totalmente os joelhos contra a resistência, pause por 1 segundo e retorne devagar.",
+        errors: "Dar impulsos bruscos ou não estender totalmente as pernas no topo.",
+        tips: "Segure firme nos apoios laterais para manter o quadril estabilizado no banco.",
+        rest: "45 segundos"
+    },
+    "Mesa Flexora": {
+        video: "https://videos.pexels.com/video-files/4754020/4754020-sd_360_640_30fps.mp4",
+        muscles: "Posterior de Coxa (Isquiotibiais)",
+        instructions: "Deite de bruços no aparelho e flexione os joelhos trazendo o rolo em direção aos glúteos. Retorne controlando a descida.",
+        errors: "Tirar o quadril do banco durante a fase de esforço.",
+        tips: "Mantenha os pés em dorsoflexão e contraia o posterior de coxa de forma isolada.",
+        rest: "45 segundos"
+    },
+    "Passada com Carga": {
+        video: "https://videos.pexels.com/video-files/4754020/4754020-sd_360_640_30fps.mp4",
+        muscles: "Quadríceps, Glúteos, Adutores",
+        instructions: "Dê um passo largo à frente, descendo o quadril até que o joelho da perna de trás quase toque o chão e o da frente forme 90 graus.",
+        errors: "Dar passos muito curtos ou deixar o joelho da frente passar excessivamente da ponta do pé.",
+        tips: "Mantenha o tronco ereto e dê passos firmes e largos.",
+        rest: "60 segundos"
+    },
+    "Polichinelos": {
+        video: "https://videos.pexels.com/video-files/3121405/3121405-sd_540_960_24fps.mp4",
+        muscles: "Panturrilhas, Ombros, Cardio",
+        instructions: "Salte abrindo as pernas e batendo as mãos acima da cabeça simultaneamente. Salte novamente fechando as pernas e descendo os braços.",
+        errors: "Aterissar com os pés totalmente planos ou com as pernas rígidas sem amortecimento.",
+        tips: "Amorteça a queda na ponta dos pés e mantenha um ritmo constante.",
+        rest: "15 segundos"
+    },
+    "Corrida Estacionária": {
+        video: "https://videos.pexels.com/video-files/3121405/3121405-sd_540_960_24fps.mp4",
+        muscles: "Cardio, Core, Quadríceps",
+        instructions: "Simule uma corrida sem sair do lugar, elevando os joelhos até a altura da cintura e coordenando o movimento dos braços.",
+        errors: "Postura curvada à frente ou pouca elevação dos joelhos.",
+        tips: "Mantenha o peito aberto e respire de forma cadenciada.",
+        rest: "15 segundos"
+    },
+    "Burpees Adaptados": {
+        video: "https://videos.pexels.com/video-files/3121405/3121405-sd_540_960_24fps.mp4",
+        muscles: "Full Body, Cardio, Core",
+        instructions: "Fique de pé, agache colocando as mãos no chão, jogue os pés para trás em posição de prancha, retorne os pés e fique de pé estendendo os braços.",
+        errors: "Deixar o quadril ceder na posição de prancha ou curvar as costas ao levantar.",
+        tips: "Faça o movimento de forma fluida sem pressa para manter a técnica ideal.",
+        rest: "30 segundos"
+    },
+    "Agachamento com Salto": {
+        video: "https://videos.pexels.com/video-files/3121405/3121405-sd_540_960_24fps.mp4",
+        muscles: "Quadríceps, Glúteos, Panturrilhas",
+        instructions: "Execute um agachamento livre e exploda para cima com um salto vertical. Amorteça a queda agachando suavemente.",
+        errors: "Aterissar com pernas estendidas ou bater o calcanhar com força no chão.",
+        tips: "Pense na aterrissagem como o início do próximo agachamento.",
+        rest: "30 segundos"
+    },
+    "Postura da Criança (Child Pose)": {
+        video: "https://videos.pexels.com/video-files/4753995/4753995-sd_360_640_30fps.mp4",
+        muscles: "Costas, Ombros, Quadris",
+        instructions: "Ajoelhe-se no chão, sente-se nos calcanhares e incline-se para a frente, estendendo os braços no chão à sua frente e apoiando a testa no tapete.",
+        errors: "Tentar forçar a postura se sentir dor excessiva nos joelhos.",
+        tips: "Respire profundamente pelo nariz expandindo as costelas nas costas.",
+        rest: "10 segundos"
+    },
+    "Alongamento Gato-Vaca": {
+        video: "https://videos.pexels.com/video-files/4753995/4753995-sd_360_640_30fps.mp4",
+        muscles: "Coluna Vertebral, Core, Pescoço",
+        instructions: "Na posição de quatro apoios, arqueie a coluna para cima empurrando o chão (gato) e depois curve a coluna para baixo olhando para o teto (vaca).",
+        errors: "Realizar movimentos rápidos e de forma brusca.",
+        tips: "Sincronize com a respiração: expire no gato e inspire na vaca.",
+        rest: "10 segundos"
+    },
+    "Torção de Coluna Deitada": {
+        video: "https://videos.pexels.com/video-files/4753995/4753995-sd_360_640_30fps.mp4",
+        muscles: "Lombar, Glúteos, Peitorais",
+        instructions: "Deitada de costas, abra os braços em cruz, dobre uma das pernas e gire o quadril levando o joelho em direção ao chão do lado oposto.",
+        errors: "Forçar o ombro oposto a sair do chão.",
+        tips: "Mantenha o olhar para o lado contrário da torção para alongar a coluna cervical.",
+        rest: "10 segundos"
+    },
+    "Alongamento Isquiotibiais": {
+        video: "https://videos.pexels.com/video-files/4753995/4753995-sd_360_640_30fps.mp4",
+        muscles: "Posterior de Coxa, Panturrilhas",
+        instructions: "Sentada com uma perna estendida à frente, incline o tronco em direção ao pé, mantendo a coluna o mais reta possível.",
+        errors: "Curvar excessivamente os ombros na tentativa de alcançar o pé.",
+        tips: "Concentre o alongamento atrás do joelho e na coxa.",
+        rest: "10 segundos"
+    },
+    "Puxada Aberta no Pulley": {
+        video: "https://videos.pexels.com/video-files/4754020/4754020-sd_360_640_30fps.mp4",
+        muscles: "Dorsais (Costas), Bíceps, Ombros",
+        instructions: "Sente-se no aparelho, segure a barra com pegada aberta e puxe-a em direção à parte superior do peito, contraindo as escápulas.",
+        errors: "Inclinar o tronco excessivamente para trás ou puxar a barra atrás da nuca.",
+        tips: "Puxe com os cotovelos direcionados para baixo e não com a força dos braços.",
+        rest: "45 segundos"
+    },
+    "Remada Baixa com Triângulo": {
+        video: "https://videos.pexels.com/video-files/4754020/4754020-sd_360_640_30fps.mp4",
+        muscles: "Costas (Romboides, Grande Dorsal), Bíceps",
+        instructions: "Segure o triângulo, apoie os pés e puxe a carga em direção ao abdômen, mantendo os cotovelos rentes ao corpo e peito estufado.",
+        errors: "Curvar a lombar ou balançar o tronco para ganhar impulso.",
+        tips: "Mantenha o peito estufado e esmague as costas no final do movimento.",
+        rest: "45 segundos"
+    },
+    "Desenvolvimento de Ombros": {
+        video: "https://videos.pexels.com/video-files/4754020/4754020-sd_360_640_30fps.mp4",
+        muscles: "Deltoides (Ombros), Tríceps",
+        instructions: "Sentada ou em pé, segure os halteres na altura das orelhas e empurre-os verticalmente para cima até estender quase totalmente os braços.",
+        errors: "Arquear a coluna lombar ou bater os halteres no topo.",
+        tips: "Mantenha os cotovelos levemente projetados para a frente do corpo.",
+        rest: "45 segundos"
+    },
+    "Rosca Martelo Unilateral": {
+        video: "https://videos.pexels.com/video-files/4754020/4754020-sd_360_640_30fps.mp4",
+        muscles: "Bíceps, Braquiorradial (Antebraço)",
+        instructions: "Segure os halteres com pegada neutra (palmas voltadas uma para a outra) e flexione o cotovelo alternadamente mantendo o punho firme.",
+        errors: "Balançar os cotovelos para trás ou ajudar com o ombro.",
+        tips: "Mantenha o cotovelo colado ao lado da costela o tempo todo.",
+        rest: "30 segundos"
+    }
+};
+
 function openWorkoutDetail(id) {
     const w = workoutsDB.find(workout => workout.id === id);
     activeWorkoutState.workout = w;
@@ -666,14 +830,65 @@ function openWorkoutDetail(id) {
     w.exercises.forEach(ex => {
         const row = document.createElement("div");
         row.className = "exercise-row-item";
+        row.onclick = () => openExerciseGuide(ex.name, ex.sets, ex.reps);
         row.innerHTML = `
-            <span>${ex.name}</span>
+            <div style="display: flex; flex-direction: column;">
+                <span style="font-weight: 600; color: var(--text-primary); font-size: 13px;">${ex.name}</span>
+                <span style="font-size: 10px; color: var(--accent-rose);">📖 Ver tutorial de execução</span>
+            </div>
             <span class="exercise-row-reps">${ex.sets}s x ${ex.reps}</span>
         `;
         listWrapper.appendChild(row);
     });
     
     openModal("modal-workout-detail");
+}
+
+function openExerciseGuide(name, sets, reps) {
+    const guide = exercisesGuideDB[name] || {
+        video: "https://videos.pexels.com/video-files/4754020/4754020-sd_360_640_30fps.mp4",
+        muscles: "Músculos do corpo",
+        instructions: "Execute o exercício mantendo a postura ereta e o core contraído.",
+        errors: "Evite pressa e falta de amplitude de movimento.",
+        tips: "Mantenha respiração constante.",
+        rest: "30 segundos"
+    };
+
+    document.getElementById("ex-guide-name").innerText = name;
+    document.getElementById("ex-guide-target").innerText = guide.muscles;
+    document.getElementById("ex-guide-sets").innerText = `${sets} séries`;
+    document.getElementById("ex-guide-reps").innerText = reps;
+    document.getElementById("ex-guide-rest").innerText = guide.rest;
+    document.getElementById("ex-guide-instructions").innerText = guide.instructions;
+    document.getElementById("ex-guide-errors").innerText = guide.errors;
+    document.getElementById("ex-guide-tips").innerText = guide.tips;
+
+    // Configura vídeo
+    const video = document.getElementById("ex-guide-video");
+    video.src = guide.video;
+    video.load();
+    video.play().catch(err => console.log("Auto-play blocked, waiting for click."));
+
+    // Restaura ícone de pausa/play
+    const icon = document.getElementById("ex-guide-video-icon");
+    icon.setAttribute("data-lucide", "pause");
+    lucide.createIcons();
+
+    openModal("modal-exercise-guide");
+}
+
+function toggleGuideVideo() {
+    const video = document.getElementById("ex-guide-video");
+    const icon = document.getElementById("ex-guide-video-icon");
+    
+    if (video.paused) {
+        video.play();
+        icon.setAttribute("data-lucide", "pause");
+    } else {
+        video.pause();
+        icon.setAttribute("data-lucide", "play");
+    }
+    lucide.createIcons();
 }
 
 function startActiveWorkout() {
