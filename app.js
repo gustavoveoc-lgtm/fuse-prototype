@@ -131,10 +131,11 @@ const defaultState = {
     levelNum: 8,
     levelTitle: "Nível 8: Constância",
     streak: 7,
-    habitsCompleted: [false, false, false, false, false],
-    habitsCount: 5,
+    habitsCompleted: [false, false, false, false, false, false],
+    habitsCount: 6,
     completedWorkoutsCount: 14,
     streakUpdated: false,
+    lastCheckInDate: "",
 
     // Cálculos de Macros
     targetCalories: 1840,
@@ -153,6 +154,22 @@ const defaultState = {
 };
 
 let userState = JSON.parse(localStorage.getItem("fuse_user_state")) || defaultState;
+
+// Sincroniza estado de hábitos antigo se houver incompatibilidade
+if (!userState.habitsCompleted || userState.habitsCompleted.length !== 6) {
+    userState.habitsCompleted = [false, false, false, false, false, false];
+    userState.habitsCount = 6;
+}
+
+// Lógica de reinicialização diária automática à meia-noite
+const todayStr = new Date().toISOString().slice(0, 10);
+if (!userState.lastCheckInDate) {
+    userState.lastCheckInDate = todayStr;
+} else if (userState.lastCheckInDate !== todayStr) {
+    userState.habitsCompleted = [false, false, false, false, false, false];
+    userState.lastCheckInDate = todayStr;
+    userState.streakUpdated = false;
+}
 
 function saveStateToStorage() {
     localStorage.setItem("fuse_user_state", JSON.stringify(userState));
@@ -487,6 +504,18 @@ function updateProgressUI() {
     
     document.getElementById("ritual-progress-bar").style.width = `${percentage}%`;
     document.getElementById("ritual-ratio").innerText = `${completedCount}/${userState.habitsCount} concluídos`;
+    
+    // Restaura visualmente os checkboxes marcados
+    const items = document.querySelectorAll(".ritual-item");
+    items.forEach((item, idx) => {
+        if (item) {
+            if (userState.habitsCompleted[idx]) {
+                item.classList.add("checked");
+            } else {
+                item.classList.remove("checked");
+            }
+        }
+    });
     
     // Atualizações no Perfil
     document.getElementById("profile-xp-ratio").innerText = `${userState.xp} / 500 XP`;
