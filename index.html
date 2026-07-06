@@ -692,21 +692,76 @@
                     </div>
 
                     <!-- Secção de Prêmios -->
-                    <div class="section-card challenge-prizes-card">
-                        <h3 class="card-title">🎁 Premiação Exclusiva</h3>
-                        <p class="challenge-prize-desc">
-                            A FUSE enviará na casa das vencedoras o <strong>Kit Wellness Premium</strong> contendo:
+                    <div class="section-card challenge-prizes-card" style="padding: 16px;">
+                        <h3 class="card-title" style="margin-bottom: 8px;">🎁 Premiação Exclusiva</h3>
+                        <p class="challenge-prize-desc" style="font-size: 11px; color: var(--text-secondary); margin-bottom: 14px;">
+                            Ao concluir os 21 dias de disciplina e cumprir todas as regras, você concorrerá a esta super premiação:
                         </p>
-                        <ul class="prize-list-bullets">
-                            <li>1 Garrafa Térmica FUSE com display de temperatura digital.</li>
-                            <li>1 Conjunto de Elásticos de Resistência (Superbands) de alta durabilidade.</li>
-                            <li>R$ 500,00 em dinheiro creditado diretamente via Pix.</li>
-                        </ul>
-                        <div class="prize-rules-box mt-3">
-                            <h4>Como concorrer e vencer:</h4>
-                            <p><strong>Critério para participar:</strong> Inscrição no valor de R$ 19,99 e conclusão de 100% das tarefas diárias do desafio.</p>
-                            <p><strong>Critério para vencer:</strong> Sorteio oficial auditado entre todas as participantes que finalizarem os 21 dias com 100% de aproveitamento.</p>
-                            <p><strong>Resultado:</strong> Anúncio no feed do Círculo em 01 de Agosto de 2026.</p>
+                        
+                        <!-- Vitrine de Prêmios -->
+                        <div class="prizes-vitrine-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px;">
+                            <!-- Prêmio 1: Bíblia -->
+                            <div class="prize-card-item" style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;">
+                                <div style="width: 100%; aspect-ratio: 4/3; background: #000; overflow: hidden; position: relative;">
+                                    <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=250" alt="Bíblia Sagrada" style="width:100%; height:100%; object-fit:cover;">
+                                    <span style="position: absolute; top: 8px; left: 8px; background: rgba(18,10,14,0.75); padding: 2px 6px; border-radius: 10px; font-size: 10px; color: var(--accent-rose); font-weight: 700;">Fé & Foco</span>
+                                </div>
+                                <div style="padding: 10px; text-align: left;">
+                                    <h4 style="font-size: 12px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">📖 Uma Bíblia</h4>
+                                    <p style="font-size: 9.5px; color: var(--text-secondary); line-height: 1.3;">Para fortalecer a sua espiritualidade e renovar sua devoção diária.</p>
+                                </div>
+                            </div>
+
+                            <!-- Prêmio 2: Kit Growth -->
+                            <div class="prize-card-item" style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;">
+                                <div style="width: 100%; aspect-ratio: 4/3; background: #000; overflow: hidden; position: relative;">
+                                    <img src="https://images.unsplash.com/photo-1579758629938-03607ccdbaba?auto=format&fit=crop&q=80&w=250" alt="Kit Growth" style="width:100%; height:100%; object-fit:cover;">
+                                    <span style="position: absolute; top: 8px; left: 8px; background: rgba(18,10,14,0.75); padding: 2px 6px; border-radius: 10px; font-size: 10px; color: var(--accent-rose); font-weight: 700;">Nutrição</span>
+                                </div>
+                                <div style="padding: 10px; text-align: left;">
+                                    <h4 style="font-size: 12px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">💪 Kit Growth</h4>
+                                    <p style="font-size: 9.5px; color: var(--text-secondary); line-height: 1.3;">Suplementos de alta qualidade para impulsionar seus treinos.</p>
+                                </div>
+                            </div>
+
+                            <!-- Prêmio 3: Garrafa Fuse -->
+                            <div class="prize-card-item" style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;">
+                                <div style="width: 100%; aspect-ratio: 4/3; background: #000; overflow: hidden; position: relative;">
+                                    <img src="https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&q=80&w=250" alt="Garrafa Fuse" style="width:100%; height:100%; object-fit:cover;">
+                                    <span style="position: absolute; top: 8px; left: 8px; background: rgba(18,10,14,0.75); padding: 2px 6px; border-radius: 10px; font-size: 10px; color: var(--accent-rose); font-weight: 700;">Hidratação</span>
+                                </div>
+                                <div style="padding: 10px; text-align: left;">
+                                    <h4 style="font-size: 12px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">💧 Garrafa FUSE</h4>
+                                    <p style="font-size: 9.5px; color: var(--text-secondary); line-height: 1.3;">Exclusiva garrafa térmica FUSE com display de temperatura digital.</p>
+                                </div>
+                            </div>
+
+                            <!-- Prêmio 4: Premium Access -->
+                            <div class="prize-card-item" style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;">
+                                <div style="width: 100%; aspect-ratio: 4/3; background: #000; overflow: hidden; position: relative;">
+                                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=250" alt="Acesso Premium" style="width:100%; height:100%; object-fit:cover;">
+                                    <span style="position: absolute; top: 8px; left: 8px; background: rgba(18,10,14,0.75); padding: 2px 6px; border-radius: 10px; font-size: 10px; color: var(--accent-rose); font-weight: 700;">VIP</span>
+                                </div>
+                                <div style="padding: 10px; text-align: left;">
+                                    <h4 style="font-size: 12px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">⭐ FUSE Premium</h4>
+                                    <p style="font-size: 9.5px; color: var(--text-secondary); line-height: 1.3;">1 mês de acesso VIP ilimitado a todas as ferramentas avançadas.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Box de Destaque Motivador -->
+                        <div class="motivation-badge-box" style="background: linear-gradient(135deg, rgba(232, 165, 152, 0.15) 0%, rgba(26,15,21,0.5) 100%); border: 1px dashed var(--accent-rose); padding: 12px; border-radius: var(--radius-md); text-align: center; margin-top: 14px;">
+                            <p style="font-size: 11px; font-weight: 600; color: var(--text-primary); line-height: 1.4; font-family: var(--font-header);">
+                                ✨ “Complete o desafio, cumpra todas as regras e concorra a essa premiação exclusiva!”
+                            </p>
+                        </div>
+                        
+                        <!-- Regras Box -->
+                        <div class="prize-rules-box mt-3" style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px;">
+                            <h4 style="font-size: 11px; font-weight: 700; color: var(--accent-rose); margin-bottom: 6px;">Como concorrer e vencer:</h4>
+                            <p style="font-size: 10.5px; color: var(--text-secondary); margin-bottom: 4px;"><strong>Critério para participar:</strong> Inscrição no valor de R$ 19,99 e conclusão de 100% das tarefas diárias do desafio.</p>
+                            <p style="font-size: 10.5px; color: var(--text-secondary); margin-bottom: 4px;"><strong>Critério para vencer:</strong> Sorteio oficial auditado entre todas as participantes que finalizarem os 21 dias com 100% de aproveitamento.</p>
+                            <p style="font-size: 10.5px; color: var(--text-secondary);"><strong>Resultado:</strong> Anúncio no feed do Círculo em 01 de Agosto de 2026.</p>
                         </div>
                     </div>
 
