@@ -756,7 +756,7 @@ let activeWorkoutState = {
 // Banco de Dados de Detalhes dos Exercícios (Guia FUSE)
 const exercisesGuideDB = {
     "Agachamento Livre": {
-        image: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&q=80&w=400",
+        image: "assets/img/agachamento-livre.jpg",
         muscles: "Quadríceps, Glúteos, Posterior de Coxa, Core",
         instructions: "Fique em pé com os pés na largura dos ombros. Agache projetando os quadris para trás, mantendo a coluna alinhada e descendo até as coxas ficarem paralelas ao chão.",
         errors: "Evite curvar as costas, levantar os calcanhares ou deixar os joelhos entrarem para dentro (valgo dinâmico).",
@@ -764,7 +764,7 @@ const exercisesGuideDB = {
         rest: "45 segundos"
     },
     "Elevação Pélvica": {
-        image: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&q=80&w=400",
+        image: "assets/img/elevacao-pelvica.png",
         muscles: "Glúteo Máximo, Posteriores de Coxa, Core",
         instructions: "Deite de costas com os joelhos dobrados e os pés apoiados no chão. Contraia os glúteos e eleve os quadris até que o corpo forme uma linha reta dos ombros aos joelhos.",
         errors: "Não force a coluna lombar arquivando excessivamente as costas no topo do movimento.",
@@ -772,7 +772,7 @@ const exercisesGuideDB = {
         rest: "45 segundos"
     },
     "Quatro Apoios Unilateral": {
-        image: "https://images.unsplash.com/photo-1607962837359-5e7e89f866ad?auto=format&fit=crop&q=80&w=400",
+        image: "", // Utiliza o fallback automático de "Demonstração Indisponível"
         muscles: "Glúteo Médio e Máximo, Core",
         instructions: "Na posição de quatro apoios, eleve uma das pernas dobrada a 90 graus até que a coxa fique alinhada com o tronco, mantendo a sola do pé apontada para o teto.",
         errors: "Não balance o quadril lateralmente e evite arquear excessivamente a coluna lombar.",
@@ -780,7 +780,7 @@ const exercisesGuideDB = {
         rest: "30 segundos"
     },
     "Ponte Glúteos Isometrica": {
-        image: "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&q=80&w=400",
+        image: "", // Utiliza o fallback automático de "Demonstração Indisponível"
         muscles: "Glúteos, Isquiotibiais, Core",
         instructions: "Mantenha o quadril elevado na posição de ponte e segure a contração estática sem descer pelo tempo recomendado na ficha.",
         errors: "Deixar o quadril ceder com o tempo ou esquecer de contrair fortemente os glúteos.",
@@ -788,7 +788,7 @@ const exercisesGuideDB = {
         rest: "30 segundos"
     },
     "Agachamento com Halteres": {
-        image: "https://images.unsplash.com/photo-1605296867304-46d5465a25f1?auto=format&fit=crop&q=80&w=400",
+        image: "assets/img/agachamento-livre.jpg",
         muscles: "Quadríceps, Glúteos, Core",
         instructions: "Segure dois halteres ao lado do corpo. Agache mantendo a postura ereta, peito estufado e o calcanhar firme no chão.",
         errors: "Olhar para o chão ou inclinar o tronco excessivamente para a frente jogando a carga na lombar.",
@@ -796,7 +796,7 @@ const exercisesGuideDB = {
         rest: "60 segundos"
     },
     "Cadeira Extensora": {
-        image: "https://images.unsplash.com/photo-1590487988256-9ed24133863e?auto=format&fit=crop&q=80&w=400",
+        image: "assets/img/leg-press.jpg",
         muscles: "Quadríceps (Foco frontal)",
         instructions: "Ajuste o rolo de espuma sobre os tornozelos. Estenda totalmente os joelhos contra a resistência, pause por 1 segundo e retorne devagar.",
         errors: "Dar impulsos bruscos ou não estender totalmente as pernas no topo.",
@@ -804,7 +804,7 @@ const exercisesGuideDB = {
         rest: "45 segundos"
     },
     "Mesa Flexora": {
-        image: "https://images.unsplash.com/photo-1591741914073-9a3c20054007?auto=format&fit=crop&q=80&w=400",
+        image: "assets/img/stiff.jpg",
         muscles: "Posterior de Coxa (Isquiotibiais)",
         instructions: "Deite de bruços no aparelho e flexione os joelhos trazendo o rolo em direção aos glúteos. Retorne controlando a descida.",
         errors: "Tirar o quadril do banco durante a fase de esforço.",
@@ -812,7 +812,7 @@ const exercisesGuideDB = {
         rest: "45 segundos"
     },
     "Passada com Carga": {
-        image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=400",
+        image: "assets/img/stiff.jpg",
         muscles: "Quadríceps, Glúteos, Adutores",
         instructions: "Dê um passo largo à frente, descendo o quadril até que o joelho da perna de trás quase toque o chão e o da frente forme 90 graus.",
         errors: "Dar passos muito curtos ou deixar o joelho da frente passar excessivamente da ponta do pé.",
