@@ -186,6 +186,47 @@ if (!userState.activeDietFilters) {
     userState.activeDietFilters = [];
 }
 
+const defaultPosts = [
+    {
+        id: "p1",
+        author: "Camila Silva",
+        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150",
+        level: 10,
+        time: "Há 15 min",
+        content: "Mais um dia pago! Confesso que estava com preguiça, mas completei os 15 min de alongamento e já me sinto outra! Vamos meninas! 💪💖",
+        image: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&q=80&w=350",
+        likes: 24,
+        likedByMe: false,
+        reports: 0,
+        comments: [
+            { author: "Beatriz M.", content: "Arrasou Camila! Inspiração pura!" },
+            { author: "Júlia F.", content: "Pago por aqui também!" }
+        ]
+    },
+    {
+        id: "p2",
+        author: "Mariana Costa",
+        avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=150",
+        level: 8,
+        time: "Há 2 horas",
+        content: "Cardio de hoje concluído! 5km de corrida estacionária no quarto. O importante é não parar!",
+        image: "https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&q=80&w=350",
+        likes: 18,
+        likedByMe: false,
+        reports: 0,
+        comments: [
+            { author: "Amanda Fernandes", content: "Foco total!" }
+        ]
+    }
+];
+
+if (!userState.communityPosts) {
+    userState.communityPosts = [...defaultPosts];
+}
+if (userState.lastPostPointsDate === undefined) {
+    userState.lastPostPointsDate = "";
+}
+
 // Lógica de reinicialização diária automática à meia-noite
 const todayStr = new Date().toISOString().slice(0, 10);
 if (!userState.lastCheckInDate) {
@@ -279,6 +320,7 @@ function restoreSession() {
     populateNutritionMealsUI();
     updateShoppingListLiveUI();
     renderChallengeUI();
+    renderCommunityFeed();
 
     // Mostra o container principal
     document.getElementById("app-screen").style.display = "flex";
@@ -554,6 +596,7 @@ function finishOnboarding() {
     // Transição da Tela e Salvamento de Sessão
     userState.hasLoggedIn = true;
     renderChallengeUI();
+    renderCommunityFeed();
     saveStateToStorage();
 
     document.getElementById("onboarding-screen").classList.remove("active");
@@ -577,6 +620,10 @@ function switchTab(tabId) {
     if (targetBtn) targetBtn.classList.add("active");
     
     document.querySelector(".app-main-content").scrollTop = 0;
+    
+    if (tabId === "community") {
+        renderCommunityFeed();
+    }
 }
 
 // DIÁRIO CHECK-IN DE METAS
@@ -1593,64 +1640,273 @@ function generateShoppingList() {
 }
 
 // 7. COMUNIDADE E REDE SOCIAL
+function previewPostImage(input) {
+    const file = input.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const previewImg = document.getElementById("post-image-preview");
+            const previewContainer = document.getElementById("post-image-preview-container");
+            previewImg.src = e.target.result;
+            previewContainer.style.display = "block";
+        }
+        reader.readAsDataURL(file);
+    }
+}
+
+function removePostImagePreview() {
+    const previewImg = document.getElementById("post-image-preview");
+    const previewContainer = document.getElementById("post-image-preview-container");
+    const fileInput = document.getElementById("post-image-file");
+    previewImg.src = "";
+    previewContainer.style.display = "none";
+    if (fileInput) fileInput.value = "";
+}
+
 function createNewPost() {
-    const input = document.getElementById("post-input");
-    const text = input.value.trim();
+    const textInput = document.getElementById("post-input");
+    const text = textInput.value.trim();
+    const previewImg = document.getElementById("post-image-preview");
+    const imageSrc = previewImg.src;
+    const hasImage = previewImg.style.display !== "none" && imageSrc;
     
-    if (text === "") {
-        alert("Por favor, preencha algo antes de publicar.");
+    if (!text && !hasImage) {
+        alert("Sua publicação precisa de pelo menos uma mensagem ou foto.");
         return;
     }
     
-    const feedContainer = document.getElementById("feed-container");
-    const card = document.createElement("div");
-    card.className = "community-post-card";
-    card.style.animation = "fadeIn 0.3s ease";
+    // Default mock image if they clicked publish but didn't upload any file
+    const finalImage = hasImage ? imageSrc : "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&q=80&w=350";
     
-    card.innerHTML = `
-        <div class="post-header">
-            <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=150" alt="Avatar Amanda" class="post-user-avatar">
-            <div>
-                <span class="post-user-name">${userState.name}</span>
-                <div class="post-badge-group">
-                    <span class="user-level-badge">Nível ${userState.levelNum}</span>
-                    <span class="post-time">• Agora mesmo</span>
-                </div>
-            </div>
-        </div>
-        <p class="post-content">"${text}"</p>
-        <div class="post-actions">
-            <button class="btn-like" onclick="likePostMock(this)">
-                <i data-lucide="heart"></i> <span class="like-count">0</span> apoios
-            </button>
-            <button class="btn-comment" onclick="alert('Comentários na comunidade liberados no aplicativo final.')">
-                <i data-lucide="message-circle"></i> Comentar
-            </button>
-        </div>
-    `;
+    const newPost = {
+        id: "p_" + Date.now(),
+        author: userState.name || "Amanda Fernandes",
+        avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=150",
+        level: userState.levelNum || 1,
+        time: "Agora mesmo",
+        content: text || "Treino concluído com sucesso! 💪✨",
+        image: finalImage,
+        likes: 0,
+        likedByMe: false,
+        reports: 0,
+        comments: []
+    };
     
-    feedContainer.insertBefore(card, feedContainer.firstChild);
-    lucide.createIcons();
+    if (!userState.communityPosts) {
+        userState.communityPosts = [...defaultPosts];
+    }
     
-    input.value = "";
+    userState.communityPosts.unshift(newPost);
+    
+    // LÓGICA DE PONTUAÇÃO DO DESAFIO:
+    // Apenas a primeira publicação válida do dia gera pontos!
+    const todayStr = new Date().toISOString().slice(0, 10);
+    if (userState.lastPostPointsDate !== todayStr) {
+        userState.lastPostPointsDate = todayStr;
+        
+        // Atribui 20 pontos de desafio
+        userState.challengePoints += 20;
+        
+        // Marca a tarefa como concluída no desafio
+        userState.challengeTasksCompleted[5] = true; // "community" task index is 5!
+        
+        alert("🎉 Conquista compartilhada! +20 pontos computados no ranking do Desafio Core!");
+    } else {
+        alert("Publicação enviada com sucesso para o Círculo!");
+    }
+    
+    // Reseta o input e a imagem
+    textInput.value = "";
+    removePostImagePreview();
+    
     addXP(15);
-    alert("Publicação enviada para o Círculo FUSE! +15 XP.");
+    saveStateToStorage();
+    renderCommunityFeed();
+    renderChallengeUI();
     updateProgressUI();
 }
 
-function likePostMock(btn) {
-    const likeCountSpan = btn.querySelector(".like-count");
-    let count = parseInt(likeCountSpan.innerText);
-    
-    if (btn.classList.contains("btn-like-active")) {
-        btn.className = "btn-like";
-        btn.querySelector("i").removeAttribute("fill");
-        likeCountSpan.innerText = count - 1;
-    } else {
-        btn.className = "btn-like-active";
-        btn.querySelector("i").setAttribute("fill", "currentColor");
-        likeCountSpan.innerText = count + 1;
+function toggleLikePost(postId) {
+    const post = userState.communityPosts.find(p => p.id === postId);
+    if (post) {
+        post.likedByMe = !post.likedByMe;
+        post.likes = post.likedByMe ? post.likes + 1 : post.likes - 1;
+        saveStateToStorage();
+        renderCommunityFeed();
     }
+}
+
+function toggleCommentsSection(postId) {
+    const box = document.getElementById(`comments-box-${postId}`);
+    if (box) {
+        box.style.display = box.style.display === "none" ? "block" : "none";
+    }
+}
+
+function handleCommentKeyPress(event, postId) {
+    if (event.key === "Enter") {
+        submitNewComment(postId);
+    }
+}
+
+function submitNewComment(postId) {
+    const input = document.getElementById(`comment-input-${postId}`);
+    const text = input.value.trim();
+    if (!text) return;
+    
+    const post = userState.communityPosts.find(p => p.id === postId);
+    if (post) {
+        if (!post.comments) post.comments = [];
+        post.comments.push({
+            author: userState.name || "Amanda Fernandes",
+            content: text
+        });
+        input.value = "";
+        saveStateToStorage();
+        renderCommunityFeed();
+    }
+}
+
+let selectedReportReasonText = "";
+
+function openReportPostModal(postId) {
+    document.getElementById("report-target-post-id").value = postId;
+    selectedReportReasonText = "";
+    
+    const options = document.querySelectorAll(".report-reason-option");
+    options.forEach(opt => opt.classList.remove("active"));
+    
+    openModal("modal-report-post");
+}
+
+function selectReportReason(reason, el) {
+    selectedReportReasonText = reason;
+    const options = document.querySelectorAll(".report-reason-option");
+    options.forEach(opt => opt.classList.remove("active"));
+    el.classList.add("active");
+}
+
+function submitReportPost(testInstant) {
+    const postId = document.getElementById("report-target-post-id").value;
+    
+    if (!selectedReportReasonText && !testInstant) {
+        alert("Por favor, selecione um motivo para a denúncia.");
+        return;
+    }
+    
+    const posts = userState.communityPosts || [];
+    const post = posts.find(p => p.id === postId);
+    if (!post) {
+        closeModal("modal-report-post");
+        return;
+    }
+    
+    const added = testInstant ? 10 : 1;
+    post.reports = (post.reports || 0) + added;
+    
+    if (post.reports >= 10) {
+        // Remove do feed
+        userState.communityPosts = posts.filter(p => p.id !== postId);
+        
+        // Se for o post da própria usuária, remove os pontos do desafio!
+        if (post.author === userState.name) {
+            const todayStr = new Date().toISOString().slice(0, 10);
+            if (userState.lastPostPointsDate === todayStr) {
+                userState.challengePoints = Math.max(0, userState.challengePoints - 20);
+                userState.challengeTasksCompleted[5] = false;
+                userState.lastPostPointsDate = ""; // Permite postar de novo para tentar recuperar
+                alert("⚠️ Sua publicação foi removida do feed por excesso de denúncias! Os 20 pontos associados foram removidos do seu ranking.");
+            } else {
+                alert("⚠️ Sua publicação foi removida por excesso de denúncias.");
+            }
+        } else {
+            alert("Publicação removida com sucesso devido ao excesso de denúncias da comunidade.");
+        }
+    } else {
+        alert(`Denúncia registrada! A publicação acumulou ${post.reports}/10 denúncias.`);
+    }
+    
+    closeModal("modal-report-post");
+    saveStateToStorage();
+    renderCommunityFeed();
+    renderChallengeUI();
+}
+
+function renderCommunityFeed() {
+    const feedContainer = document.getElementById("feed-container");
+    if (!feedContainer) return;
+    
+    if (!userState.communityPosts) {
+        userState.communityPosts = [...defaultPosts];
+    }
+    
+    feedContainer.innerHTML = "";
+    
+    userState.communityPosts.forEach(post => {
+        const card = document.createElement("div");
+        card.className = "community-post-card";
+        card.style.animation = "fadeIn 0.3s ease";
+        
+        let imageHtml = "";
+        if (post.image) {
+            imageHtml = `<img src="${post.image}" class="post-uploaded-img" alt="Foto da publicação">`;
+        }
+        
+        const likeClass = post.likedByMe ? "btn-like-active" : "btn-like";
+        const likeFillAttr = post.likedByMe ? 'fill="currentColor"' : "";
+        
+        let commentsHtml = "";
+        if (post.comments && post.comments.length > 0) {
+            commentsHtml = post.comments.map(c => `
+                <div class="comment-item">
+                    <span class="comment-author">${c.author}:</span>
+                    <span>${c.content}</span>
+                </div>
+            `).join("");
+        }
+        
+        card.innerHTML = `
+            <div class="post-header">
+                <img src="${post.avatar}" alt="Avatar ${post.author}" class="post-user-avatar">
+                <div>
+                    <span class="post-user-name">${post.author}</span>
+                    <div class="post-badge-group">
+                        <span class="user-level-badge">Nível ${post.level}</span>
+                        <span class="post-time">• ${post.time}</span>
+                    </div>
+                </div>
+                <button class="btn-report" onclick="openReportPostModal('${post.id}')" style="margin-left:auto; background:transparent; border:none; color:var(--text-secondary); cursor:pointer; font-size:11px; display:flex; align-items:center; gap:4px; padding: 4px 8px;">
+                    <i data-lucide="flag" style="width:11px; height:11px;"></i> Denunciar
+                </button>
+            </div>
+            
+            <p class="post-content">${post.content}</p>
+            
+            ${imageHtml}
+            
+            <div class="post-actions">
+                <button class="${likeClass}" onclick="toggleLikePost('${post.id}')">
+                    <i data-lucide="heart" ${likeFillAttr}></i> <span class="like-count">${post.likes}</span> apoios
+                </button>
+                <button class="btn-comment" onclick="toggleCommentsSection('${post.id}')">
+                    <i data-lucide="message-circle"></i> <span class="comment-count">${post.comments ? post.comments.length : 0}</span> comentários
+                </button>
+            </div>
+            
+            <div class="comment-section-box" id="comments-box-${post.id}" style="display: none;">
+                <div class="comment-input-box">
+                    <input type="text" placeholder="Escreva um comentário motivador..." class="comment-text-input" id="comment-input-${post.id}" onkeypress="handleCommentKeyPress(event, '${post.id}')">
+                    <button class="btn-send-comment" onclick="submitNewComment('${post.id}')">Enviar</button>
+                </div>
+                <div class="comments-list">
+                    ${commentsHtml || '<p style="font-size:10px; color:var(--text-secondary); text-align:center; padding: 4px 0;">Seja a primeira a comentar! 💖</p>'}
+                </div>
+            </div>
+        `;
+        feedContainer.appendChild(card);
+    });
+    
+    lucide.createIcons();
 }
 
 // 8. PERFIL & ATUALIZAÇÕES DE PESO

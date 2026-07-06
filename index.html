@@ -629,10 +629,16 @@
                         <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=150" alt="Avatar Amanda" class="post-user-avatar">
                         <input type="text" placeholder="Compartilhe seu ritual de hoje ou conquista..." id="post-input">
                     </div>
+                    <!-- Image Preview Container -->
+                    <div id="post-image-preview-container" style="display:none; width: 100%; margin-top: 10px; border-radius: 8px; overflow: hidden; position: relative;">
+                        <img id="post-image-preview" src="" style="width: 100%; max-height: 180px; object-fit: cover; border-radius: 8px;">
+                        <button onclick="removePostImagePreview()" style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.6); border: none; border-radius: 50%; width: 26px; height: 26px; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">✕</button>
+                    </div>
                     <div class="write-actions">
-                        <button class="btn-photo-upload" onclick="alert('Upload de fotos disponível no aplicativo mobile.')">
+                        <button class="btn-photo-upload" onclick="document.getElementById('post-image-file').click()">
                             <i data-lucide="image"></i> Adicionar Foto
                         </button>
+                        <input type="file" id="post-image-file" style="display:none;" accept="image/*" onchange="previewPostImage(this)">
                         <button class="btn-publish-post" onclick="createNewPost()">Publicar</button>
                     </div>
                 </div>
@@ -1252,6 +1258,42 @@
             </div>
 
             <button class="btn-modal-cancel" onclick="closeModal('modal-recipe-detail')" style="margin-top: 14px;">Fechar Receita</button>
+        </div>
+    </div>
+
+    <!-- Modal 2C: Denúncia de Publicação (BottomSheet) -->
+    <div class="modal-backdrop" id="modal-report-post" style="z-index: 120;">
+        <div class="modal-content bottom-sheet" style="max-height: 80%;">
+            <div class="drag-handle"></div>
+            <h2 class="modal-title" style="font-size: 18px; margin-bottom: 4px;">Denunciar Publicação</h2>
+            <p class="modal-text" style="font-size: 11px; margin-bottom: 16px;">Ajude a manter a comunidade FUSE segura e motivadora.</p>
+            
+            <div class="scrollable-sheet-content" style="padding-bottom: 20px; text-align: left;">
+                <input type="hidden" id="report-target-post-id">
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <div class="report-reason-option" onclick="selectReportReason('Não é uma foto de treino', this)" style="padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.01); cursor: pointer; font-size: 13px; color: var(--text-primary);">
+                        🏋️‍♂️ Não é uma foto de treino / fora do contexto
+                    </div>
+                    <div class="report-reason-option" onclick="selectReportReason('Conteúdo impróprio', this)" style="padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.01); cursor: pointer; font-size: 13px; color: var(--text-primary);">
+                        🚫 Conteúdo impróprio ou inadequado
+                    </div>
+                    <div class="report-reason-option" onclick="selectReportReason('Spam', this)" style="padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.01); cursor: pointer; font-size: 13px; color: var(--text-primary);">
+                        ⚠️ Spam, propagandas ou mensagens repetitivas
+                    </div>
+                    <div class="report-reason-option" onclick="selectReportReason('Conteúdo ofensivo', this)" style="padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.01); cursor: pointer; font-size: 13px; color: var(--text-primary);">
+                        🤬 Conteúdo ofensivo, bullying ou discurso de ódio
+                    </div>
+                    <div class="report-reason-option" onclick="selectReportReason('Outro', this)" style="padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.01); cursor: pointer; font-size: 13px; color: var(--text-primary);">
+                        Outros motivos
+                    </div>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 16px;">
+                <button class="btn-modal-start" style="flex: 1;" onclick="submitReportPost(false)">Denunciar (+1)</button>
+                <button class="btn-modal-start" style="flex: 1; background: var(--accent-rose); border-color: var(--accent-rose);" onclick="submitReportPost(true)">Testar Remoção (+10)</button>
+            </div>
+            <button class="btn-modal-cancel" onclick="closeModal('modal-report-post')" style="width: 100%; margin-top: 8px;">Cancelar</button>
         </div>
     </div>
 
