@@ -137,29 +137,36 @@
                         <div class="goal-option-card active" onclick="selectGoal('emagrecer', this)">
                             <div class="goal-icon-box">🔥</div>
                             <div class="goal-card-text">
-                                <h3>Emagrecer</h3>
+                                <h3>Emagrecimento</h3>
                                 <p>Perda de gordura corporal saudável.</p>
                             </div>
                         </div>
                         <div class="goal-option-card" onclick="selectGoal('massa', this)">
                             <div class="goal-icon-box">💪</div>
                             <div class="goal-card-text">
-                                <h3>Ganhar Massa</h3>
-                                <p>Fortalecer e definir os músculos.</p>
+                                <h3>Ganho de massa muscular</h3>
+                                <p>Fortalecer e construir músculos.</p>
+                            </div>
+                        </div>
+                        <div class="goal-option-card" onclick="selectGoal('definicao', this)">
+                            <div class="goal-icon-box">✨</div>
+                            <div class="goal-card-text">
+                                <h3>Definição muscular</h3>
+                                <p>Tonificar e reduzir percentual de gordura.</p>
                             </div>
                         </div>
                         <div class="goal-option-card" onclick="selectGoal('manter', this)">
-                            <div class="goal-icon-box">✨</div>
+                            <div class="goal-icon-box">⚖️</div>
                             <div class="goal-card-text">
-                                <h3>Manter o Peso</h3>
-                                <p>Equilíbrio, vitalidade e constância.</p>
+                                <h3>Manutenção de peso</h3>
+                                <p>Equilíbrio, vitalidade e constância diária.</p>
                             </div>
                         </div>
-                        <div class="goal-option-card" onclick="selectGoal('ganhar-peso', this)">
-                            <div class="goal-icon-box">🍎</div>
+                        <div class="goal-option-card" onclick="selectGoal('hipertrofia-gluteos', this)">
+                            <div class="goal-icon-box">🍑</div>
                             <div class="goal-card-text">
-                                <h3>Ganhar Peso</h3>
-                                <p>Aumento saudável e estruturado.</p>
+                                <h3>Hipertrofia</h3>
+                                <p>Foco no desenvolvimento de glúteos e pernas.</p>
                             </div>
                         </div>
                     </div>
@@ -448,35 +455,83 @@
 
                 <div id="nut-diet-container">
                     <!-- Configuração de Plano Alimentar -->
-                    <div class="section-card nutrition-config-card">
-                        <h3 class="card-title">Configurar Plano</h3>
-                        <div class="config-grid">
-                            <div class="config-item">
-                                <label for="nut-select-goal">Objetivo Nutricional</label>
-                                <select id="nut-select-goal" onchange="changeNutritionConfig()">
-                                    <option value="emagrecer">🔥 Emagrecimento</option>
-                                    <option value="massa">💪 Ganho de massa muscular</option>
-                                    <option value="definicao">✨ Definição muscular</option>
-                                    <option value="manter">⚖️ Manutenção do peso</option>
-                                    <option value="hipertrofia-gluteos">🍑 Hipertrofia de glúteos e pernas</option>
-                                    <option value="saudavel">❤️ Alimentação saudável</option>
-                                    <option value="alta-proteina">⚡ Alta proteína</option>
-                                    <option value="tradicional">🥩 Dieta tradicional</option>
-                                </select>
+                    <div class="section-card nutrition-config-card" style="padding: 16px;">
+                        <h3 class="card-title" style="margin-bottom: 12px;">Objetivo Nutricional</h3>
+                        <div class="input-group" style="margin-bottom: 20px;">
+                            <select id="nut-select-goal" onchange="changeNutritionConfig()" style="width:100%; padding:12px; border-radius:10px; background: #1a0f15; border:1px solid rgba(255,255,255,0.08); color:#fff; font-size: 13px; font-weight: 600; outline: none;">
+                                <option value="emagrecer">🔥 Emagrecimento</option>
+                                <option value="massa">💪 Ganho de massa muscular</option>
+                                <option value="definicao">✨ Definição muscular</option>
+                                <option value="manter">⚖️ Manutenção de peso</option>
+                                <option value="hipertrofia-gluteos">🍑 Hipertrofia</option>
+                            </select>
+                        </div>
+
+                        <h3 class="card-title" style="margin-bottom: 4px;">Filtros do Cardápio</h3>
+                        <p class="card-subtitle" style="margin-bottom: 12px; font-size: 11px;">Combine um ou mais filtros para personalizar o seu cardápio.</p>
+                        
+                        <div class="filters-cards-grid" style="display: flex; flex-direction: column; gap: 10px;">
+                            <!-- Filtro 1: Rápidas -->
+                            <div class="filter-card-item" onclick="toggleNutritionFilter('rapidas', this)" id="filter-card-rapidas">
+                                <div class="filter-card-icon">⚡</div>
+                                <div class="filter-card-info">
+                                    <span class="filter-card-name">Receitas rápidas</span>
+                                    <span class="filter-card-desc">Preparo em menos de 10 minutos para rotinas corridas.</span>
+                                </div>
                             </div>
-                            <div class="config-item">
-                                <label for="nut-select-style">Filtros do Cardápio</label>
-                                <select id="nut-select-style" onchange="changeNutritionConfig()">
-                                    <option value="all">Todas as opções</option>
-                                    <option value="rapidas">Receitas rápidas</option>
-                                    <option value="economica">Econômicas</option>
-                                    <option value="vegetariana">Vegetarianas</option>
-                                    <option value="vegana">Veganas</option>
-                                    <option value="sem-lactose">Sem lactose</option>
-                                    <option value="sem-gluten">Sem glúten</option>
-                                    <option value="alto-prot">Alto teor de proteínas</option>
-                                    <option value="baixo-carb">Baixo carboidrato</option>
-                                </select>
+                            
+                            <!-- Filtro 2: Econômicas -->
+                            <div class="filter-card-item" onclick="toggleNutritionFilter('economica', this)" id="filter-card-economica">
+                                <div class="filter-card-icon">🪙</div>
+                                <div class="filter-card-info">
+                                    <span class="filter-card-name">Receitas econômicas</span>
+                                    <span class="filter-card-desc">Ingredientes acessíveis que cabem no bolso.</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Filtro 3: Tradicional -->
+                            <div class="filter-card-item" onclick="toggleNutritionFilter('tradicional', this)" id="filter-card-tradicional">
+                                <div class="filter-card-icon">🥩</div>
+                                <div class="filter-card-info">
+                                    <span class="filter-card-name">Dieta tradicional</span>
+                                    <span class="filter-card-desc">Inclui carnes, arroz, feijão e alimentos do dia a dia.</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Filtro 4: Vegetariana -->
+                            <div class="filter-card-item" onclick="toggleNutritionFilter('vegetariana', this)" id="filter-card-vegetariana">
+                                <div class="filter-card-icon">🥗</div>
+                                <div class="filter-card-info">
+                                    <span class="filter-card-name">Dieta vegetariana</span>
+                                    <span class="filter-card-desc">Plano sem carnes, focado em ovos, laticínios e vegetais.</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Filtro 5: Vegana -->
+                            <div class="filter-card-item" onclick="toggleNutritionFilter('vegana', this)" id="filter-card-vegana">
+                                <div class="filter-card-icon">🌱</div>
+                                <div class="filter-card-info">
+                                    <span class="filter-card-name">Dieta vegana</span>
+                                    <span class="filter-card-desc">Alimentos 100% de origem vegetal, livre de derivados animais.</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Filtro 6: Sem lactose -->
+                            <div class="filter-card-item" onclick="toggleNutritionFilter('sem-lactose', this)" id="filter-card-sem-lactose">
+                                <div class="filter-card-icon">🥛</div>
+                                <div class="filter-card-info">
+                                    <span class="filter-card-name">Sem lactose</span>
+                                    <span class="filter-card-desc">Substitutos seguros para intolerantes a derivados de leite.</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Filtro 7: Sem glúten -->
+                            <div class="filter-card-item" onclick="toggleNutritionFilter('sem-gluten', this)" id="filter-card-sem-gluten">
+                                <div class="filter-card-icon">🌾</div>
+                                <div class="filter-card-info">
+                                    <span class="filter-card-name">Sem glúten</span>
+                                    <span class="filter-card-desc">Receitas com tapioca, batata e aveia livre de glúten.</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1024,23 +1079,24 @@
 
     <!-- Modal 2B: Guia de Execução do Exercício (BottomSheet) -->
     <div class="modal-backdrop" id="modal-exercise-guide" style="z-index: 110;">
-        <div class="modal-content bottom-sheet" style="max-height: 85%;">
-            <div class="drag-handle"></div>
+        <div class="modal-content bottom-sheet" style="max-height: 85%; padding: 0; display: flex; flex-direction: column; overflow: hidden;">
+            <div class="drag-handle" style="margin: 10px auto 4px auto; flex-shrink: 0;"></div>
             
-            <span class="recipe-sheet-tag" id="ex-guide-target">Músculos Trabalhados</span>
-            <h2 class="modal-title" id="ex-guide-name" style="margin-top: 2px;">Agachamento Livre</h2>
+            <!-- Player de Vídeo em Loop no Topo -->
+            <div class="exercise-video-wrapper" style="width: 100%; border-radius: 0; margin-bottom: 0; aspect-ratio: 16/9; flex-shrink: 0; position: relative;">
+                <video id="ex-guide-video" loop muted autoplay playsinline style="width: 100%; height: 100%; object-fit: cover;">
+                    <source src="" type="video/mp4">
+                </video>
+                <button class="btn-video-control" onclick="toggleGuideVideo()" style="position: absolute; bottom: 12px; right: 12px; z-index: 5;">
+                    <i data-lucide="pause" id="ex-guide-video-icon"></i>
+                </button>
+            </div>
             
-            <div class="scrollable-sheet-content" style="padding-bottom: 20px;">
-                <!-- Player de Vídeo em Loop -->
-                <div class="exercise-video-wrapper">
-                    <video id="ex-guide-video" loop muted autoplay playsinline>
-                        <source src="" type="video/mp4">
-                    </video>
-                    <button class="btn-video-control" onclick="toggleGuideVideo()">
-                        <i data-lucide="pause" id="ex-guide-video-icon"></i>
-                    </button>
-                </div>
-
+            <!-- Conteúdo Scrollable embaixo do vídeo -->
+            <div class="scrollable-sheet-content" style="padding: 16px 20px 20px 20px; overflow-y: auto; flex: 1; text-align: left;">
+                <span class="recipe-sheet-tag" id="ex-guide-target" style="margin-top: 0;">Músculos Trabalhados</span>
+                <h2 class="modal-title" id="ex-guide-name" style="margin-top: 2px; margin-bottom: 12px; font-size: 20px; font-family: var(--font-header);">Agachamento Livre</h2>
+                
                 <div class="recipe-macros-row" style="margin-bottom: 16px;">
                     <div class="recipe-macro-stat">
                         <span class="macro-stat-val" id="ex-guide-sets">3 séries</span>
@@ -1072,9 +1128,9 @@
                 <p class="guide-text-content" id="ex-guide-tips">
                     Inspire ao descer (fase excêntrica) e expire forte ao subir (fase concêntrica). Mantenha o core sempre contraído para proteger a região lombar.
                 </p>
+                
+                <button class="btn-modal-cancel" onclick="closeModal('modal-exercise-guide')" style="width: 100%; margin-top: 16px;">Voltar à Ficha</button>
             </div>
-            
-            <button class="btn-modal-cancel" onclick="closeModal('modal-exercise-guide')" style="margin-top: 8px;">Voltar à Ficha</button>
         </div>
     </div>
 
@@ -1249,10 +1305,11 @@
                 <div class="input-group" style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px;">
                     <label style="font-size:10px; color: var(--text-secondary); text-transform: uppercase; font-weight:600;">Objetivo de Saúde</label>
                     <select id="edit-prof-goal" style="width:100%; padding:10px; border-radius:8px; background: #1a0f15; border:1px solid rgba(255,255,255,0.08); color:#fff; font-size: 13px; outline:none;">
-                        <option value="emagrecer">Emagrecer (Déficit Calórico)</option>
-                        <option value="massa">Ganhar Massa Muscular (Superávit)</option>
-                        <option value="manter">Manter Peso e Definir</option>
-                        <option value="ganhar-peso">Ganhar Peso Saudável</option>
+                        <option value="emagrecer">🔥 Emagrecimento</option>
+                        <option value="massa">💪 Ganho de massa muscular</option>
+                        <option value="definicao">✨ Definição muscular</option>
+                        <option value="manter">⚖️ Manutenção de peso</option>
+                        <option value="hipertrofia-gluteos">🍑 Hipertrofia</option>
                     </select>
                 </div>
 

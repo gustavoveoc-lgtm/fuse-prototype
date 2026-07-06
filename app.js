@@ -182,6 +182,10 @@ if (!userState.habitsCompleted || userState.habitsCompleted.length !== 6) {
     userState.habitsCount = 6;
 }
 
+if (!userState.activeDietFilters) {
+    userState.activeDietFilters = [];
+}
+
 // Lógica de reinicialização diária automática à meia-noite
 const todayStr = new Date().toISOString().slice(0, 10);
 if (!userState.lastCheckInDate) {
@@ -252,6 +256,15 @@ function restoreSession() {
 
     // Atualiza Seletores da Aba Nutrir
     document.getElementById("nut-select-goal").value = userState.goal;
+    
+    // Restaura visualmente os filtros selecionados
+    document.querySelectorAll(".filter-card-item").forEach(card => card.classList.remove("selected"));
+    if (userState.activeDietFilters) {
+        userState.activeDietFilters.forEach(f => {
+            const el = document.getElementById(`filter-card-${f}`);
+            if (el) el.classList.add("selected");
+        });
+    }
     
     // Atualiza Dados do Perfil
     document.getElementById("prof-initial-weight").innerText = `${userState.initialWeight} kg`;
@@ -1258,9 +1271,27 @@ function updateSubstitutionsGrid() {
     });
 }
 
+function toggleNutritionFilter(filterName, el) {
+    if (!userState.activeDietFilters) {
+        userState.activeDietFilters = [];
+    }
+    
+    const idx = userState.activeDietFilters.indexOf(filterName);
+    if (idx === -1) {
+        userState.activeDietFilters.push(filterName);
+        el.classList.add("selected");
+    } else {
+        userState.activeDietFilters.splice(idx, 1);
+        el.classList.remove("selected");
+    }
+    
+    // Salva o estado e regenera o cardápio
+    saveStateToStorage();
+    changeNutritionConfig();
+}
+
 function changeNutritionConfig() {
     const selectedGoal = document.getElementById("nut-select-goal").value;
-    const selectedStyle = document.getElementById("nut-select-style").value;
     
     // Salva no estado
     userState.goal = selectedGoal;
@@ -1314,27 +1345,32 @@ function changeNutritionConfig() {
     document.getElementById("home-diet-btn-sub").innerText = `Meta de Kcal do dia: ${userState.targetCalories}`;
     document.getElementById("workout-tab-sub").innerText = `Foco no seu objetivo: ${selectedGoal.charAt(0).toUpperCase() + selectedGoal.slice(1)}`;
 
-    // Gera plano baseado no Objetivo + Estilo
-    generateDynamicCardapio(selectedGoal, selectedStyle);
+    // Gera plano baseado no Objetivo + Filtros combinados
+    generateDynamicCardapio(selectedGoal, userState.activeDietFilters || []);
 }
 
-function generateDynamicCardapio(goal, style) {
+function generateDynamicCardapio(goal, filters) {
     const mealCategories = ["Café da Manhã", "Lanche da Manhã", "Almoço", "Lanche da Tarde", "Jantar", "Ceia"];
     userState.currentMeals = [];
 
-    // Determina o estilo padrão baseado no objetivo nutricional se o filtro for "all"
-    let targetStyle = style;
-    if (style === "all") {
-        if (goal === "alta-proteina") targetStyle = "alto-prot";
-        else if (goal === "tradicional") targetStyle = "tradicional";
-        else if (goal === "emagrecer") targetStyle = "baixo-carb";
-        else if (goal === "massa" || goal === "hipertrofia-gluteos") targetStyle = "alto-prot";
-        else targetStyle = "tradicional";
+    // Fallback de estilo padrão baseado no objetivo se nenhum filtro estiver selecionado
+    let activeStyle = "tradicional";
+    if (filters && filters.length > 0) {
+        // Se houver múltiplos filtros, escolhe o mais restritivo como base:
+        // Prioridade: vegana > vegetariana > sem-lactose > sem-gluten > alto-prot > baixo-carb > rapidas > economica
+        const priorities = ["vegana", "vegetariana", "sem-lactose", "sem-gluten", "alto-prot", "baixo-carb", "rapidas", "economica", "tradicional"];
+        const found = priorities.find(p => filters.includes(p));
+        if (found) activeStyle = found;
+    } else {
+        // Estilo padrão procedural baseado no objetivo
+        if (goal === "massa" || goal === "hipertrofia-gluteos") activeStyle = "alto-prot";
+        else if (goal === "emagrecer") activeStyle = "baixo-carb";
+        else activeStyle = "tradicional";
     }
 
     mealCategories.forEach((cat, idx) => {
         const styleTemplates = recipeTemplates[cat];
-        let template = styleTemplates[targetStyle] || styleTemplates["tradicional"] || styleTemplates["all"];
+        let template = styleTemplates[activeStyle] || styleTemplates["tradicional"] || styleTemplates["all"];
         
         // Fatores de caloria baseados na refeição
         const mealPct = {
@@ -1349,9 +1385,9 @@ function generateDynamicCardapio(goal, style) {
         const mealKcal = Math.round(userState.targetCalories * mealPct[cat]);
         
         // Calcula macros proporcionais baseados no objetivo
-        let pFactor = 0.25, cFactor = 0.50, fFactor = 0.25;
-        if (goal === "alta-proteina") {
-            pFactor = 0.35; cFactor = 0.35; fFactor = 0.30;
+        let pFactor = 0.20, cFactor = 0.50, fFactor = 0.30;
+        if (goal === "massa" || goal === "hipertrofia-gluteos") {
+            pFactor = 0.25; cFactor = 0.50; fFactor = 0.25;
         } else if (goal === "emagrecer" || goal === "definicao") {
             pFactor = 0.30; cFactor = 0.40; fFactor = 0.30;
         }
@@ -1374,10 +1410,27 @@ function generateDynamicCardapio(goal, style) {
             return ing;
         });
 
+        // Adiciona tags das restrições e preferências combinadas no título do prato
+        let activeTags = [];
+        if (filters && filters.length > 0) {
+            filters.forEach(f => {
+                const nameMap = {
+                    rapidas: "Rápida",
+                    economica: "Econômica",
+                    tradicional: "Tradicional",
+                    vegetariana: "Veggie",
+                    vegana: "Vegana",
+                    "sem-lactose": "Sem Lactose",
+                    "sem-gluten": "Sem Glúten"
+                };
+                if (nameMap[f]) activeTags.push(nameMap[f]);
+            });
+        }
+
         userState.currentMeals.push({
             id: `dyn-${idx}`,
             type: cat,
-            title: template.title,
+            title: template.title + (activeTags.length > 0 ? ` [${activeTags.join(", ")}]` : ""),
             kcal: mealKcal,
             prot: prot,
             carb: carb,
