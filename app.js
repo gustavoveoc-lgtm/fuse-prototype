@@ -153,7 +153,28 @@ const defaultState = {
     challengePoints: 210
 };
 
-let userState = JSON.parse(localStorage.getItem("fuse_user_state")) || defaultState;
+// Banco de Dados de Usuárias Cadastradas (Simula banco de dados na nuvem)
+let usersDB = JSON.parse(localStorage.getItem("fuse_users_db")) || {};
+let currentUserEmail = localStorage.getItem("fuse_current_user_email") || "";
+
+// Pré-popula usuário padrão de teste para login direto imediato
+if (Object.keys(usersDB).length === 0) {
+    usersDB["amanda@fuse.com.br"] = {
+        password: "senha123",
+        userState: {
+            ...defaultState,
+            name: "Amanda Fernandes",
+            hasLoggedIn: true
+        }
+    };
+    localStorage.setItem("fuse_users_db", JSON.stringify(usersDB));
+}
+
+let userState = defaultState;
+
+if (currentUserEmail && usersDB[currentUserEmail]) {
+    userState = usersDB[currentUserEmail].userState;
+}
 
 // Sincroniza estado de hábitos antigo se houver incompatibilidade
 if (!userState.habitsCompleted || userState.habitsCompleted.length !== 6) {
@@ -172,6 +193,15 @@ if (!userState.lastCheckInDate) {
 }
 
 function saveStateToStorage() {
+    if (currentUserEmail) {
+        if (!usersDB[currentUserEmail]) {
+            usersDB[currentUserEmail] = {};
+        }
+        usersDB[currentUserEmail].userState = userState;
+        localStorage.setItem("fuse_users_db", JSON.stringify(usersDB));
+        localStorage.setItem("fuse_current_user_email", currentUserEmail);
+    }
+    // Mantém backup do estado atual
     localStorage.setItem("fuse_user_state", JSON.stringify(userState));
 }
 
@@ -272,21 +302,72 @@ function toggleAuthMode() {
 
 function handleAuth(isLoginButton) {
     if (authMode === "register") {
-        const nameInput = document.getElementById("reg-name").value.trim();
-        if (nameInput === "") {
-            alert("Por favor, preencha o seu nome.");
+        const nameVal = document.getElementById("reg-name").value.trim();
+        const emailVal = document.getElementById("reg-email").value.trim().toLowerCase();
+        const passVal = document.getElementById("reg-pass").value.trim();
+        
+        if (nameVal === "" || emailVal === "" || passVal === "") {
+            alert("Por favor, preencha todos os campos do cadastro.");
             return;
         }
-        userState.name = nameInput;
+        
+        if (usersDB[emailVal]) {
+            alert("Este e-mail já possui uma conta ativa. Faça login.");
+            return;
+        }
+        
+        // Registra nova conta limpa
+        currentUserEmail = emailVal;
+        userState = JSON.parse(JSON.stringify(defaultState));
+        userState.name = nameVal;
+        userState.hasLoggedIn = false; // precisa passar pelo onboarding
+        
+        usersDB[currentUserEmail] = {
+            password: passVal,
+            userState: userState
+        };
+        saveStateToStorage();
+        
+        // Vai para onboarding
+        document.getElementById("auth-screen").classList.remove("active");
+        document.getElementById("onboarding-screen").classList.add("active");
+        updateOnboardingStepUI();
+        
     } else {
-        // Login simulado usa o nome padrão
-        userState.name = "Amanda Fernandes";
+        const emailVal = document.getElementById("login-email").value.trim().toLowerCase();
+        const passVal = document.getElementById("login-pass").value.trim();
+        
+        if (emailVal === "" || passVal === "") {
+            alert("Por favor, preencha e-mail e senha.");
+            return;
+        }
+        
+        const account = usersDB[emailVal];
+        if (!account) {
+            alert("Conta não cadastrada com este e-mail. Por favor, registre-se!");
+            return;
+        }
+        
+        if (account.password !== passVal) {
+            alert("Senha incorreta. Tente novamente.");
+            return;
+        }
+        
+        // Login com sucesso
+        currentUserEmail = emailVal;
+        userState = account.userState;
+        saveStateToStorage();
+        
+        document.getElementById("auth-screen").classList.remove("active");
+        
+        if (userState.hasLoggedIn) {
+            restoreSession();
+        } else {
+            // Se registrou mas não completou o onboarding da outra vez
+            document.getElementById("onboarding-screen").classList.add("active");
+            updateOnboardingStepUI();
+        }
     }
-
-    // Passa para o Onboarding
-    document.getElementById("auth-screen").classList.remove("active");
-    document.getElementById("onboarding-screen").classList.add("active");
-    updateOnboardingStepUI();
 }
 
 function handleSocialAuth(provider) {
@@ -392,8 +473,7 @@ function updateOnboardingStepUI() {
     btnNext.innerText = (currentOnboardingStep === totalOnboardingSteps) ? "Finalizar" : "Continuar";
 }
 
-function finishOnboarding() {
-    // 1. CÁLCULO METABÓLICO (Mifflin-St Jeor)
+function recalculateUserNutritionAndMacros() {
     const weight = userState.weight;
     const height = userState.height;
     const age = userState.age;
@@ -427,6 +507,14 @@ function finishOnboarding() {
     userState.protGrams = Math.round((targetKcal * ratios.prot) / 4);
     userState.carbGrams = Math.round((targetKcal * ratios.carb) / 4);
     userState.fatGrams = Math.round((targetKcal * ratios.fat) / 9);
+}
+
+function finishOnboarding() {
+    // Inicializa peso de referência
+    userState.initialWeight = userState.weight;
+
+    // 1. CÁLCULO METABÓLICO (Mifflin-St Jeor)
+    recalculateUserNutritionAndMacros();
 
     // 2. CONFIGURA OS SELETORES DE PLANO ALIMENTAR CONFORME ONBOARDING
     document.getElementById("nut-select-goal").value = (userState.goal === "ganhar-peso") ? "ganhar-peso" : userState.goal;
@@ -436,7 +524,7 @@ function finishOnboarding() {
     // 3. POPULA PORTAL DE TREINOS COM FILTRO DE EQUIPAMENTO E TEMPO
     populateWorkoutsGrid();
 
-    // 4. ATUALIZA TEXTOS E HEADERS DA HOME
+    // 4. ATUALIZA TEXTOS E HEADERS DA HOME E PERFIL
     document.getElementById("user-display-name").innerText = userState.name;
     document.getElementById("profile-display-name").innerText = userState.name;
     document.getElementById("home-workout-chk-desc").innerText = `Treinar na ${userState.place} (${userState.idealDuration} min)`;
@@ -444,6 +532,7 @@ function finishOnboarding() {
     // Atualiza Banners Rápidos
     const defaultWorkout = workoutsDB.find(w => w.place === userState.place) || workoutsDB[0];
     document.getElementById("home-workout-btn-sub").innerText = `${defaultWorkout.title} • ${defaultWorkout.duration} min`;
+    document.getElementById("home-diet-btn-sub").innerText = `Meta de Kcal do dia: ${userState.targetCalories}`;
 
     // Atualiza Dados do Perfil
     document.getElementById("prof-initial-weight").innerText = `${userState.initialWeight} kg`;
@@ -518,6 +607,7 @@ function updateProgressUI() {
     });
     
     // Atualizações no Perfil
+    document.getElementById("profile-level-title").innerText = userState.levelTitle;
     document.getElementById("profile-xp-ratio").innerText = `${userState.xp} / 500 XP`;
     const xpPercentage = (userState.xp / 500) * 100;
     document.getElementById("profile-xp-bar").style.width = `${xpPercentage}%`;
@@ -1546,4 +1636,69 @@ function completeChallengeTask(taskKey, btnEl) {
     
     renderChallengeUI();
     saveStateToStorage();
+}
+
+function openEditProfileModal() {
+    document.getElementById("edit-prof-name").value = userState.name;
+    document.getElementById("edit-prof-age").value = userState.age;
+    document.getElementById("edit-prof-height").value = userState.height;
+    document.getElementById("edit-prof-weight").value = userState.weight;
+    document.getElementById("edit-prof-init-weight").value = userState.initialWeight;
+    document.getElementById("edit-prof-goal").value = userState.goal;
+    document.getElementById("edit-prof-place").value = userState.place;
+    document.getElementById("edit-prof-level").value = userState.level;
+    
+    openModal("modal-edit-profile");
+}
+
+function saveEditProfileChanges() {
+    const nameVal = document.getElementById("edit-prof-name").value.trim();
+    const ageVal = parseInt(document.getElementById("edit-prof-age").value);
+    const heightVal = parseInt(document.getElementById("edit-prof-height").value);
+    const weightVal = parseFloat(document.getElementById("edit-prof-weight").value);
+    const initWeightVal = parseFloat(document.getElementById("edit-prof-init-weight").value);
+    const goalVal = document.getElementById("edit-prof-goal").value;
+    const placeVal = document.getElementById("edit-prof-place").value;
+    const levelVal = document.getElementById("edit-prof-level").value;
+    
+    if (nameVal === "" || isNaN(ageVal) || isNaN(heightVal) || isNaN(weightVal) || isNaN(initWeightVal)) {
+        alert("Por favor, preencha todos os campos corretamente.");
+        return;
+    }
+    
+    // Atualiza o estado
+    userState.name = nameVal;
+    userState.age = ageVal;
+    userState.height = heightVal;
+    userState.weight = weightVal;
+    userState.initialWeight = initWeightVal;
+    userState.goal = goalVal;
+    userState.place = placeVal;
+    userState.level = levelVal;
+    
+    // Recalcula necessidades nutricionais
+    recalculateUserNutritionAndMacros();
+    
+    // Fecha modal
+    closeModal("modal-edit-profile");
+    
+    // Recarrega todos os dados da sessão na tela
+    restoreSession();
+    
+    alert("✨ Perfil e objetivos atualizados! Suas necessidades diárias foram recalculadas com sucesso.");
+}
+
+function logoutUserAction() {
+    if (confirm("Deseja realmente sair da sua conta? Seu progresso continuará salvo na nuvem.")) {
+        // Limpa usuário logado ativo
+        currentUserEmail = "";
+        localStorage.removeItem("fuse_current_user_email");
+        userState = JSON.parse(JSON.stringify(defaultState)); // Restaura para cópia limpa do defaultState
+        
+        // Esconde container do app e mostra login
+        document.getElementById("app-screen").style.display = "none";
+        document.getElementById("auth-screen").classList.add("active");
+        
+        alert("Você saiu da conta com sucesso.");
+    }
 }
