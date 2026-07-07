@@ -1284,6 +1284,77 @@
         </div>
     </div>
 
+    <!-- Modal 5B: Checkout de Assinatura do Aplicativo (Após Registro) -->
+    <div class="modal-backdrop" id="modal-subscription-checkout" style="z-index: 130;">
+        <div class="modal-content payment-modal text-center">
+            <div class="payment-icon-glow" style="background: rgba(232, 165, 152, 0.15);"><i data-lucide="sparkles" style="color: var(--accent-rose);"></i></div>
+            <h2 class="modal-title" style="font-size: 18px; margin-bottom: 4px;">Assinatura FUSE Premium</h2>
+            <p class="modal-text" style="font-size: 11px; margin-bottom: 14px;">Selecione o plano ideal para liberar o seu acesso total.</p>
+            
+            <!-- Opções de Plano -->
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+                <div class="subscription-plan-card" id="plan-monthly" onclick="selectSubscriptionPlan('monthly')" style="display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.06); padding: 12px; border-radius: 8px; cursor: pointer; text-align: left; background: rgba(255,255,255,0.01);">
+                    <div>
+                        <span style="font-size: 12px; font-weight: 600; color: var(--text-primary); display: block;">Plano Mensal</span>
+                        <span style="font-size: 10px; color: var(--text-secondary);">Cobrança mensal recorrente</span>
+                    </div>
+                    <span style="font-size: 14px; font-weight: 700; color: var(--text-primary);">R$ 29,90/mês</span>
+                </div>
+                <div class="subscription-plan-card active" id="plan-yearly" onclick="selectSubscriptionPlan('yearly')" style="display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--accent-rose); padding: 12px; border-radius: 8px; cursor: pointer; text-align: left; background: rgba(232, 165, 152, 0.05); position: relative;">
+                    <span style="position: absolute; top: -8px; right: 10px; background: var(--accent-rose); color: var(--bg-primary); font-size: 8px; font-weight: bold; padding: 2px 6px; border-radius: 10px; text-transform: uppercase;">Melhor Valor</span>
+                    <div>
+                        <span style="font-size: 12px; font-weight: 600; color: var(--text-primary); display: block;">Plano Anual (50% OFF)</span>
+                        <span style="font-size: 10px; color: var(--text-secondary);">Equivalente a R$ 14,90/mês</span>
+                    </div>
+                    <span style="font-size: 14px; font-weight: 700; color: var(--accent-rose);">R$ 178,80/ano</span>
+                </div>
+            </div>
+
+            <!-- Opções de Forma de Pagamento -->
+            <div class="payment-methods-row" style="display: flex; gap: 8px; margin-bottom: 16px;">
+                <div class="pay-method-card active" id="btn-sub-pay-pix" style="flex: 1; border: 1px solid var(--accent-rose); padding: 10px; border-radius: 8px; cursor: pointer; text-align: center; background: rgba(232, 165, 152, 0.08);" onclick="selectSubPaymentMethod('pix')">
+                    <span style="font-size: 12px; font-weight: 600; color: var(--text-primary);">⚡ PIX</span>
+                </div>
+                <div class="pay-method-card" id="btn-sub-pay-card" style="flex: 1; border: 1px solid rgba(255,255,255,0.08); padding: 10px; border-radius: 8px; cursor: pointer; text-align: center; background: rgba(255,255,255,0.02);" onclick="selectSubPaymentMethod('card')">
+                    <span style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">💳 Cartão</span>
+                </div>
+            </div>
+
+            <!-- PIX Checkout Box -->
+            <div class="pix-checkout-box" id="sub-pix-payment-box">
+                <div class="qr-code-placeholder">
+                    <div style="width:110px; height:110px; background:#fff; border:4px solid var(--accent-rose); margin:0 auto; display:flex; align-items:center; justify-content:center; color:#000; font-size:9px; font-weight:bold;">
+                        FUSE QR CODE PIX
+                    </div>
+                </div>
+                <p class="pix-inst-text" style="font-size:10px; margin-top:8px; color: var(--text-secondary);">Copie a chave Pix abaixo ou escaneie o código para pagar.</p>
+                <input type="text" class="pix-copia-cola" style="width:100%; padding:8px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); color:var(--accent-rose); font-size:10px; text-align:center; border-radius:6px; margin-top:6px; outline: none; cursor: pointer;" value="00020126360014br.gov.bcb.pix0114fuseapp999" readonly onclick="this.select(); alert('Chave Pix Copiada!');">
+            </div>
+
+            <!-- Card Checkout Box -->
+            <div class="card-checkout-box" id="sub-card-payment-box" style="display:none; text-align:left; margin-top:10px;">
+                <div style="margin-bottom:8px;">
+                    <label style="font-size:9px; color:var(--text-secondary); text-transform:uppercase; display:block; margin-bottom:2px;">Número do Cartão</label>
+                    <input type="text" placeholder="xxxx xxxx xxxx xxxx" style="width:100%; padding:8px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); color:var(--text-primary); border-radius:6px; font-size:11px; outline:none;" value="4000 1234 5678 9010">
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <div style="flex:1;">
+                        <label style="font-size:9px; color:var(--text-secondary); text-transform:uppercase; display:block; margin-bottom:2px;">Validade</label>
+                        <input type="text" placeholder="MM/AA" style="width:100%; padding:8px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); color:var(--text-primary); border-radius:6px; font-size:11px; outline:none;" value="12/30">
+                    </div>
+                    <div style="flex:1;">
+                        <label style="font-size:9px; color:var(--text-secondary); text-transform:uppercase; display:block; margin-bottom:2px;">CVV</label>
+                        <input type="password" placeholder="***" style="width:100%; padding:8px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); color:var(--text-primary); border-radius:6px; font-size:11px; outline:none;" value="123">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botão de Finalização -->
+            <button class="btn-modal-start" onclick="confirmAppSubscription()" style="width:100%; margin-top:20px; background: var(--accent-rose); border-color: var(--accent-rose);">Confirmar Assinatura</button>
+            <button class="btn-modal-cancel" style="width:100%; margin-top:8px;" onclick="closeModal('modal-subscription-checkout')">Cancelar Cadastro</button>
+        </div>
+    </div>
+
     <!-- Modal 5: Simulação de Pagamento do Desafio -->
     <div class="modal-backdrop" id="modal-payment">
         <div class="modal-content payment-modal text-center">

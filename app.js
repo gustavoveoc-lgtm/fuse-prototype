@@ -383,10 +383,9 @@ function handleAuth(isLoginButton) {
         };
         saveStateToStorage();
         
-        // Vai para onboarding
+        // Abre o modal de assinatura antes de ir para o onboarding
         document.getElementById("auth-screen").classList.remove("active");
-        document.getElementById("onboarding-screen").classList.add("active");
-        updateOnboardingStepUI();
+        openModal("modal-subscription-checkout");
         
     } else {
         const emailVal = document.getElementById("login-email").value.trim().toLowerCase();
@@ -2165,4 +2164,67 @@ function logoutUserAction() {
         
         alert("Você saiu da conta com sucesso.");
     }
+}
+
+let selectedSubPlan = "yearly";
+let selectedSubPaymentMethod = "pix";
+
+function selectSubscriptionPlan(plan) {
+    selectedSubPlan = plan;
+    const planMonthly = document.getElementById("plan-monthly");
+    const planYearly = document.getElementById("plan-yearly");
+    
+    if (plan === "monthly") {
+        planMonthly.style.borderColor = "var(--accent-rose)";
+        planMonthly.style.background = "rgba(232, 165, 152, 0.05)";
+        planYearly.style.borderColor = "rgba(255,255,255,0.06)";
+        planYearly.style.background = "rgba(255,255,255,0.01)";
+    } else {
+        planYearly.style.borderColor = "var(--accent-rose)";
+        planYearly.style.background = "rgba(232, 165, 152, 0.05)";
+        planMonthly.style.borderColor = "rgba(255,255,255,0.06)";
+        planMonthly.style.background = "rgba(255,255,255,0.01)";
+    }
+}
+
+function selectSubPaymentMethod(method) {
+    selectedSubPaymentMethod = method;
+    const btnPix = document.getElementById("btn-sub-pay-pix");
+    const btnCard = document.getElementById("btn-sub-pay-card");
+    const boxPix = document.getElementById("sub-pix-payment-box");
+    const boxCard = document.getElementById("sub-card-payment-box");
+    
+    if (method === "pix") {
+        btnPix.style.borderColor = "var(--accent-rose)";
+        btnPix.style.background = "rgba(232, 165, 152, 0.08)";
+        btnPix.querySelector("span").style.color = "var(--text-primary)";
+        
+        btnCard.style.borderColor = "rgba(255,255,255,0.08)";
+        btnCard.style.background = "rgba(255,255,255,0.02)";
+        btnCard.querySelector("span").style.color = "var(--text-secondary)";
+        
+        boxPix.style.display = "block";
+        boxCard.style.display = "none";
+    } else {
+        btnCard.style.borderColor = "var(--accent-rose)";
+        btnCard.style.background = "rgba(232, 165, 152, 0.08)";
+        btnCard.querySelector("span").style.color = "var(--text-primary)";
+        
+        btnPix.style.borderColor = "rgba(255,255,255,0.08)";
+        btnPix.style.background = "rgba(255,255,255,0.02)";
+        btnPix.querySelector("span").style.color = "var(--text-secondary)";
+        
+        boxPix.style.display = "none";
+        boxCard.style.display = "block";
+    }
+}
+
+function confirmAppSubscription() {
+    closeModal("modal-subscription-checkout");
+    
+    alert("🎉 Assinatura Ativada! Seja muito bem-vinda ao FUSE Premium. Vamos começar a configurar o seu perfil!");
+    
+    // Prossiga para onboarding
+    document.getElementById("onboarding-screen").classList.add("active");
+    updateOnboardingStepUI();
 }
