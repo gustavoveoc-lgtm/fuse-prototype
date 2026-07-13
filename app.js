@@ -270,6 +270,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function skipSplash() {
     document.getElementById("splash-screen").classList.remove("active");
+    if (checkCaktoUrlParams()) {
+        return;
+    }
     if (userState.hasLoggedIn) {
         restoreSession();
     } else {
@@ -2227,4 +2230,88 @@ function confirmAppSubscription() {
     // Prossiga para onboarding
     document.getElementById("onboarding-screen").classList.add("active");
     updateOnboardingStepUI();
+}
+
+// INTEGRAÇÃO DE ASSINATURA CAKTO (WEBHOOK & REDIRECT)
+function checkCaktoUrlParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const caktoEmail = urlParams.get("cakto_email");
+    const caktoName = urlParams.get("cakto_name");
+    const caktoStatus = urlParams.get("cakto_status");
+    
+    if (caktoEmail && caktoStatus === "approved") {
+        const emailClean = caktoEmail.trim().toLowerCase();
+        const nameClean = caktoName ? decodeURIComponent(caktoName).trim() : "Cliente FUSE";
+        
+        // Cria usuário se não existir ou atualiza status de pagamento
+        if (!usersDB[emailClean]) {
+            usersDB[emailClean] = {
+                password: "senha123", // senha padrão de ativação automática
+                userState: {
+                    ...defaultState,
+                    name: nameClean,
+                    hasLoggedIn: false
+                }
+            };
+        }
+        
+        currentUserEmail = emailClean;
+        userState = usersDB[emailClean].userState;
+        saveStateToStorage();
+        
+        // Limpa os parâmetros da URL
+        const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+        window.history.replaceState({ path: cleanUrl }, "", cleanUrl);
+        
+        alert(`🎉 Assinatura Aprovada via Cakto!\n\nBem-vinda, ${nameClean}! Seu acesso ao FUSE Premium foi liberado com sucesso. Vamos configurar o seu perfil!`);
+        
+        // Vai direto para o onboarding
+        document.getElementById("auth-screen").classList.remove("active");
+        document.getElementById("onboarding-screen").classList.add("active");
+        updateOnboardingStepUI();
+        return true;
+    }
+    return false;
+}
+
+function simulateCaktoWebhook() {
+    const nameInput = document.getElementById("cakto-sim-name").value.trim();
+    const emailInput = document.getElementById("cakto-sim-email").value.trim().toLowerCase();
+    
+    if (!nameInput || !emailInput) {
+        alert("Por favor, preencha o nome e e-mail para simular o Webhook.");
+        return;
+    }
+    
+    // Simula a requisição POST que a Cakto envia no background
+    if (!usersDB[emailInput]) {
+        usersDB[emailInput] = {
+            password: "senha123",
+            userState: {
+                ...defaultState,
+                name: nameInput,
+                hasLoggedIn: false
+            }
+        };
+        localStorage.setItem("fuse_users_db", JSON.stringify(usersDB));
+        alert(`⚡ [WEBHOOK CAKTO - SIMULAÇÃO]\n\nEvento: purchase_approved\nCliente: ${nameInput}\nE-mail: ${emailInput}\n\nResultado: Conta criada com sucesso no banco de dados FUSE! A cliente agora já pode fazer login direto com a senha padrão 'senha123'.`);
+    } else {
+        alert(`⚡ [WEBHOOK CAKTO - SIMULAÇÃO]\n\nResultado: A conta para o e-mail '${emailInput}' já existe no banco de dados FUSE.`);
+    }
+}
+
+function simulateCaktoRedirect() {
+    const nameInput = document.getElementById("cakto-sim-name").value.trim();
+    const emailInput = document.getElementById("cakto-sim-email").value.trim().toLowerCase();
+    
+    if (!nameInput || !emailInput) {
+        alert("Por favor, preencha o nome e e-mail para simular.");
+        return;
+    }
+    
+    const encodedName = encodeURIComponent(nameInput);
+    const redirectUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}?cakto_email=${emailInput}&cakto_name=${encodedName}&cakto_status=approved`;
+    
+    alert(`🔗 Redirecionando para a URL de Retorno da Cakto:\n\n${redirectUrl}`);
+    window.location.href = redirectUrl;
 }

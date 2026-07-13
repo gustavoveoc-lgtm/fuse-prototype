@@ -68,7 +68,32 @@
 
 
 
-            <p class="auth-toggle-text">
+            <!-- Painel Integrador Cakto (Simulador de Vendas/Acesso) -->
+            <div class="cakto-simulator-box" style="margin-top: 24px; padding: 14px; border-radius: 12px; border: 1px dashed rgba(232, 165, 152, 0.2); background: rgba(232, 165, 152, 0.02); text-align: left;">
+                <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
+                    <i data-lucide="webhook" style="width: 14px; height: 14px; color: var(--accent-rose);"></i>
+                    <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent-rose);">Integração Webhook Cakto</span>
+                </div>
+                <p style="font-size: 10px; color: var(--text-secondary); margin-bottom: 10px; line-height: 1.4;">
+                    Simule a integração oficial da Cakto que cria contas e libera o acesso automaticamente via Webhook (POST) ou Redirecionamento de URL.
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="cakto-sim-name" placeholder="Nome da Cliente" value="Renata Souza" style="flex: 1; padding: 6px 10px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; color: var(--text-primary); font-size: 11px; outline: none;">
+                        <input type="email" id="cakto-sim-email" placeholder="E-mail da Cliente" value="renata@exemplo.com" style="flex: 1; padding: 6px 10px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; color: var(--text-primary); font-size: 11px; outline: none;">
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="sim-cakto-btn" onclick="simulateCaktoWebhook()" style="flex: 1; padding: 8px; background: rgba(232, 165, 152, 0.15); border: 1px solid var(--accent-rose); border-radius: 6px; color: var(--text-primary); font-size: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                            Simular Webhook (POST)
+                        </button>
+                        <button class="sim-cakto-btn" onclick="simulateCaktoRedirect()" style="flex: 1; padding: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: var(--text-secondary); font-size: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                            Simular Redirecionamento (URL)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <p class="auth-toggle-text" style="margin-top: 16px;">
                 <span id="auth-toggle-desc">Ainda não possui assinatura?</span>
                 <a href="#" class="auth-link-toggle" id="auth-toggle-btn" onclick="toggleAuthMode()">Criar conta</a>
             </p>
