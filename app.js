@@ -331,7 +331,18 @@ function toggleAuthMode() {
     }
 }
 
-function handleAuth(isLoginButton) {
+async function checkCaktoPurchaseAPI(email) {
+    try {
+        const response = await fetch(`/api/verify-purchase?email=${encodeURIComponent(email)}`);
+        if (!response.ok) return { success: false };
+        return await response.json();
+    } catch (e) {
+        console.error("Erro ao chamar API de verificação:", e);
+        return { success: false };
+    }
+}
+
+async function handleAuth(isLoginButton) {
     if (authMode === "register") {
         const nameVal = document.getElementById("reg-name").value.trim();
         const emailVal = document.getElementById("reg-email").value.trim().toLowerCase();
@@ -347,11 +358,31 @@ function handleAuth(isLoginButton) {
             return;
         }
         
-        // Registra nova conta limpa
+        const btnEl = document.querySelector("#register-form-wrapper .btn-auth-primary");
+        const originalText = btnEl ? btnEl.innerText : "Criar Conta e Iniciar";
+        if (btnEl) {
+            btnEl.innerText = "Verificando assinatura na Cakto...";
+            btnEl.disabled = true;
+        }
+        
+        const verify = await checkCaktoPurchaseAPI(emailVal);
+        
+        if (btnEl) {
+            btnEl.innerText = originalText;
+            btnEl.disabled = false;
+        }
+        
+        if (!verify.success) {
+            alert("Nenhuma compra aprovada foi encontrada para este e-mail no Cakto. Para liberar seu acesso, por favor conclua o pagamento da sua assinatura.");
+            openModal("modal-subscription-checkout");
+            return;
+        }
+        
+        // Registra nova conta com dados confirmados
         currentUserEmail = emailVal;
         userState = JSON.parse(JSON.stringify(defaultState));
-        userState.name = nameVal;
-        userState.hasLoggedIn = false; // precisa passar pelo onboarding
+        userState.name = nameVal || verify.customerName;
+        userState.hasLoggedIn = false;
         
         usersDB[currentUserEmail] = {
             password: passVal,
@@ -359,9 +390,11 @@ function handleAuth(isLoginButton) {
         };
         saveStateToStorage();
         
-        // Abre o modal de assinatura antes de ir para o onboarding
+        alert(`🎉 Assinatura premium confirmada via API!\n\nBem-vinda ao FUSE, ${userState.name}!`);
+        
         document.getElementById("auth-screen").classList.remove("active");
-        openModal("modal-subscription-checkout");
+        document.getElementById("onboarding-screen").classList.add("active");
+        updateOnboardingStepUI();
         
     } else {
         const emailVal = document.getElementById("login-email").value.trim().toLowerCase();
@@ -372,10 +405,42 @@ function handleAuth(isLoginButton) {
             return;
         }
         
-        const account = usersDB[emailVal];
+        let account = usersDB[emailVal];
+        
+        // Se a conta não existe localmente, verifica na API do Cakto se o cliente já pagou!
         if (!account) {
-            alert("Conta não cadastrada com este e-mail. Por favor, registre-se!");
-            return;
+            const btnEl = document.querySelector("#login-form-wrapper .btn-auth-primary");
+            const originalText = btnEl ? btnEl.innerText : "Entrar";
+            if (btnEl) {
+                btnEl.innerText = "Verificando assinatura...";
+                btnEl.disabled = true;
+            }
+            
+            const verify = await checkCaktoPurchaseAPI(emailVal);
+            
+            if (btnEl) {
+                btnEl.innerText = originalText;
+                btnEl.disabled = false;
+            }
+            
+            if (verify.success) {
+                // Cria a conta automaticamente usando a senha informada
+                userState = JSON.parse(JSON.stringify(defaultState));
+                userState.name = verify.customerName;
+                userState.hasLoggedIn = false;
+                
+                usersDB[emailVal] = {
+                    password: passVal,
+                    userState: userState
+                };
+                localStorage.setItem("fuse_users_db", JSON.stringify(usersDB));
+                account = usersDB[emailVal];
+                
+                alert(`🎉 Compra ativa confirmada via API Cakto!\n\nSeu acesso premium foi liberado.`);
+            } else {
+                alert("Conta não cadastrada. Se você realizou o pagamento na Cakto, certifique-se de usar o mesmo e-mail do checkout!");
+                return;
+            }
         }
         
         if (account.password !== passVal) {
@@ -393,7 +458,6 @@ function handleAuth(isLoginButton) {
         if (userState.hasLoggedIn) {
             restoreSession();
         } else {
-            // Se registrou mas não completou o onboarding da outra vez
             document.getElementById("onboarding-screen").classList.add("active");
             updateOnboardingStepUI();
         }
