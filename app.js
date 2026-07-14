@@ -131,6 +131,7 @@ const defaultState = {
     levelNum: 8,
     levelTitle: "Nível 8: Constância",
     streak: 7,
+    weeklyCheckins: [true, true, true, true, true, true, false],
     habitsCompleted: [false, false, false, false, false, false],
     habitsCount: 6,
     completedWorkoutsCount: 14,
@@ -324,6 +325,7 @@ function restoreSession() {
     updateShoppingListLiveUI();
     renderChallengeUI();
     renderCommunityFeed();
+    renderWeeklyTracker();
 
     // Mostra o container principal
     document.getElementById("app-screen").style.display = "flex";
@@ -707,11 +709,11 @@ function triggerDailySuccess() {
         document.getElementById("streak-counter").innerText = `${userState.streak} dias ativos`;
         document.getElementById("profile-streak-count").innerText = userState.streak;
         
-        const sundayDot = document.getElementById("dot-sunday");
-        sundayDot.classList.remove("active");
-        sundayDot.classList.add("completed");
-        sundayDot.querySelector("i").innerHTML = `<i data-lucide="check"></i>`;
-        lucide.createIcons();
+        if (!userState.weeklyCheckins) {
+            userState.weeklyCheckins = [true, true, true, true, true, true, false];
+        }
+        userState.weeklyCheckins[6] = true;
+        renderWeeklyTracker();
     }
     
     document.getElementById("modal-streak-val").innerText = `${userState.streak} Dias de Streak 🔥`;
@@ -986,7 +988,6 @@ function openWorkoutDetail(id) {
         row.innerHTML = `
             <div style="display: flex; flex-direction: column;">
                 <span style="font-weight: 600; color: var(--text-primary); font-size: 13px;">${ex.name}</span>
-                <span style="font-size: 10px; color: var(--accent-rose);">📖 Ver tutorial de execução</span>
             </div>
             <span class="exercise-row-reps">${ex.sets}s x ${ex.reps}</span>
         `;
@@ -2314,4 +2315,80 @@ function simulateCaktoRedirect() {
     
     alert(`🔗 Redirecionando para a URL de Retorno da Cakto:\n\n${redirectUrl}`);
     window.location.href = redirectUrl;
+}
+
+function renderWeeklyTracker() {
+    const container = document.getElementById("weekly-tracker-container");
+    if (!container) return;
+    
+    container.innerHTML = "";
+    const daysLabel = ["S", "T", "Q", "Q", "S", "S", "D"];
+    
+    if (!userState.weeklyCheckins) {
+        userState.weeklyCheckins = [true, true, true, true, true, true, false];
+    }
+    
+    userState.weeklyCheckins.forEach((completed, index) => {
+        const dotDiv = document.createElement("div");
+        dotDiv.className = `weekday-dot ${completed ? "completed" : (index === 6 ? "active" : "")}`;
+        dotDiv.style.cursor = "pointer";
+        dotDiv.setAttribute("onclick", `toggleWeeklyDay(${index})`);
+        
+        dotDiv.innerHTML = `
+            <span>${daysLabel[index]}</span>
+            <i data-lucide="${completed ? "check" : "circle"}"></i>
+        `;
+        
+        container.appendChild(dotDiv);
+    });
+    
+    lucide.createIcons();
+}
+
+function toggleWeeklyDay(index) {
+    if (!userState.weeklyCheckins) {
+        userState.weeklyCheckins = [true, true, true, true, true, true, false];
+    }
+    
+    const wasCompleted = userState.weeklyCheckins[index];
+    userState.weeklyCheckins[index] = !wasCompleted;
+    
+    // Se marcou como completado, aumenta o streak, senão diminui
+    if (userState.weeklyCheckins[index]) {
+        userState.streak += 1;
+        if (index === 6) {
+            userState.streakUpdated = true;
+        }
+    } else {
+        userState.streak = Math.max(0, userState.streak - 1);
+        if (index === 6) {
+            userState.streakUpdated = false;
+        }
+    }
+    
+    // Atualiza contadores visuais
+    document.getElementById("streak-counter").innerText = `${userState.streak} dias ativos`;
+    document.getElementById("profile-streak-count").innerText = userState.streak;
+    
+    const modalStreakVal = document.getElementById("modal-streak-val");
+    if (modalStreakVal) {
+        modalStreakVal.innerText = `${userState.streak} Dias de Streak 🔥`;
+    }
+    
+    // Atualiza conquista de medalha no perfil
+    const medal = document.getElementById("medal-ritual-perfeito");
+    if (userState.streak >= 8) {
+        if (medal) {
+            medal.classList.remove("blocked");
+            medal.querySelector(".badge-item-desc").innerText = "Desbloqueado!";
+        }
+    } else {
+        if (medal) {
+            medal.classList.add("blocked");
+            medal.querySelector(".badge-item-desc").innerText = "Bloqueado (8 dias streak)";
+        }
+    }
+    
+    saveStateToStorage();
+    renderWeeklyTracker();
 }
