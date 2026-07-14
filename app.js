@@ -984,10 +984,29 @@ function openWorkoutDetail(id) {
     w.exercises.forEach(ex => {
         const row = document.createElement("div");
         row.className = "exercise-row-item";
-        row.onclick = () => openExerciseGuide(ex.name, ex.sets, ex.reps);
+        row.style.border = "1px solid transparent";
+        
+        row.onclick = () => {
+            row.classList.toggle("completed");
+            const checkIcon = row.querySelector(".exercise-check-icon");
+            if (row.classList.contains("completed")) {
+                checkIcon.innerHTML = `<i data-lucide="check-circle-2" style="color: var(--accent-rose); width: 16px; height: 16px;"></i>`;
+                row.style.background = "rgba(232, 165, 152, 0.06)";
+                row.style.borderColor = "rgba(232, 165, 152, 0.2)";
+            } else {
+                checkIcon.innerHTML = `<i data-lucide="circle" style="color: rgba(255,255,255,0.15); width: 16px; height: 16px;"></i>`;
+                row.style.background = "rgba(255,255,255,0.02)";
+                row.style.borderColor = "transparent";
+            }
+            lucide.createIcons();
+        };
+        
         row.innerHTML = `
-            <div style="display: flex; flex-direction: column;">
-                <span style="font-weight: 600; color: var(--text-primary); font-size: 13px;">${ex.name}</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div class="exercise-check-icon" style="display: flex; align-items: center;">
+                    <i data-lucide="circle" style="color: rgba(255,255,255,0.15); width: 16px; height: 16px;"></i>
+                </div>
+                <span style="font-weight: 600; color: var(--text-primary); font-size: 12.5px;">${ex.name}</span>
             </div>
             <span class="exercise-row-reps">${ex.sets}s x ${ex.reps}</span>
         `;
