@@ -2475,3 +2475,22 @@ function toggleWeeklyDay(index) {
     saveStateToStorage();
     renderWeeklyTracker();
 }
+
+function skipOnboardingToLogin() {
+    document.getElementById("onboarding-screen").classList.remove("active");
+    document.getElementById("auth-screen").classList.add("active");
+    
+    // Configura o formulário para modo login
+    authMode = "login";
+    const loginWrapper = document.getElementById("login-form-wrapper");
+    const registerWrapper = document.getElementById("register-form-wrapper");
+    const titleText = document.getElementById("auth-subtitle-text");
+    const btnToggle = document.getElementById("auth-toggle-btn");
+    const descToggle = document.getElementById("auth-toggle-desc");
+    
+    loginWrapper.style.display = "block";
+    registerWrapper.style.display = "none";
+    titleText.innerText = "Faça login para continuar sua jornada";
+    btnToggle.innerText = "Criar conta";
+    descToggle.innerText = "Ainda não possui assinatura?";
+}
