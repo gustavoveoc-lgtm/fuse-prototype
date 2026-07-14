@@ -436,7 +436,7 @@ async function handleAuth(isLoginButton) {
                 localStorage.setItem("fuse_users_db", JSON.stringify(usersDB));
                 account = usersDB[emailVal];
                 
-                alert(`🎉 Compra ativa confirmada via API Cakto!\n\nSeu acesso premium foi liberado.`);
+                alert(`🎉 Compra ativa confirmada via API Cakto!\n\nComo este é seu primeiro acesso, criamos sua conta premium. Os seus dados de login definidos foram:\n\n📧 E-mail: ${emailVal}\n🔑 Senha: A senha que você acabou de digitar!`);
             } else {
                 alert("Conta não cadastrada. Se você realizou o pagamento na Cakto, certifique-se de usar o mesmo e-mail do checkout!");
                 return;
