@@ -723,6 +723,7 @@ function populateWorkoutsGrid() {
     workoutsDB.forEach(w => {
         let img = "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&q=80&w=500";
         if (w.category.includes("gluteos")) img = "assets/img/gluteos-workout.png";
+        else if (w.category.includes("pernas")) img = "assets/img/pernas-workout.png";
         else if (w.category.includes("cardio")) img = "https://images.unsplash.com/photo-1518310383802-640c2de311b2?auto=format&fit=crop&q=80&w=500";
         else if (w.category.includes("alongamento")) img = "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=500";
         else if (w.category.includes("braços")) img = "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&q=80&w=500";
