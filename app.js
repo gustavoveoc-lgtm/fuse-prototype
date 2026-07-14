@@ -187,42 +187,13 @@ if (!userState.activeDietFilters) {
     userState.activeDietFilters = [];
 }
 
-const defaultPosts = [
-    {
-        id: "p1",
-        author: "Camila Silva",
-        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150",
-        level: 10,
-        time: "Há 15 min",
-        content: "Mais um dia pago! Confesso que estava com preguiça, mas completei os 15 min de alongamento e já me sinto outra! Vamos meninas! 💪💖",
-        image: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&q=80&w=350",
-        likes: 24,
-        likedByMe: false,
-        reports: 0,
-        comments: [
-            { author: "Beatriz M.", content: "Arrasou Camila! Inspiração pura!" },
-            { author: "Júlia F.", content: "Pago por aqui também!" }
-        ]
-    },
-    {
-        id: "p2",
-        author: "Mariana Costa",
-        avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=150",
-        level: 8,
-        time: "Há 2 horas",
-        content: "Cardio de hoje concluído! 5km de corrida estacionária no quarto. O importante é não parar!",
-        image: "https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&q=80&w=350",
-        likes: 18,
-        likedByMe: false,
-        reports: 0,
-        comments: [
-            { author: "Amanda Fernandes", content: "Foco total!" }
-        ]
-    }
-];
+const defaultPosts = [];
 
 if (!userState.communityPosts) {
-    userState.communityPosts = [...defaultPosts];
+    userState.communityPosts = [];
+} else {
+    // Purga posts falsos (p1, p2) do localStorage do navegador
+    userState.communityPosts = userState.communityPosts.filter(p => p.id !== "p1" && p.id !== "p2");
 }
 if (userState.lastPostPointsDate === undefined) {
     userState.lastPostPointsDate = "";
