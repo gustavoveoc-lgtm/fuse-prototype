@@ -248,7 +248,8 @@ function skipSplash() {
     if (userState.hasLoggedIn) {
         restoreSession();
     } else {
-        document.getElementById("auth-screen").classList.add("active");
+        document.getElementById("onboarding-screen").classList.add("active");
+        updateOnboardingStepUI();
     }
 }
 
@@ -378,11 +379,10 @@ async function handleAuth(isLoginButton) {
             return;
         }
         
-        // Registra nova conta com dados confirmados
+        // Registra nova conta salvando as respostas do onboarding preenchidas antes
         currentUserEmail = emailVal;
-        userState = JSON.parse(JSON.stringify(defaultState));
         userState.name = nameVal || verify.customerName;
-        userState.hasLoggedIn = false;
+        userState.hasLoggedIn = true;
         
         usersDB[currentUserEmail] = {
             password: passVal,
@@ -393,8 +393,7 @@ async function handleAuth(isLoginButton) {
         alert(`🎉 Assinatura premium confirmada via API!\n\nBem-vinda ao FUSE, ${userState.name}!`);
         
         document.getElementById("auth-screen").classList.remove("active");
-        document.getElementById("onboarding-screen").classList.add("active");
-        updateOnboardingStepUI();
+        restoreSession();
         
     } else {
         const emailVal = document.getElementById("login-email").value.trim().toLowerCase();
@@ -424,10 +423,9 @@ async function handleAuth(isLoginButton) {
             }
             
             if (verify.success) {
-                // Cria a conta automaticamente usando a senha informada
-                userState = JSON.parse(JSON.stringify(defaultState));
+                // Cria a conta automaticamente usando a senha informada e as respostas da anamnese
                 userState.name = verify.customerName;
-                userState.hasLoggedIn = false;
+                userState.hasLoggedIn = true;
                 
                 usersDB[emailVal] = {
                     password: passVal,
@@ -450,14 +448,24 @@ async function handleAuth(isLoginButton) {
         
         // Login com sucesso
         currentUserEmail = emailVal;
+        
+        // Se a conta existe mas ainda não foi registrada com o onboarding
+        if (!account.userState.hasLoggedIn && userState.age) {
+            account.userState = userState;
+            account.userState.hasLoggedIn = true;
+        }
+        
         userState = account.userState;
         saveStateToStorage();
         
         document.getElementById("auth-screen").classList.remove("active");
         
-        if (userState.hasLoggedIn) {
+        if (userState.hasLoggedIn || (userState.age && userState.weight)) {
+            userState.hasLoggedIn = true;
+            saveStateToStorage();
             restoreSession();
         } else {
+            // Fallback caso por algum motivo não haja respostas
             document.getElementById("onboarding-screen").classList.add("active");
             updateOnboardingStepUI();
         }
@@ -633,15 +641,35 @@ function finishOnboarding() {
     document.getElementById("prof-current-weight").innerText = `${userState.weight} kg`;
 
     // Transição da Tela e Salvamento de Sessão
-    userState.hasLoggedIn = true;
-    renderChallengeUI();
-    renderCommunityFeed();
-    saveStateToStorage();
+    if (currentUserEmail && usersDB[currentUserEmail]) {
+        userState.hasLoggedIn = true;
+        renderChallengeUI();
+        renderCommunityFeed();
+        saveStateToStorage();
 
-    document.getElementById("onboarding-screen").classList.remove("active");
-    document.getElementById("app-screen").style.display = "flex";
-    
-    updateProgressUI();
+        document.getElementById("onboarding-screen").classList.remove("active");
+        document.getElementById("app-screen").style.display = "flex";
+        
+        updateProgressUI();
+    } else {
+        // Redireciona para o login/registro para salvar a conta
+        document.getElementById("onboarding-screen").classList.remove("active");
+        document.getElementById("auth-screen").classList.add("active");
+        
+        // Altera para a tela de registro/cadastro como padrão
+        authMode = "register";
+        const loginWrapper = document.getElementById("login-form-wrapper");
+        const registerWrapper = document.getElementById("register-form-wrapper");
+        const titleText = document.getElementById("auth-subtitle-text");
+        const btnToggle = document.getElementById("auth-toggle-btn");
+        const descToggle = document.getElementById("auth-toggle-desc");
+        
+        loginWrapper.style.display = "none";
+        registerWrapper.style.display = "block";
+        titleText.innerText = "Crie sua conta para salvar suas respostas da Anamnese e acessar seus treinos!";
+        btnToggle.innerText = "Fazer Login";
+        descToggle.innerText = "Já possui uma assinatura?";
+    }
 }
 
 // 4. ABAS E COMPONENTES PRINCIPAIS
