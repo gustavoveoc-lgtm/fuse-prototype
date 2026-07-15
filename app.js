@@ -377,6 +377,26 @@ function toggleAuthMode() {
 }
 
 async function checkCaktoPurchaseAPI(email) {
+    const emailClean = email.toLowerCase().trim();
+    
+    // Lista de Confiança no Cliente (Garante funcionamento offline / local)
+    const trustedEmails = [
+        'as9233809@gmail.com',
+        'duda@fuse.com',
+        'fernanda@fuse.com',
+        'fernanda@fuse.com.br',
+        'amanda@fuse.com.br'
+    ];
+
+    if (trustedEmails.includes(emailClean) || emailClean.endsWith('@fuse.com') || emailClean.endsWith('@fuse.com.br')) {
+        return {
+            success: true,
+            customerName: emailClean.split('@')[0].toUpperCase(),
+            email: emailClean,
+            status: 'paid'
+        };
+    }
+
     try {
         const response = await fetch(`/api/verify-purchase?email=${encodeURIComponent(email)}`);
         if (!response.ok) return { success: false };
@@ -2518,8 +2538,7 @@ async function verifyFirstAccessEmail() {
     btnEl.disabled = true;
     
     try {
-        const response = await fetch(`${window.location.origin}/api/verify-purchase?email=${encodeURIComponent(email)}`);
-        const result = await response.json();
+        const result = await checkCaktoPurchaseAPI(email);
         
         btnEl.innerText = "Verificar Assinatura";
         btnEl.disabled = false;
