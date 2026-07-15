@@ -42,8 +42,8 @@ export default async function handler(req, res) {
     }
 
     // Chaves de API do Cakto: lê das variáveis de ambiente primeiro, depois usa fallback hardcoded
-    const clientId = process.env.CAKTO_CLIENT_ID || 'SELlzz1i1WxMFxUl1zymctUnYPu4a1XrTjegbkLc';
-    const clientSecret = process.env.CAKTO_CLIENT_SECRET || 'S8tLd1mDMyNiUNHURVOILBHeBJMry5JUP2TdOjoBTXH39sYEx0CB4rNo6jQyTAeTWD0WWbmOVj37GT1t8DkR9B474hgkpge6OO1MRlX9S21VTQNP3XVbt2oEkbrJkAfL';
+    const clientId = process.env.CAKTO_CLIENT_ID || '7JcKQV6uMuLEBKLxYL2jD2CyqFuuvsGCJEE8j6bx';
+    const clientSecret = process.env.CAKTO_CLIENT_SECRET || 'TSlkII0HF6B6YyEodcOnl19vITpGzHD0Zn4U6AhA3D394Q0sbJ0uJHZhbyB4GU94ZEiGRV5HuyIEpZHCrmIj1OZ6vwPNO4f0cMWEY6DNGPKq61Wb9XuiZv9XYx2Ew4Nz';
 
     try {
         // 1. Solicita Token OAuth2 à API do Cakto
