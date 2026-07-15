@@ -272,8 +272,10 @@ function restoreSession() {
     if (userState.profilePhoto) {
         const headerAv = document.getElementById("header-avatar");
         const profileAv = document.getElementById("profile-big-avatar");
+        const writeAv = document.getElementById("write-post-avatar");
         if (headerAv) headerAv.src = userState.profilePhoto;
         if (profileAv) profileAv.src = userState.profilePhoto;
+        if (writeAv) writeAv.src = userState.profilePhoto;
     }
 
     // 1. ATUALIZA TEXTOS E HEADERS DA HOME E PERFIL
@@ -1781,7 +1783,7 @@ function createNewPost() {
     const newPost = {
         id: "p_" + Date.now(),
         author: userState.name || "Amanda Fernandes",
-        avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=150",
+        avatar: userState.profilePhoto || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=150",
         level: userState.levelNum || 1,
         time: "Agora mesmo",
         content: text || "Treino concluído com sucesso! 💪✨",
