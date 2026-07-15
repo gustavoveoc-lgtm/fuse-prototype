@@ -159,15 +159,8 @@ let usersDB = JSON.parse(localStorage.getItem("fuse_users_db")) || {};
 let currentUserEmail = localStorage.getItem("fuse_current_user_email") || "";
 
 // Pré-popula usuários padrão de teste para login direto imediato
-if (!usersDB["amanda@fuse.com.br"]) {
-    usersDB["amanda@fuse.com.br"] = {
-        password: "senha123",
-        userState: {
-            ...defaultState,
-            name: "Amanda Fernandes",
-            hasLoggedIn: true
-        }
-    };
+if (usersDB["amanda@fuse.com.br"]) {
+    delete usersDB["amanda@fuse.com.br"];
 }
 if (!usersDB["duda@fuse.com"]) {
     usersDB["duda@fuse.com"] = {
