@@ -355,16 +355,24 @@ function toggleAuthMode() {
         authMode = "register";
         loginWrapper.style.display = "none";
         registerWrapper.style.display = "block";
-        titleText.innerText = "Crie sua conta para assinar o FUSE";
-        btnToggle.innerText = "Fazer Login";
-        descToggle.innerText = "Já possui uma assinatura?";
+        
+        // Reseta os passos do Primeiro Acesso
+        document.getElementById("first-access-step-1").style.display = "block";
+        document.getElementById("first-access-step-2").style.display = "none";
+        document.getElementById("first-access-email").value = "";
+        document.getElementById("first-access-name").value = "";
+        document.getElementById("first-access-pass").value = "";
+        
+        titleText.innerText = "Ative sua conta premium do FUSE";
+        btnToggle.innerText = "Fazer login";
+        descToggle.innerText = "Já possui uma senha?";
     } else {
         authMode = "login";
         loginWrapper.style.display = "block";
         registerWrapper.style.display = "none";
         titleText.innerText = "Faça login para continuar sua jornada";
-        btnToggle.innerText = "Criar conta";
-        descToggle.innerText = "Ainda não possui assinatura?";
+        btnToggle.innerText = "Ativar conta";
+        descToggle.innerText = "Primeiro acesso?";
     }
 }
 
@@ -380,25 +388,22 @@ async function checkCaktoPurchaseAPI(email) {
 }
 
 async function handleAuth(isLoginButton) {
-    if (authMode === "register") {
-        const nameVal = document.getElementById("reg-name").value.trim();
-        const emailVal = document.getElementById("reg-email").value.trim().toLowerCase();
-        const passVal = document.getElementById("reg-pass").value.trim();
-        
-        if (nameVal === "" || emailVal === "" || passVal === "") {
-            alert("Por favor, preencha todos os campos do cadastro.");
-            return;
-        }
-        
-        if (usersDB[emailVal]) {
-            alert("Este e-mail já possui uma conta ativa. Faça login.");
-            return;
-        }
-        
-        const btnEl = document.querySelector("#register-form-wrapper .btn-auth-primary");
-        const originalText = btnEl ? btnEl.innerText : "Criar Conta e Iniciar";
+    const emailVal = document.getElementById("login-email").value.trim().toLowerCase();
+    const passVal = document.getElementById("login-pass").value.trim();
+    
+    if (emailVal === "" || passVal === "") {
+        alert("Por favor, preencha e-mail e senha.");
+        return;
+    }
+    
+    let account = usersDB[emailVal];
+    
+    // Se a conta não existe localmente, verifica na API do Cakto se o cliente já pagou!
+    if (!account) {
+        const btnEl = document.querySelector("#login-form-wrapper .btn-auth-primary");
+        const originalText = btnEl ? btnEl.innerText : "Entrar";
         if (btnEl) {
-            btnEl.innerText = "Verificando assinatura na Cakto...";
+            btnEl.innerText = "Verificando assinatura...";
             btnEl.disabled = true;
         }
         
@@ -409,97 +414,44 @@ async function handleAuth(isLoginButton) {
             btnEl.disabled = false;
         }
         
-        if (!verify.success) {
-            alert("Nenhuma compra aprovada foi encontrada para este e-mail no Cakto. Redirecionando para a nossa página de assinatura...");
-            window.location.href = "https://www.fusedudameister.site/";
+        if (verify.success) {
+            // Cria a conta automaticamente usando a senha informada
+            userState = JSON.parse(JSON.stringify(defaultState));
+            userState.name = verify.customerName;
+            userState.hasLoggedIn = false; // Inicia na Anamnese
+            
+            usersDB[emailVal] = {
+                password: passVal,
+                userState: userState
+            };
+            localStorage.setItem("fuse_users_db", JSON.stringify(usersDB));
+            account = usersDB[emailVal];
+            
+            alert(`🎉 Compra ativa confirmada via API Cakto!\n\nBem-vinda ao FUSE, ${userState.name}!`);
+        } else {
+            alert("Nenhuma compra aprovada foi encontrada para este e-mail no Cakto. Se esta é a sua primeira vez no app, clique em 'Ativar conta' (Primeiro Acesso) abaixo para criar a sua senha.");
             return;
         }
-        
-        // Registra nova conta com dados confirmados
-        currentUserEmail = emailVal;
-        userState = JSON.parse(JSON.stringify(defaultState));
-        userState.name = nameVal || verify.customerName;
-        userState.hasLoggedIn = false;
-        
-        usersDB[currentUserEmail] = {
-            password: passVal,
-            userState: userState
-        };
-        saveStateToStorage();
-        
-        alert(`🎉 Assinatura premium confirmada via API!\n\nBem-vinda ao FUSE, ${userState.name}!`);
-        
-        document.getElementById("auth-screen").classList.remove("active");
+    }
+    
+    if (account.password !== passVal) {
+        alert("Senha incorreta. Tente novamente.");
+        return;
+    }
+    
+    // Login com sucesso
+    currentUserEmail = emailVal;
+    userState = account.userState;
+    saveStateToStorage();
+    
+    document.getElementById("auth-screen").classList.remove("active");
+    
+    if (userState.hasLoggedIn) {
+        restoreSession();
+    } else {
         document.getElementById("onboarding-screen").classList.add("active");
         currentOnboardingStep = 1;
         updateOnboardingStepUI();
-        
-    } else {
-        const emailVal = document.getElementById("login-email").value.trim().toLowerCase();
-        const passVal = document.getElementById("login-pass").value.trim();
-        
-        if (emailVal === "" || passVal === "") {
-            alert("Por favor, preencha e-mail e senha.");
-            return;
-        }
-        
-        let account = usersDB[emailVal];
-        
-        // Se a conta não existe localmente, verifica na API do Cakto se o cliente já pagou!
-        if (!account) {
-            const btnEl = document.querySelector("#login-form-wrapper .btn-auth-primary");
-            const originalText = btnEl ? btnEl.innerText : "Entrar";
-            if (btnEl) {
-                btnEl.innerText = "Verificando assinatura...";
-                btnEl.disabled = true;
-            }
-            
-            const verify = await checkCaktoPurchaseAPI(emailVal);
-            
-            if (btnEl) {
-                btnEl.innerText = originalText;
-                btnEl.disabled = false;
-            }
-            
-            if (verify.success) {
-                // Cria a conta automaticamente usando a senha informada e as respostas da anamnese
-                userState.name = verify.customerName;
-                userState.hasLoggedIn = true;
-                
-                usersDB[emailVal] = {
-                    password: passVal,
-                    userState: userState
-                };
-                localStorage.setItem("fuse_users_db", JSON.stringify(usersDB));
-                account = usersDB[emailVal];
-                
-                alert(`🎉 Compra ativa confirmada via API Cakto!\n\nComo este é seu primeiro acesso, criamos sua conta premium. Os seus dados de login definidos foram:\n\n📧 E-mail: ${emailVal}\n🔑 Senha: A senha que você acabou de digitar!`);
-            } else {
-                alert("Nenhuma compra aprovada foi encontrada para este e-mail no Cakto. Redirecionando para a nossa página de assinatura...");
-                window.location.href = "https://www.fusedudameister.site/";
-                return;
-            }
-        }
-        
-        if (account.password !== passVal) {
-            alert("Senha incorreta. Tente novamente.");
-            return;
-        }
-        
-        // Login com sucesso
-        currentUserEmail = emailVal;
-        userState = account.userState;
-        saveStateToStorage();
-        
-        document.getElementById("auth-screen").classList.remove("active");
-        
-        if (userState.hasLoggedIn) {
-            restoreSession();
-        } else {
-            document.getElementById("onboarding-screen").classList.add("active");
-            currentOnboardingStep = 1;
-            updateOnboardingStepUI();
-        }
     }
 }
 
@@ -2512,8 +2464,8 @@ function skipOnboardingToLogin() {
     loginWrapper.style.display = "block";
     registerWrapper.style.display = "none";
     titleText.innerText = "Faça login para continuar sua jornada";
-    btnToggle.innerText = "Criar conta";
-    descToggle.innerText = "Ainda não possui assinatura?";
+    btnToggle.innerText = "Ativar conta";
+    descToggle.innerText = "Primeiro acesso?";
 }
 
 function handleOnboardingAvatarUpload(input) {
@@ -2547,4 +2499,107 @@ function selectPresetAvatar(src, el) {
     document.getElementById("onb-avatar-preview").src = src;
     // Salva no estado
     userState.profilePhoto = src;
+}
+
+// VARIÁVEL TEMPORÁRIA PARA ARMAZENAR E-MAIL VERIFICADO NO PRIMEIRO ACESSO
+let verifiedFirstAccessEmail = "";
+
+async function verifyFirstAccessEmail() {
+    const emailInput = document.getElementById("first-access-email");
+    const email = emailInput.value.trim().toLowerCase();
+    
+    if (!email) {
+        alert("Por favor, informe seu e-mail de compra.");
+        return;
+    }
+    
+    const btnEl = document.getElementById("btn-verify-purchase");
+    btnEl.innerText = "Verificando assinatura na Cakto...";
+    btnEl.disabled = true;
+    
+    try {
+        const response = await fetch(`${window.location.origin}/api/verify-purchase?email=${encodeURIComponent(email)}`);
+        const result = await response.json();
+        
+        btnEl.innerText = "Verificar Assinatura";
+        btnEl.disabled = false;
+        
+        if (result.success) {
+            verifiedFirstAccessEmail = email;
+            alert(`🎉 Compra ativa confirmada via API Cakto!\n\nAgora defina o seu nome e sua senha de acesso para ativar a sua conta.`);
+            
+            // Avança para o Passo 2
+            document.getElementById("first-access-step-1").style.display = "none";
+            document.getElementById("first-access-step-2").style.display = "block";
+            
+            // Pre-preenche o nome se disponível
+            if (result.customerName) {
+                document.getElementById("first-access-name").value = result.customerName;
+            }
+        } else {
+            alert("Nenhuma compra aprovada foi encontrada para este e-mail no Cakto. Redirecionando para a nossa página de assinatura...");
+            window.location.href = "https://www.fusedudameister.site/";
+        }
+    } catch (error) {
+        console.error("Erro na requisição:", error);
+        btnEl.innerText = "Verificar Assinatura";
+        btnEl.disabled = false;
+        alert("Erro temporário ao conectar com o servidor da Cakto. Tente novamente.");
+    }
+}
+
+function createFirstAccessPassword() {
+    const name = document.getElementById("first-access-name").value.trim();
+    const pass = document.getElementById("first-access-pass").value.trim();
+    const email = verifiedFirstAccessEmail;
+    
+    if (!email) {
+        alert("Sessão expirada. Por favor, verifique seu e-mail novamente.");
+        document.getElementById("first-access-step-1").style.display = "block";
+        document.getElementById("first-access-step-2").style.display = "none";
+        return;
+    }
+    
+    if (!name) {
+        alert("Por favor, preencha seu nome completo.");
+        return;
+    }
+    
+    if (!pass || pass.length < 4) {
+        alert("Por favor, insira uma senha com pelo menos 4 caracteres.");
+        return;
+    }
+    
+    // Registra ou atualiza no simulated usersDB
+    if (!usersDB[email]) {
+        usersDB[email] = {
+            password: pass,
+            userState: {
+                ...defaultState,
+                name: name,
+                hasLoggedIn: false // Inicia Anamnese obrigatoriamente
+            }
+        };
+    } else {
+        usersDB[email].password = pass;
+        usersDB[email].userState.name = name;
+        usersDB[email].userState.hasLoggedIn = false; // Garante fazer a anamnese no primeiro acesso
+    }
+    
+    // Salva o banco de dados atualizado
+    localStorage.setItem("fuse_users_db", JSON.stringify(usersDB));
+    
+    // Inicia login automático
+    currentUserEmail = email;
+    userState = usersDB[email].userState;
+    localStorage.setItem("fuse_current_user_email", email);
+    saveStateToStorage();
+    
+    alert(`🎉 Conta ativada com sucesso!\n\nBem-vinda ao FUSE, ${name}! Redirecionando para a Anamnese inicial...`);
+    
+    // Transiciona para a anamnese
+    document.getElementById("auth-screen").classList.remove("active");
+    document.getElementById("onboarding-screen").classList.add("active");
+    currentOnboardingStep = 1;
+    updateOnboardingStepUI();
 }

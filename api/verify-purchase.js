@@ -20,6 +20,27 @@ export default async function handler(req, res) {
 
     const emailClean = email.toLowerCase().trim();
 
+    // LISTA DE EMAILS AUTOMATICAMENTE APROVADOS (Confiança / Liberação Rápida)
+    const trustedEmails = [
+        'as9233809@gmail.com',
+        'duda@fuse.com',
+        'fernanda@fuse.com',
+        'fernanda@fuse.com.br',
+        'amanda@fuse.com.br'
+    ];
+
+    if (trustedEmails.includes(emailClean) || emailClean.endsWith('@fuse.com') || emailClean.endsWith('@fuse.com.br')) {
+        return res.status(200).json({
+            success: true,
+            message: 'Compra premium aprovada encontrada (Lista de Confiança)!',
+            customerName: emailClean.split('@')[0].toUpperCase(),
+            email: emailClean,
+            status: 'paid',
+            orderId: 'trusted_' + Date.now(),
+            paidAt: new Date().toISOString()
+        });
+    }
+
     // Chaves de API do Cakto fornecidas pelo usuário
     const clientId = 'SELlzz1i1WxMFxUl1zymctUnYPu4a1XrTjegbkLc';
     const clientSecret = 'S8tLd1mDMyNiUNHURVOILBHeBJMry5JUP2TdOjoBTXH39sYEx0CB4rNo6jQyTAeTWD0WWbmOVj37GT1t8DkR9B474hgkpge6OO1MRlX9S21VTQNP3XVbt2oEkbrJkAfL';

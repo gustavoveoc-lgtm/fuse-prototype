@@ -49,29 +49,34 @@
                 <button class="btn-auth-primary" onclick="handleAuth(true)">Entrar</button>
             </div>
 
-            <!-- Cadastro Form (Escondido inicialmente) -->
+            <!-- Primeiro Acesso Form (Escondido inicialmente) -->
             <div id="register-form-wrapper" style="display: none;">
-                <div class="input-group">
-                    <label for="reg-name">Nome Completo</label>
-                    <input type="text" id="reg-name" placeholder="Como deseja ser chamada?">
+                <!-- Passo 1: Verificar e-mail da compra -->
+                <div id="first-access-step-1">
+                    <div class="input-group">
+                        <label for="first-access-email">E-mail da compra</label>
+                        <input type="email" id="first-access-email" placeholder="O e-mail usado no checkout">
+                    </div>
+                    <button class="btn-auth-primary" id="btn-verify-purchase" onclick="verifyFirstAccessEmail()">Verificar Assinatura</button>
                 </div>
-                <div class="input-group">
-                    <label for="reg-email">E-mail</label>
-                    <input type="email" id="reg-email" placeholder="nome@exemplo.com">
+
+                <!-- Passo 2: Criar Senha (escondido inicialmente) -->
+                <div id="first-access-step-2" style="display: none;">
+                    <div class="input-group">
+                        <label for="first-access-name">Nome Completo</label>
+                        <input type="text" id="first-access-name" placeholder="Como deseja ser chamada?">
+                    </div>
+                    <div class="input-group">
+                        <label for="first-access-pass">Crie sua Senha</label>
+                        <input type="password" id="first-access-pass" placeholder="Senha para seus próximos acessos">
+                    </div>
+                    <button class="btn-auth-primary" id="btn-create-password" onclick="createFirstAccessPassword()">Criar Senha e Acessar</button>
                 </div>
-                <div class="input-group">
-                    <label for="reg-pass">Senha</label>
-                    <input type="password" id="reg-pass" placeholder="Crie uma senha forte">
-                </div>
-                <button class="btn-auth-primary" onclick="handleAuth(false)">Criar Conta e Iniciar</button>
             </div>
 
-
-
-
             <p class="auth-toggle-text" style="margin-top: 16px;">
-                <span id="auth-toggle-desc">Ainda não possui assinatura?</span>
-                <a href="#" class="auth-link-toggle" id="auth-toggle-btn" onclick="toggleAuthMode()">Criar conta</a>
+                <span id="auth-toggle-desc">Primeiro acesso?</span>
+                <a href="#" class="auth-link-toggle" id="auth-toggle-btn" onclick="toggleAuthMode()">Ativar conta</a>
             </p>
         </div>
     </div>
