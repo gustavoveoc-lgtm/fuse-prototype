@@ -179,6 +179,16 @@ if (!usersDB["duda@fuse.com"]) {
         }
     };
 }
+if (!usersDB["fernanda@fuse.com.br"]) {
+    usersDB["fernanda@fuse.com.br"] = {
+        password: "Fernanda123",
+        userState: {
+            ...defaultState,
+            name: "Fernanda",
+            hasLoggedIn: true
+        }
+    };
+}
 localStorage.setItem("fuse_users_db", JSON.stringify(usersDB));
 
 let userState = defaultState;
