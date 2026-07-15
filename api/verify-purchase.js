@@ -41,9 +41,9 @@ export default async function handler(req, res) {
         });
     }
 
-    // Chaves de API do Cakto fornecidas pelo usuário
-    const clientId = 'SELlzz1i1WxMFxUl1zymctUnYPu4a1XrTjegbkLc';
-    const clientSecret = 'S8tLd1mDMyNiUNHURVOILBHeBJMry5JUP2TdOjoBTXH39sYEx0CB4rNo6jQyTAeTWD0WWbmOVj37GT1t8DkR9B474hgkpge6OO1MRlX9S21VTQNP3XVbt2oEkbrJkAfL';
+    // Chaves de API do Cakto: lê das variáveis de ambiente primeiro, depois usa fallback hardcoded
+    const clientId = process.env.CAKTO_CLIENT_ID || 'SELlzz1i1WxMFxUl1zymctUnYPu4a1XrTjegbkLc';
+    const clientSecret = process.env.CAKTO_CLIENT_SECRET || 'S8tLd1mDMyNiUNHURVOILBHeBJMry5JUP2TdOjoBTXH39sYEx0CB4rNo6jQyTAeTWD0WWbmOVj37GT1t8DkR9B474hgkpge6OO1MRlX9S21VTQNP3XVbt2oEkbrJkAfL';
 
     try {
         // 1. Solicita Token OAuth2 à API do Cakto
