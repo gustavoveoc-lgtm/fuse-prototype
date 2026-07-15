@@ -474,24 +474,20 @@ async function handleAuth(isLoginButton) {
         
         // Login com sucesso
         currentUserEmail = emailVal;
+        userState = account.userState;
         
-        // Se a conta existe mas ainda não foi registrada com o onboarding
-        if (!account.userState.hasLoggedIn && userState.age) {
-            account.userState = userState;
-            account.userState.hasLoggedIn = true;
+        // Se for uma das contas de teste, força a reiniciar no onboarding para facilitar os testes deles
+        if (emailVal === "duda@fuse.com" || emailVal === "fernanda@fuse.com") {
+            userState.hasLoggedIn = false;
         }
         
-        userState = account.userState;
         saveStateToStorage();
         
         document.getElementById("auth-screen").classList.remove("active");
         
-        if (userState.hasLoggedIn || (userState.age && userState.weight)) {
-            userState.hasLoggedIn = true;
-            saveStateToStorage();
+        if (userState.hasLoggedIn) {
             restoreSession();
         } else {
-            // Fallback caso não haja respostas
             document.getElementById("onboarding-screen").classList.add("active");
             currentOnboardingStep = 1;
             updateOnboardingStepUI();
