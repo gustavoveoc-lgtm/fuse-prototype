@@ -248,8 +248,7 @@ function skipSplash() {
     if (userState.hasLoggedIn) {
         restoreSession();
     } else {
-        document.getElementById("onboarding-screen").classList.add("active");
-        updateOnboardingStepUI();
+        document.getElementById("auth-screen").classList.add("active");
     }
 }
 
@@ -621,8 +620,14 @@ function finishOnboarding() {
     recalculateUserNutritionAndMacros();
 
     // 2. CONFIGURA OS SELETORES DE PLANO ALIMENTAR CONFORME ONBOARDING
-    document.getElementById("nut-select-goal").value = (userState.goal === "ganhar-peso") ? "ganhar-peso" : userState.goal;
-    document.getElementById("nut-select-style").value = "all"; // padrão inicial
+    const goalEl = document.getElementById("nut-select-goal");
+    if (goalEl) {
+        goalEl.value = (userState.goal === "ganhar-peso") ? "ganhar-peso" : userState.goal;
+    }
+    const styleEl = document.getElementById("nut-select-style");
+    if (styleEl) {
+        styleEl.value = "all";
+    }
     changeNutritionConfig();
 
     // 3. POPULA PORTAL DE TREINOS COM FILTRO DE EQUIPAMENTO E TEMPO
@@ -643,37 +648,19 @@ function finishOnboarding() {
     document.getElementById("prof-current-weight").innerText = `${userState.weight} kg`;
 
     // Transição da Tela e Salvamento de Sessão
+    userState.hasLoggedIn = true;
+    
     if (currentUserEmail && usersDB[currentUserEmail]) {
-        userState.hasLoggedIn = true;
         usersDB[currentUserEmail].userState = userState;
-        
-        renderChallengeUI();
-        renderCommunityFeed();
-        saveStateToStorage();
-
-        document.getElementById("onboarding-screen").classList.remove("active");
-        document.getElementById("app-screen").style.display = "flex";
-        
-        updateProgressUI();
-    } else {
-        // Redireciona para o login/registro para salvar a conta
-        document.getElementById("onboarding-screen").classList.remove("active");
-        document.getElementById("auth-screen").classList.add("active");
-        
-        // Altera para a tela de registro/cadastro como padrão
-        authMode = "register";
-        const loginWrapper = document.getElementById("login-form-wrapper");
-        const registerWrapper = document.getElementById("register-form-wrapper");
-        const titleText = document.getElementById("auth-subtitle-text");
-        const btnToggle = document.getElementById("auth-toggle-btn");
-        const descToggle = document.getElementById("auth-toggle-desc");
-        
-        loginWrapper.style.display = "none";
-        registerWrapper.style.display = "block";
-        titleText.innerText = "Crie sua conta para salvar suas respostas da Anamnese e acessar seus treinos!";
-        btnToggle.innerText = "Fazer Login";
-        descToggle.innerText = "Já possui uma assinatura?";
     }
+    
+    renderChallengeUI();
+    renderCommunityFeed();
+    saveStateToStorage();
+
+    document.getElementById("onboarding-screen").classList.remove("active");
+    document.getElementById("app-screen").style.display = "flex";
+    updateProgressUI();
 }
 
 // 4. ABAS E COMPONENTES PRINCIPAIS
@@ -1641,7 +1628,8 @@ function toggleFavoriteRecipe(idx) {
 function swapSingleMeal(index) {
     event.stopPropagation();
     const meal = userState.currentMeals[index];
-    const selectedStyle = document.getElementById("nut-select-style").value;
+    const styleEl = document.getElementById("nut-select-style");
+    const selectedStyle = styleEl ? styleEl.value : "all";
     
     // Filtra opções extras de substituição (Swap DB) ou gera uma alternativa aleatória da categoria
     const categoryTemplates = recipeTemplates[meal.type];
