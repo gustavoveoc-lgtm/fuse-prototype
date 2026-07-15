@@ -237,7 +237,7 @@ function saveStateToStorage() {
 
 // ESTÁGIOS DA TELA
 let currentOnboardingStep = 1;
-const totalOnboardingSteps = 7;
+const totalOnboardingSteps = 8;
 
 // 1. SPLASH SCREEN
 document.addEventListener("DOMContentLoaded", () => {
@@ -266,6 +266,14 @@ function skipSplash() {
 }
 
 function restoreSession() {
+    // Atualiza Fotos de Perfil se houver imagem customizada
+    if (userState.profilePhoto) {
+        const headerAv = document.getElementById("header-avatar");
+        const profileAv = document.getElementById("profile-big-avatar");
+        if (headerAv) headerAv.src = userState.profilePhoto;
+        if (profileAv) profileAv.src = userState.profilePhoto;
+    }
+
     // 1. ATUALIZA TEXTOS E HEADERS DA HOME E PERFIL
     document.getElementById("user-display-name").innerText = userState.name;
     document.getElementById("profile-display-name").innerText = userState.name;
@@ -568,7 +576,6 @@ function updateOnboardingStepUI() {
     document.getElementById("onboarding-fill").style.width = `${percentage}%`;
     document.getElementById("step-number-text").innerText = `Passo ${currentOnboardingStep} de ${totalOnboardingSteps}`;
     
-    // Atualiza cabeçalhos de título
     const titles = {
         1: "Qual a sua idade?",
         2: "Qual sua altura?",
@@ -576,7 +583,8 @@ function updateOnboardingStepUI() {
         4: "Qual seu objetivo principal?",
         5: "Qual seu nível de treino?",
         6: "Pretende treinar quantos dias?",
-        7: "Duração e Local de Treino"
+        7: "Duração e Local de Treino",
+        8: "Sua Foto de Perfil"
     };
     document.getElementById("step-title-text").innerText = titles[currentOnboardingStep];
 
@@ -2498,4 +2506,37 @@ function skipOnboardingToLogin() {
     titleText.innerText = "Faça login para continuar sua jornada";
     btnToggle.innerText = "Criar conta";
     descToggle.innerText = "Ainda não possui assinatura?";
+}
+
+function handleOnboardingAvatarUpload(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const dataUrl = e.target.result;
+            // Atualiza preview na tela de onboarding
+            document.getElementById("onb-avatar-preview").src = dataUrl;
+            // Salva no estado
+            userState.profilePhoto = dataUrl;
+            
+            // Remove destaque dos presets
+            document.querySelectorAll(".onb-preset-avatar").forEach(img => {
+                img.style.borderColor = "transparent";
+            });
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function selectPresetAvatar(src, el) {
+    // Remove destaque dos presets
+    document.querySelectorAll(".onb-preset-avatar").forEach(img => {
+        img.style.borderColor = "transparent";
+    });
+    // Destaca o selecionado
+    el.style.borderColor = "var(--accent-rose)";
+    
+    // Atualiza preview na tela de onboarding
+    document.getElementById("onb-avatar-preview").src = src;
+    // Salva no estado
+    userState.profilePhoto = src;
 }

@@ -227,6 +227,33 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Step 8: Foto de Perfil -->
+                <div class="step-panel" id="step-panel-8">
+                    <p class="step-desc">Adicione uma foto para personalizar o seu perfil e as postagens na comunidade.</p>
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 16px; margin-top: 10px;">
+                        <!-- Avatar Preview Frame -->
+                        <div style="position: relative; width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--accent-rose); overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(232,165,152,0.3);">
+                            <img id="onb-avatar-preview" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=150" style="width:100%; height:100%; object-fit:cover;">
+                        </div>
+                        
+                        <!-- Upload Button -->
+                        <label class="btn-auth-primary" style="cursor: pointer; padding: 8px 16px; font-size: 11px; display: inline-flex; align-items: center; gap: 6px; background: transparent; border: 1px solid var(--accent-rose); color: var(--accent-rose); border-radius: 8px;">
+                            <i data-lucide="camera" style="width: 14px; height: 14px;"></i> Escolher Foto
+                            <input type="file" id="onb-avatar-upload" accept="image/*" style="display: none;" onchange="handleOnboardingAvatarUpload(this)">
+                        </label>
+                        
+                        <!-- Default Avatars Selection -->
+                        <div style="margin-top: 8px; width: 100%;">
+                            <p style="font-size: 9.5px; color: var(--text-secondary); text-transform: uppercase; text-align: center; margin-bottom: 8px;">Ou escolha um avatar padrão:</p>
+                            <div style="display: flex; justify-content: center; gap: 12px;">
+                                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150" class="onb-preset-avatar" style="width: 44px; height: 44px; border-radius: 50%; cursor: pointer; border: 2px solid transparent;" onclick="selectPresetAvatar(this.src, this)">
+                                <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=150" class="onb-preset-avatar" style="width: 44px; height: 44px; border-radius: 50%; cursor: pointer; border: 2px solid transparent;" onclick="selectPresetAvatar(this.src, this)">
+                                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150" class="onb-preset-avatar" style="width: 44px; height: 44px; border-radius: 50%; cursor: pointer; border: 2px solid transparent;" onclick="selectPresetAvatar(this.src, this)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Footer Controls -->
