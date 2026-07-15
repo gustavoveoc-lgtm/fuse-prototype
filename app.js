@@ -127,14 +127,14 @@ const defaultState = {
     place: "casa", // casa, academia
     
     // Status do Perfil
-    xp: 420,
-    levelNum: 8,
-    levelTitle: "Nível 8: Constância",
-    streak: 7,
-    weeklyCheckins: [true, true, true, true, true, true, false],
+    xp: 0,
+    levelNum: 0,
+    levelTitle: "Nível 0: Constância",
+    streak: 0,
+    weeklyCheckins: [false, false, false, false, false, false, false],
     habitsCompleted: [false, false, false, false, false, false],
     habitsCount: 6,
-    completedWorkoutsCount: 14,
+    completedWorkoutsCount: 0,
     streakUpdated: false,
     lastCheckInDate: "",
 
@@ -158,32 +158,44 @@ const defaultState = {
 let usersDB = JSON.parse(localStorage.getItem("fuse_users_db")) || {};
 let currentUserEmail = localStorage.getItem("fuse_current_user_email") || "";
 
+// Migração de Banco de Dados de Teste para resetar dados e aplicar novos padrões 0 dias
+if (!localStorage.getItem("fuse_db_reset_v5")) {
+    usersDB = {};
+    currentUserEmail = "";
+    localStorage.removeItem("fuse_current_user_email");
+    localStorage.setItem("fuse_db_reset_v5", "true");
+}
+
 // Pré-popula usuários padrão de teste para login direto imediato
 if (usersDB["amanda@fuse.com.br"]) {
     delete usersDB["amanda@fuse.com.br"];
 }
-// Pré-popula ou reseta usuários padrão de teste para login direto imediato
-usersDB["duda@fuse.com"] = {
-    password: "Duda123",
-    userState: {
-        ...defaultState,
-        name: "Duda Meister",
-        hasLoggedIn: false
-    }
-};
+// Pré-popula usuários padrão de teste para login direto imediato se não existirem
+if (!usersDB["duda@fuse.com"]) {
+    usersDB["duda@fuse.com"] = {
+        password: "Duda123",
+        userState: {
+            ...defaultState,
+            name: "Duda Meister",
+            hasLoggedIn: false
+        }
+    };
+}
 
 if (usersDB["fernanda@fuse.com.br"]) {
     delete usersDB["fernanda@fuse.com.br"];
 }
 
-usersDB["fernanda@fuse.com"] = {
-    password: "Fer123",
-    userState: {
-        ...defaultState,
-        name: "Fernanda",
-        hasLoggedIn: false
-    }
-};
+if (!usersDB["fernanda@fuse.com"]) {
+    usersDB["fernanda@fuse.com"] = {
+        password: "Fer123",
+        userState: {
+            ...defaultState,
+            name: "Fernanda",
+            hasLoggedIn: false
+        }
+    };
+}
 localStorage.setItem("fuse_users_db", JSON.stringify(usersDB));
 
 let userState = defaultState;
@@ -477,12 +489,6 @@ async function handleAuth(isLoginButton) {
         // Login com sucesso
         currentUserEmail = emailVal;
         userState = account.userState;
-        
-        // Se for uma das contas de teste, força a reiniciar no onboarding para facilitar os testes deles
-        if (emailVal === "duda@fuse.com" || emailVal === "fernanda@fuse.com") {
-            userState.hasLoggedIn = false;
-        }
-        
         saveStateToStorage();
         
         document.getElementById("auth-screen").classList.remove("active");
