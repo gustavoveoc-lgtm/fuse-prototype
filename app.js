@@ -162,29 +162,28 @@ let currentUserEmail = localStorage.getItem("fuse_current_user_email") || "";
 if (usersDB["amanda@fuse.com.br"]) {
     delete usersDB["amanda@fuse.com.br"];
 }
-if (!usersDB["duda@fuse.com"]) {
-    usersDB["duda@fuse.com"] = {
-        password: "Duda123",
-        userState: {
-            ...defaultState,
-            name: "Duda Meister",
-            hasLoggedIn: true
-        }
-    };
-}
+// Pré-popula ou reseta usuários padrão de teste para login direto imediato
+usersDB["duda@fuse.com"] = {
+    password: "Duda123",
+    userState: {
+        ...defaultState,
+        name: "Duda Meister",
+        hasLoggedIn: false
+    }
+};
+
 if (usersDB["fernanda@fuse.com.br"]) {
     delete usersDB["fernanda@fuse.com.br"];
 }
-if (!usersDB["fernanda@fuse.com"]) {
-    usersDB["fernanda@fuse.com"] = {
-        password: "Fer123",
-        userState: {
-            ...defaultState,
-            name: "Fernanda",
-            hasLoggedIn: true
-        }
-    };
-}
+
+usersDB["fernanda@fuse.com"] = {
+    password: "Fer123",
+    userState: {
+        ...defaultState,
+        name: "Fernanda",
+        hasLoggedIn: false
+    }
+};
 localStorage.setItem("fuse_users_db", JSON.stringify(usersDB));
 
 let userState = defaultState;
@@ -402,10 +401,11 @@ async function handleAuth(isLoginButton) {
             return;
         }
         
-        // Registra nova conta com dados confirmados e mantém respostas do onboarding
+        // Registra nova conta com dados confirmados
         currentUserEmail = emailVal;
+        userState = JSON.parse(JSON.stringify(defaultState));
         userState.name = nameVal || verify.customerName;
-        userState.hasLoggedIn = true;
+        userState.hasLoggedIn = false;
         
         usersDB[currentUserEmail] = {
             password: passVal,
@@ -416,7 +416,9 @@ async function handleAuth(isLoginButton) {
         alert(`🎉 Assinatura premium confirmada via API!\n\nBem-vinda ao FUSE, ${userState.name}!`);
         
         document.getElementById("auth-screen").classList.remove("active");
-        restoreSession();
+        document.getElementById("onboarding-screen").classList.add("active");
+        currentOnboardingStep = 1;
+        updateOnboardingStepUI();
         
     } else {
         const emailVal = document.getElementById("login-email").value.trim().toLowerCase();
