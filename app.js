@@ -172,9 +172,12 @@ if (!usersDB["duda@fuse.com"]) {
         }
     };
 }
-if (!usersDB["fernanda@fuse.com.br"]) {
-    usersDB["fernanda@fuse.com.br"] = {
-        password: "Fernanda123",
+if (usersDB["fernanda@fuse.com.br"]) {
+    delete usersDB["fernanda@fuse.com.br"];
+}
+if (!usersDB["fernanda@fuse.com"]) {
+    usersDB["fernanda@fuse.com"] = {
+        password: "Fer123",
         userState: {
             ...defaultState,
             name: "Fernanda",
