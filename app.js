@@ -158,8 +158,8 @@ const defaultState = {
 let usersDB = JSON.parse(localStorage.getItem("fuse_users_db")) || {};
 let currentUserEmail = localStorage.getItem("fuse_current_user_email") || "";
 
-// Pré-popula usuário padrão de teste para login direto imediato
-if (Object.keys(usersDB).length === 0) {
+// Pré-popula usuários padrão de teste para login direto imediato
+if (!usersDB["amanda@fuse.com.br"]) {
     usersDB["amanda@fuse.com.br"] = {
         password: "senha123",
         userState: {
@@ -168,8 +168,18 @@ if (Object.keys(usersDB).length === 0) {
             hasLoggedIn: true
         }
     };
-    localStorage.setItem("fuse_users_db", JSON.stringify(usersDB));
 }
+if (!usersDB["duda@fuse.com"]) {
+    usersDB["duda@fuse.com"] = {
+        password: "Duda123",
+        userState: {
+            ...defaultState,
+            name: "Duda Meister",
+            hasLoggedIn: true
+        }
+    };
+}
+localStorage.setItem("fuse_users_db", JSON.stringify(usersDB));
 
 let userState = defaultState;
 
