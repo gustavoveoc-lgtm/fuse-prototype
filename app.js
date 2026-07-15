@@ -678,9 +678,8 @@ function finishOnboarding() {
         usersDB[currentUserEmail].userState = userState;
     }
     
-    renderChallengeUI();
-    renderCommunityFeed();
     saveStateToStorage();
+    restoreSession(); // Atualiza avatares, textos, dieta, treinos e feeds dinamicamente
 
     document.getElementById("onboarding-screen").classList.remove("active");
     document.getElementById("app-screen").style.display = "flex";
