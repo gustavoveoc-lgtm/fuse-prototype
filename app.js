@@ -237,16 +237,38 @@ if (!userState.lastCheckInDate) {
 }
 
 function saveStateToStorage() {
-    if (currentUserEmail) {
-        if (!usersDB[currentUserEmail]) {
-            usersDB[currentUserEmail] = {};
+    try {
+        if (currentUserEmail) {
+            if (!usersDB[currentUserEmail]) {
+                usersDB[currentUserEmail] = {};
+            }
+            usersDB[currentUserEmail].userState = userState;
+            localStorage.setItem("fuse_users_db", JSON.stringify(usersDB));
+            localStorage.setItem("fuse_current_user_email", currentUserEmail);
         }
-        usersDB[currentUserEmail].userState = userState;
-        localStorage.setItem("fuse_users_db", JSON.stringify(usersDB));
-        localStorage.setItem("fuse_current_user_email", currentUserEmail);
+        // Mantém backup do estado atual
+        localStorage.setItem("fuse_user_state", JSON.stringify(userState));
+    } catch (e) {
+        console.warn("Storage quota exceeded or error occurred while saving state:", e);
+        // Fallback: se excedeu cota, limpa a foto de perfil do estado para caber no storage
+        if (e.name === "QuotaExceededError" || e.code === 22) {
+            if (userState.profilePhoto && userState.profilePhoto.startsWith("data:")) {
+                alert("Sua foto de perfil é muito grande e excedeu o limite do navegador. Para continuar, salvamos seus dados usando um avatar padrão mais leve!");
+                userState.profilePhoto = "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=150";
+                
+                // Tenta salvar novamente após limpar a foto pesada
+                try {
+                    if (currentUserEmail) {
+                        usersDB[currentUserEmail].userState = userState;
+                        localStorage.setItem("fuse_users_db", JSON.stringify(usersDB));
+                    }
+                    localStorage.setItem("fuse_user_state", JSON.stringify(userState));
+                } catch (retryErr) {
+                    console.error("Failed to save even after clearing photo:", retryErr);
+                }
+            }
+        }
     }
-    // Mantém backup do estado atual
-    localStorage.setItem("fuse_user_state", JSON.stringify(userState));
 }
 
 // ESTÁGIOS DA TELA
@@ -615,53 +637,62 @@ function recalculateUserNutritionAndMacros() {
 }
 
 function finishOnboarding() {
-    // Inicializa peso de referência
-    userState.initialWeight = userState.weight;
+    try {
+        // Inicializa peso de referência
+        userState.initialWeight = userState.weight;
 
-    // 1. CÁLCULO METABÓLICO (Mifflin-St Jeor)
-    recalculateUserNutritionAndMacros();
+        // 1. CÁLCULO METABÓLICO (Mifflin-St Jeor)
+        recalculateUserNutritionAndMacros();
 
-    // 2. CONFIGURA OS SELETORES DE PLANO ALIMENTAR CONFORME ONBOARDING
-    const goalEl = document.getElementById("nut-select-goal");
-    if (goalEl) {
-        goalEl.value = (userState.goal === "ganhar-peso") ? "ganhar-peso" : userState.goal;
+        // 2. CONFIGURA OS SELETORES DE PLANO ALIMENTAR CONFORME ONBOARDING
+        const goalEl = document.getElementById("nut-select-goal");
+        if (goalEl) {
+            goalEl.value = (userState.goal === "ganhar-peso") ? "ganhar-peso" : userState.goal;
+        }
+        const styleEl = document.getElementById("nut-select-style");
+        if (styleEl) {
+            styleEl.value = "all";
+        }
+        changeNutritionConfig();
+
+        // 3. POPULA PORTAL DE TREINOS COM FILTRO DE EQUIPAMENTO E TEMPO
+        populateWorkoutsGrid();
+
+        // 4. ATUALIZA TEXTOS E HEADERS DA HOME E PERFIL
+        document.getElementById("user-display-name").innerText = userState.name;
+        document.getElementById("profile-display-name").innerText = userState.name;
+        document.getElementById("home-workout-chk-desc").innerText = `Treinar na ${userState.place} (${userState.idealDuration} min)`;
+        
+        // Atualiza Banners Rápidos
+        const defaultWorkout = workoutsDB.find(w => w.place === userState.place) || workoutsDB[0];
+        document.getElementById("home-workout-btn-sub").innerText = `${defaultWorkout.title} • ${defaultWorkout.duration} min`;
+        document.getElementById("home-diet-btn-sub").innerText = `Meta de Kcal do dia: ${userState.targetCalories}`;
+
+        // Atualiza Dados do Perfil
+        document.getElementById("prof-initial-weight").innerText = `${userState.initialWeight} kg`;
+        document.getElementById("prof-current-weight").innerText = `${userState.weight} kg`;
+
+        // Transição da Tela e Salvamento de Sessão
+        userState.hasLoggedIn = true;
+        
+        if (currentUserEmail && usersDB[currentUserEmail]) {
+            usersDB[currentUserEmail].userState = userState;
+        }
+        
+        saveStateToStorage();
+        restoreSession(); // Atualiza avatares, textos, dieta, treinos e feeds dinamicamente
+
+        document.getElementById("onboarding-screen").classList.remove("active");
+        document.getElementById("app-screen").style.display = "flex";
+        updateProgressUI();
+    } catch (err) {
+        console.error("Erro ao finalizar onboarding:", err);
+        // Garante que o usuário consiga acessar o app mesmo se houver erro menor
+        userState.hasLoggedIn = true;
+        saveStateToStorage();
+        document.getElementById("onboarding-screen").classList.remove("active");
+        document.getElementById("app-screen").style.display = "flex";
     }
-    const styleEl = document.getElementById("nut-select-style");
-    if (styleEl) {
-        styleEl.value = "all";
-    }
-    changeNutritionConfig();
-
-    // 3. POPULA PORTAL DE TREINOS COM FILTRO DE EQUIPAMENTO E TEMPO
-    populateWorkoutsGrid();
-
-    // 4. ATUALIZA TEXTOS E HEADERS DA HOME E PERFIL
-    document.getElementById("user-display-name").innerText = userState.name;
-    document.getElementById("profile-display-name").innerText = userState.name;
-    document.getElementById("home-workout-chk-desc").innerText = `Treinar na ${userState.place} (${userState.idealDuration} min)`;
-    
-    // Atualiza Banners Rápidos
-    const defaultWorkout = workoutsDB.find(w => w.place === userState.place) || workoutsDB[0];
-    document.getElementById("home-workout-btn-sub").innerText = `${defaultWorkout.title} • ${defaultWorkout.duration} min`;
-    document.getElementById("home-diet-btn-sub").innerText = `Meta de Kcal do dia: ${userState.targetCalories}`;
-
-    // Atualiza Dados do Perfil
-    document.getElementById("prof-initial-weight").innerText = `${userState.initialWeight} kg`;
-    document.getElementById("prof-current-weight").innerText = `${userState.weight} kg`;
-
-    // Transição da Tela e Salvamento de Sessão
-    userState.hasLoggedIn = true;
-    
-    if (currentUserEmail && usersDB[currentUserEmail]) {
-        usersDB[currentUserEmail].userState = userState;
-    }
-    
-    saveStateToStorage();
-    restoreSession(); // Atualiza avatares, textos, dieta, treinos e feeds dinamicamente
-
-    document.getElementById("onboarding-screen").classList.remove("active");
-    document.getElementById("app-screen").style.display = "flex";
-    updateProgressUI();
 }
 
 // 4. ABAS E COMPONENTES PRINCIPAIS
