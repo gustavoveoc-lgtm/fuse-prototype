@@ -2248,6 +2248,12 @@ function openEditProfileModal() {
     document.getElementById("edit-prof-place").value = userState.place;
     document.getElementById("edit-prof-level").value = userState.level;
     
+    // Mostra a foto atual no preview
+    const previewEl = document.getElementById("edit-prof-avatar-preview");
+    if (previewEl) {
+        previewEl.src = userState.profilePhoto || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=150";
+    }
+    
     openModal("modal-edit-profile");
 }
 
@@ -2545,22 +2551,67 @@ function skipOnboardingToLogin() {
     descToggle.innerText = "Primeiro acesso?";
 }
 
+function compressAndSaveAvatar(file, previewId, callback) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+            const canvas = document.createElement("canvas");
+            const maxDim = 120; // 120x120 é perfeito para avatar e ocupa ~3-4KB!
+            let width = img.width;
+            let height = img.height;
+            
+            if (width > height) {
+                if (width > maxDim) {
+                    height = Math.round(height * maxDim / width);
+                    width = maxDim;
+                }
+            } else {
+                if (height > maxDim) {
+                    width = Math.round(width * maxDim / height);
+                    height = maxDim;
+                }
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // Converte para JPEG comprimido (alta compressão, qualidade 0.7)
+            const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.7);
+            
+            // Atualiza preview no DOM
+            const previewEl = document.getElementById(previewId);
+            if (previewEl) previewEl.src = compressedDataUrl;
+            
+            // Executa callback passando o data URL comprimido
+            if (callback) callback(compressedDataUrl);
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
 function handleOnboardingAvatarUpload(input) {
     if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const dataUrl = e.target.result;
-            // Atualiza preview na tela de onboarding
-            document.getElementById("onb-avatar-preview").src = dataUrl;
-            // Salva no estado
-            userState.profilePhoto = dataUrl;
+        compressAndSaveAvatar(input.files[0], "onb-avatar-preview", function(compressedDataUrl) {
+            userState.profilePhoto = compressedDataUrl;
             
             // Remove destaque dos presets
             document.querySelectorAll(".onb-preset-avatar").forEach(img => {
                 img.style.borderColor = "transparent";
             });
-        };
-        reader.readAsDataURL(input.files[0]);
+        });
+    }
+}
+
+function handleEditProfileAvatarUpload(input) {
+    if (input.files && input.files[0]) {
+        compressAndSaveAvatar(input.files[0], "edit-prof-avatar-preview", function(compressedDataUrl) {
+            userState.profilePhoto = compressedDataUrl;
+            saveStateToStorage();
+        });
     }
 }
 
