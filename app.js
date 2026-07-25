@@ -147,6 +147,7 @@ const defaultState = {
     // Refeições Ativas do Plano
     currentMeals: [],
     hasLoggedIn: false,
+    anamneseConcluida: false,
     
     // Configurações do Desafio Core R$ 19,99
     challengeSubscribed: false,
@@ -177,7 +178,8 @@ if (!usersDB["duda@fuse.com"]) {
         userState: {
             ...defaultState,
             name: "Duda Meister",
-            hasLoggedIn: false
+            hasLoggedIn: false,
+            anamneseConcluida: false
         }
     };
 }
@@ -192,7 +194,8 @@ if (!usersDB["fernanda@fuse.com"]) {
         userState: {
             ...defaultState,
             name: "Fernanda",
-            hasLoggedIn: false
+            hasLoggedIn: false,
+            anamneseConcluida: false
         }
     };
 }
@@ -294,7 +297,7 @@ function skipSplash() {
     if (checkCaktoUrlParams()) {
         return;
     }
-    if (userState.hasLoggedIn) {
+    if (userState.hasLoggedIn || userState.anamneseConcluida) {
         restoreSession();
     } else {
         document.getElementById("auth-screen").classList.add("active");
@@ -359,6 +362,8 @@ function restoreSession() {
 
     // Mostra o container principal
     document.getElementById("app-screen").style.display = "flex";
+    document.getElementById("onboarding-screen").classList.remove("active");
+    document.getElementById("auth-screen").classList.remove("active");
     
     updateProgressUI();
 }
@@ -488,7 +493,7 @@ async function handleAuth(isLoginButton) {
     
     document.getElementById("auth-screen").classList.remove("active");
     
-    if (userState.hasLoggedIn) {
+    if (userState.hasLoggedIn || userState.anamneseConcluida) {
         restoreSession();
     } else {
         document.getElementById("onboarding-screen").classList.add("active");
@@ -674,6 +679,7 @@ function finishOnboarding() {
 
         // Transição da Tela e Salvamento de Sessão
         userState.hasLoggedIn = true;
+        userState.anamneseConcluida = true;
         
         if (currentUserEmail && usersDB[currentUserEmail]) {
             usersDB[currentUserEmail].userState = userState;
@@ -689,6 +695,7 @@ function finishOnboarding() {
         console.error("Erro ao finalizar onboarding:", err);
         // Garante que o usuário consiga acessar o app mesmo se houver erro menor
         userState.hasLoggedIn = true;
+        userState.anamneseConcluida = true;
         saveStateToStorage();
         document.getElementById("onboarding-screen").classList.remove("active");
         document.getElementById("app-screen").style.display = "flex";
