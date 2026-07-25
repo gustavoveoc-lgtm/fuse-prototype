@@ -404,11 +404,11 @@
                 </div>
 
                 <!-- Event Reminder Banner -->
-                <div class="section-card event-reminder-card" onclick="switchTab('events')">
+                <div class="section-card event-reminder-card" onclick="switchTab('events')" style="background: linear-gradient(135deg, rgba(232, 165, 152, 0.15), rgba(18, 18, 18, 0.5)); border: 1px solid rgba(232, 165, 152, 0.25);">
                     <div class="event-reminder-content">
-                        <span class="event-live-indicator"><span class="live-dot" style="background:#5da3fa; box-shadow:none;"></span> DIA 24 TEM CALL</span>
-                        <h3 class="event-title">Call Semanal Devocional</h3>
-                        <p class="event-meta">Com Duda Meister (Fundadora) • 19:30</p>
+                        <span class="event-live-indicator"><span class="live-dot" style="background:var(--accent-rose); box-shadow: 0 0 10px rgba(232, 165, 152, 0.4);"></span> DIA 31 TEM LIVE</span>
+                        <h3 class="event-title">Comparações nas redes sociais</h3>
+                        <p class="event-meta">Com Manuela Freitas (Psicóloga) • 19:30</p>
                     </div>
                     <i data-lucide="chevron-right" class="chevron-arrow"></i>
                 </div>
@@ -1061,8 +1061,9 @@
                 </div>
 
                 <div class="events-list">
-                    <div class="section-card live-event-active">
-                        <span class="live-tag" style="background:#5da3fa;">Dia 24 às 19:30</span>
+                    <!-- Event 1: Call Semanal Devocional (Completed) -->
+                    <div class="section-card live-event-active" style="margin-bottom: 12px; opacity: 0.85; background: linear-gradient(135deg, rgba(255,255,255,0.02), rgba(93,163,250,0.03)); border: 1px solid rgba(255,255,255,0.05);">
+                        <span class="live-tag" style="background:#888;">Dia 22 (Encerrada)</span>
                         <h3 class="event-title">Call Semanal Devocional</h3>
                         <p class="event-desc">Mentoria de direcionamento, fé e mentalidade focada para o seu Desafio com a fundadora do FUSE.</p>
                         <div class="event-expert-row">
@@ -1072,7 +1073,22 @@
                                 <span class="expert-title">Fundadora do FUSE</span>
                             </div>
                         </div>
-                        <button class="btn-live-join" style="background:#5da3fa;" onclick="alert('A sala de transmissão ao vivo da Call Semanal Devocional abrirá em breve (Dia 22 às 19:30). Te esperamos lá!')">Agendada (Dia 22 às 19:30)</button>
+                        <button class="btn-live-join" style="background:#555;" onclick="alert('Esta call já foi encerrada. O replay estará disponível em breve nos webinars anteriores!')">Finalizada (Dia 22)</button>
+                    </div>
+
+                    <!-- Event 2: Comparações nas redes sociais (Upcoming) -->
+                    <div class="section-card live-event-active" style="margin-bottom: 24px; background: linear-gradient(135deg, rgba(232, 165, 152, 0.15), rgba(18, 18, 18, 0.5)); border: 1px solid rgba(232, 165, 152, 0.25);">
+                        <span class="live-tag" style="background:var(--accent-rose);">Dia 31 às 19:30</span>
+                        <h3 class="event-title">Comparações nas redes sociais</h3>
+                        <p class="event-desc">Uma conversa profunda sobre como blindar sua mente contra as comparações virtuais e fortalecer sua autoestima no ambiente digital.</p>
+                        <div class="event-expert-row">
+                            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=150" alt="Especialista" class="expert-avatar">
+                            <div>
+                                <span class="expert-name">Manuela Freitas</span>
+                                <span class="expert-title">Psicóloga Clínica</span>
+                            </div>
+                        </div>
+                        <button class="btn-live-join" style="background:var(--accent-rose);" onclick="alert('A sala de transmissão ao vivo da Call com Manuela Freitas abrirá em breve (Dia 31 às 19:30). Te esperamos lá!')">Agendada (Dia 31 às 19:30)</button>
                     </div>
 
                     <h3 class="section-subtitle">Webinars Anteriores (Replay)</h3>
