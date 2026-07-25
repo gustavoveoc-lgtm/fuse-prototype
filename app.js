@@ -365,7 +365,26 @@ function restoreSession() {
     document.getElementById("onboarding-screen").classList.remove("active");
     document.getElementById("auth-screen").classList.remove("active");
     
+    populateDudaWelcomeMessage();
     updateProgressUI();
+}
+
+function populateDudaWelcomeMessage() {
+    const avatarEl = document.getElementById("duda-welcome-avatar");
+    const nameEl = document.getElementById("duda-welcome-name");
+    
+    if (avatarEl && nameEl) {
+        const dudaAccount = usersDB["duda@fuse.com"];
+        if (dudaAccount && dudaAccount.userState) {
+            // Se Duda Meister tiver uma foto de perfil cadastrada, usa ela. Caso contrário, usa a foto padrão dela do Unsplash.
+            avatarEl.src = dudaAccount.userState.profilePhoto || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150";
+            nameEl.innerText = dudaAccount.userState.name || "Duda Meister";
+        } else {
+            // Fallback se não encontrar a conta no banco de dados local
+            avatarEl.src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150";
+            nameEl.innerText = "Duda Meister";
+        }
+    }
 }
 
 // 2. TELA DE AUTENTICAÇÃO (LOGIN & REGISTRO)
