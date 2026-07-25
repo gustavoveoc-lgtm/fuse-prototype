@@ -178,6 +178,7 @@ if (!usersDB["duda@fuse.com"]) {
         userState: {
             ...defaultState,
             name: "Duda Meister",
+            profilePhoto: "assets/img/duda-avatar.jpg",
             hasLoggedIn: false,
             anamneseConcluida: false
         }
@@ -198,6 +199,10 @@ if (!usersDB["fernanda@fuse.com"]) {
             anamneseConcluida: false
         }
     };
+}
+if (usersDB["duda@fuse.com"]) {
+    usersDB["duda@fuse.com"].userState.profilePhoto = "assets/img/duda-avatar.jpg";
+    usersDB["duda@fuse.com"].userState.name = "Duda Meister";
 }
 localStorage.setItem("fuse_users_db", JSON.stringify(usersDB));
 
