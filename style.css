@@ -3096,3 +3096,94 @@ body {
     color: var(--accent-rose);
     margin-right: 4px;
 }
+
+/* --- DAILY HISTORY CARD & ITEMS --- */
+.daily-history-card {
+    background: var(--bg-secondary);
+    border: var(--border-glass);
+}
+
+.history-item-card {
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.history-item-card:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(232, 165, 152, 0.2);
+    transform: translateY(-2px);
+}
+
+.history-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.history-item-date {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.history-item-ratio {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent-rose);
+    background: rgba(232, 165, 152, 0.1);
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+.history-item-obs {
+    font-size: 11.5px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+}
+
+/* History detail modal checkmark items */
+.history-detail-task-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    font-size: 12.5px;
+}
+
+.history-detail-task-item.completed {
+    background: rgba(156, 227, 179, 0.05);
+    border-color: rgba(156, 227, 179, 0.15);
+}
+
+.history-detail-task-item .task-check-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 11px;
+}
+
+.history-detail-task-item.completed .task-check-icon {
+    background: var(--color-success);
+    color: #120A0E;
+}
+
+.history-detail-task-item.uncompleted .task-check-icon {
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.2);
+}

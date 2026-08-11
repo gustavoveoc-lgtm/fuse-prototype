@@ -383,6 +383,19 @@
                             <span class="xp-tag">+10 XP</span>
                         </div>
                     </div>
+                    
+                    <!-- Daily Check-in Form and Observations -->
+                    <div class="daily-checkin-form" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 16px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <label for="daily-observations" style="font-size: 11px; color: var(--text-secondary); margin: 0; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Observações do Dia:</label>
+                            <div id="auto-save-status"><span style="color: var(--text-secondary); font-size: 10px;">Sincronizado</span></div>
+                        </div>
+                        <textarea id="daily-observations" placeholder="Escreva aqui suas observações, sentimentos ou conquistas de hoje..." style="width: 100%; min-height: 70px; padding: 10px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; color: #fff; font-size: 12px; line-height: 1.5; resize: vertical; outline: none; margin-bottom: 12px; transition: border-color 0.2s;" onfocus="this.style.borderColor='var(--accent-rose)'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'"></textarea>
+                        
+                        <button id="btn-save-daily-record" onclick="saveDailyRecordAction()" class="btn-modal-start" style="width: 100%; margin-top: 0; padding: 10px; font-size: 12px; font-weight: 700; background: var(--accent-rose); border-color: var(--accent-rose); display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <i data-lucide="save" style="width: 14px; height: 14px;"></i> Sincronizar Registro
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Suggested Actions Grid -->
@@ -720,9 +733,9 @@
                             </p>
                             <div class="challenge-meta-grid">
                                 <div class="meta-item"><strong>Objetivo:</strong> <span>Foco e Constância</span></div>
-                                <div class="meta-item"><strong>Início:</strong> <span>03 de Agosto, 2026</span></div>
-                                <div class="meta-item"><strong>Encerramento:</strong> <span>12 de Agosto, 2026</span></div>
-                                <div class="meta-item"><strong>Dias Restantes:</strong> <span>28 dias para largada</span></div>
+                                <div class="meta-item"><strong>Início:</strong> <span>17 de Agosto, 2026</span></div>
+                                <div class="meta-item"><strong>Encerramento:</strong> <span>26 de Agosto, 2026</span></div>
+                                <div class="meta-item"><strong>Dias Restantes:</strong> <span>6 dias para largada</span></div>
                             </div>
                         </div>
                     </div>
@@ -796,8 +809,8 @@
                         <div class="prize-rules-box mt-3" style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px;">
                             <h4 style="font-size: 11px; font-weight: 700; color: var(--accent-rose); margin-bottom: 6px;">Como concorrer e vencer:</h4>
                             <p style="font-size: 10.5px; color: var(--text-secondary); margin-bottom: 4px;"><strong>Critério para participar:</strong> Inscrição no valor de R$ 19,99 e conclusão de 100% das tarefas diárias do desafio.</p>
-                            <p style="font-size: 10.5px; color: var(--text-secondary); margin-bottom: 4px;"><strong>Critério para vencer:</strong> Sorteio oficial auditado entre todas as participantes que finalizarem os 21 dias com 100% de aproveitamento.</p>
-                            <p style="font-size: 10.5px; color: var(--text-secondary);"><strong>Resultado:</strong> Anúncio no feed do Círculo em 01 de Agosto de 2026.</p>
+                            <p style="font-size: 10.5px; color: var(--text-secondary); margin-bottom: 4px;"><strong>Critério para vencer:</strong> Sorteio oficial auditado entre todas as participantes que finalizarem os 10 dias com 100% de aproveitamento.</p>
+                            <p style="font-size: 10.5px; color: var(--text-secondary);"><strong>Resultado:</strong> Anúncio no feed do Círculo em 27 de Agosto de 2026.</p>
                         </div>
                     </div>
 
@@ -1018,6 +1031,21 @@
                             <span class="weight-lbl">Peso Atual</span>
                             <button class="btn-update-weight" onclick="updateWeightModal()">Atualizar</button>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Section: Histórico de Hábitos -->
+                <div class="section-card daily-history-card" style="margin-top: 16px;">
+                    <h3 class="card-title">📅 Histórico de Hábitos</h3>
+                    <p class="card-subtitle" style="margin-bottom: 14px;">Consulte seus registros diários anteriores.</p>
+                    
+                    <div id="daily-history-list" class="daily-history-list" style="display: flex; flex-direction: column; gap: 10px;">
+                        <!-- Gerado dinamicamente -->
+                    </div>
+                    <div id="daily-history-empty" class="empty-state" style="padding: 20px 0; text-align: center;">
+                        <div class="empty-icon" style="font-size: 24px; margin-bottom: 8px;">📅</div>
+                        <h4 style="font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px;">Nenhum registro no histórico</h4>
+                        <p style="font-size: 11px; color: var(--text-secondary); margin: 0;">Comece a salvar o seu dia no painel principal.</p>
                     </div>
                 </div>
 
@@ -1542,6 +1570,29 @@
 
             <button class="btn-modal-start mt-2" style="width:100%;" onclick="saveEditProfileChanges()">Salvar Alterações</button>
             <button class="btn-modal-cancel" style="width:100%; margin-top:8px;" onclick="closeModal('modal-edit-profile')">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- Modal 7: Detalhes do Registro do Histórico (BottomSheet) -->
+    <div class="modal-backdrop" id="modal-history-detail" style="z-index: 120;">
+        <div class="modal-content bottom-sheet" style="max-height: 85%;">
+            <div class="drag-handle"></div>
+            <h2 class="modal-title" style="font-size: 18px; margin-bottom: 4px;">Registro de Hábitos</h2>
+            <p class="modal-text" id="history-detail-date" style="font-size: 11px; margin-bottom: 16px; color: var(--accent-rose); font-weight: 600;">Data e horário do registro</p>
+            
+            <div class="scrollable-sheet-content" style="padding-bottom: 20px; text-align: left; overflow-y: auto;">
+                <h3 class="sheet-subheading" style="font-size: 13px; font-weight: 700; margin-bottom: 10px; color: #fff;">📋 Status dos Hábitos</h3>
+                <div id="history-detail-tasks" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;">
+                    <!-- Lista de hábitos com checkmarks -->
+                </div>
+                
+                <h3 class="sheet-subheading" style="font-size: 13px; font-weight: 700; margin-bottom: 10px; color: #fff;">📝 Observações</h3>
+                <div id="history-detail-obs-box" style="padding: 12px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; font-size: 12.5px; color: #e0e0e0; line-height: 1.5; min-height: 50px; white-space: pre-wrap;">
+                    <!-- Observações -->
+                </div>
+            </div>
+            
+            <button class="btn-modal-cancel" onclick="closeModal('modal-history-detail')" style="width: 100%; margin-top: 14px;">Fechar Histórico</button>
         </div>
     </div>
 

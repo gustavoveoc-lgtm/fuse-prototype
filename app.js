@@ -152,7 +152,8 @@ const defaultState = {
     // Configurações do Desafio Core R$ 19,99
     challengeSubscribed: false,
     challengeTasksCompleted: [false, false, false, false, false, false],
-    challengePoints: 210
+    challengePoints: 210,
+    dailyHistory: []
 };
 
 // Banco de Dados de Usuárias Cadastradas (Simula banco de dados na nuvem)
@@ -234,15 +235,26 @@ if (userState.lastPostPointsDate === undefined) {
     userState.lastPostPointsDate = "";
 }
 
-// Lógica de reinicialização diária automática à meia-noite
+// Lógica de reinicialização diária automática e carregamento de registros
 const todayStr = new Date().toISOString().slice(0, 10);
-if (!userState.lastCheckInDate) {
-    userState.lastCheckInDate = todayStr;
-} else if (userState.lastCheckInDate !== todayStr) {
-    userState.habitsCompleted = [false, false, false, false, false, false];
-    userState.lastCheckInDate = todayStr;
-    userState.streakUpdated = false;
+if (!userState.dailyHistory) {
+    userState.dailyHistory = [];
 }
+const existingTodayRecord = userState.dailyHistory.find(r => r.date === todayStr);
+if (existingTodayRecord) {
+    // Restaura o registro do dia atual
+    userState.habitsCompleted = [...existingTodayRecord.habitsCompleted];
+    userState.lastCheckInDate = todayStr;
+} else {
+    if (!userState.lastCheckInDate) {
+        userState.lastCheckInDate = todayStr;
+    } else if (userState.lastCheckInDate !== todayStr) {
+        userState.habitsCompleted = [false, false, false, false, false, false];
+        userState.lastCheckInDate = todayStr;
+        userState.streakUpdated = false;
+    }
+}
+
 
 function saveStateToStorage() {
     try {
@@ -372,6 +384,18 @@ function restoreSession() {
     
     populateDudaWelcomeMessage();
     updateProgressUI();
+
+    // Restaura observações do dia atual se existirem
+    const obsTextarea = document.getElementById("daily-observations");
+    if (obsTextarea) {
+        const todayStr = new Date().toISOString().slice(0, 10);
+        if (!userState.dailyHistory) userState.dailyHistory = [];
+        const existingToday = userState.dailyHistory.find(r => r.date === todayStr);
+        obsTextarea.value = existingToday ? (existingToday.observations || "") : "";
+    }
+
+    // Renderiza a lista de histórico de hábitos no perfil
+    renderDailyHistoryList();
 }
 
 function populateDudaWelcomeMessage() {
@@ -761,6 +785,9 @@ function toggleHabit(index) {
     }
     
     updateProgressUI();
+    
+    // Auto-salvamento imediato ao alterar hábitos
+    autoSaveDailyRecord();
     
     const completedCount = userState.habitsCompleted.filter(h => h).length;
     if (completedCount === userState.habitsCount) {
@@ -2735,3 +2762,266 @@ function createFirstAccessPassword() {
     currentOnboardingStep = 1;
     updateOnboardingStepUI();
 }
+
+// --- SISTEMA DE HISTÓRICO DE HÁBITOS E RITUAL DIÁRIO ---
+
+function autoSaveDailyRecord() {
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const obsTextarea = document.getElementById("daily-observations");
+    const obsValue = obsTextarea ? obsTextarea.value.trim() : "";
+    
+    if (!userState.dailyHistory) {
+        userState.dailyHistory = [];
+    }
+    
+    const existingIndex = userState.dailyHistory.findIndex(r => r.date === todayStr);
+    const timestampStr = new Date().toLocaleString('pt-BR');
+    
+    const record = {
+        id: todayStr,
+        date: todayStr,
+        timestamp: timestampStr,
+        habitsCompleted: [...userState.habitsCompleted],
+        observations: obsValue
+    };
+    
+    if (existingIndex !== -1) {
+        // Preserva o timestamp original de criação para manter o horário de criação do registro original
+        record.timestamp = userState.dailyHistory[existingIndex].timestamp || timestampStr;
+        userState.dailyHistory[existingIndex] = record;
+    } else {
+        userState.dailyHistory.push(record);
+    }
+    
+    // Salva no banco local
+    if (currentUserEmail && usersDB[currentUserEmail]) {
+        usersDB[currentUserEmail].userState = userState;
+    }
+    saveStateToStorage();
+    
+    // Renderiza a lista atualizada no perfil
+    renderDailyHistoryList();
+    
+    // Atualiza status de auto-salvamento no topo do formulário
+    const statusEl = document.getElementById("auto-save-status");
+    if (statusEl) {
+        statusEl.innerHTML = `<span style="color: var(--color-success); font-size: 10px; font-weight: 600; display: flex; align-items: center; gap: 4px;">🟢 Salvo</span>`;
+        setTimeout(() => {
+            if (statusEl.innerText.includes("Salvo")) {
+                statusEl.innerHTML = `<span style="color: var(--text-secondary); font-size: 10px;">Sincronizado</span>`;
+            }
+        }, 1500);
+    }
+}
+
+function saveDailyRecordAction() {
+    autoSaveDailyRecord();
+    const timestampStr = new Date().toLocaleString('pt-BR');
+    alert(`✨ Registro diário sincronizado e salvo no banco de dados com sucesso!\nHorário: ${timestampStr}`);
+}
+
+function renderDailyHistoryList() {
+    const listEl = document.getElementById("daily-history-list");
+    const emptyEl = document.getElementById("daily-history-empty");
+    if (!listEl || !emptyEl) return;
+    
+    listEl.innerHTML = "";
+    
+    if (!userState.dailyHistory) {
+        userState.dailyHistory = [];
+    }
+    
+    if (userState.dailyHistory.length === 0) {
+        emptyEl.style.display = "block";
+        return;
+    }
+    
+    emptyEl.style.display = "none";
+    
+    // Ordena do mais recente para o mais antigo (ordem cronológica decrescente)
+    const sortedHistory = [...userState.dailyHistory].sort((a, b) => b.date.localeCompare(a.date));
+    
+    // Agrupa em: Hoje, Ontem, Dias anteriores
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().slice(0, 10);
+    
+    const groupToday = [];
+    const groupYesterday = [];
+    const groupOlder = [];
+    
+    sortedHistory.forEach(record => {
+        if (record.date === todayStr) {
+            groupToday.push(record);
+        } else if (record.date === yesterdayStr) {
+            groupYesterday.push(record);
+        } else {
+            groupOlder.push(record);
+        }
+    });
+    
+    const renderGroup = (title, records) => {
+        if (records.length === 0) return;
+        
+        // Cabeçalho do grupo de histórico
+        const header = document.createElement("h4");
+        header.className = "history-group-title";
+        header.style.fontSize = "10.5px";
+        header.style.fontWeight = "700";
+        header.style.color = "var(--accent-rose)";
+        header.style.textTransform = "uppercase";
+        header.style.marginTop = "14px";
+        header.style.marginBottom = "8px";
+        header.style.letterSpacing = "0.5px";
+        header.innerText = title;
+        listEl.appendChild(header);
+        
+        records.forEach(record => {
+            const completedCount = record.habitsCompleted.filter(h => h).length;
+            const itemCard = document.createElement("div");
+            itemCard.className = "history-item-card";
+            itemCard.onclick = () => openHistoryRecordDetail(record.date);
+            
+            const dateParts = record.date.split("-");
+            const formattedDate = dateParts.length === 3 ? `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}` : record.date;
+            
+            itemCard.innerHTML = `
+                <div class="history-item-header">
+                    <span class="history-item-date">📅 ${formattedDate}</span>
+                    <span class="history-item-ratio">${completedCount}/6 concluídos</span>
+                </div>
+                <p class="history-item-obs">${record.observations ? record.observations : 'Sem observações'}</p>
+            `;
+            
+            listEl.appendChild(itemCard);
+        });
+    };
+    
+    renderGroup("Hoje", groupToday);
+    renderGroup("Ontem", groupYesterday);
+    renderGroup("Dias anteriores", groupOlder);
+}
+
+function openHistoryRecordDetail(dateStr) {
+    if (!userState.dailyHistory) return;
+    const record = userState.dailyHistory.find(r => r.date === dateStr);
+    if (!record) return;
+    
+    const dateParts = record.date.split("-");
+    const formattedDate = dateParts.length === 3 ? `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}` : record.date;
+    
+    const timeStr = record.timestamp.split(" às ")[1] || record.timestamp.split(" ")[1] || record.timestamp;
+    document.getElementById("history-detail-date").innerText = `Registrado em: ${formattedDate} às ${timeStr}`;
+    
+    const tasksContainer = document.getElementById("history-detail-tasks");
+    tasksContainer.innerHTML = "";
+    
+    const habitTitles = [
+        "Fiz cardio",
+        "Treinei",
+        "Bebi água",
+        "Comi de forma equilibrada",
+        "Fiz meu devocional",
+        "Fiz algo por mim mesma"
+    ];
+    
+    // Resumo de aproveitamento no topo
+    const completedCount = record.habitsCompleted.filter(h => h).length;
+    const ratioText = `${completedCount} de 6 hábitos concluídos (${Math.round((completedCount/6)*100)}%)`;
+    
+    const progressSummary = document.createElement("div");
+    progressSummary.style.padding = "8px 12px";
+    progressSummary.style.background = "rgba(255,255,255,0.02)";
+    progressSummary.style.border = "1px solid rgba(255,255,255,0.06)";
+    progressSummary.style.borderRadius = "8px";
+    progressSummary.style.marginBottom = "14px";
+    progressSummary.style.fontSize = "11.5px";
+    progressSummary.style.fontWeight = "600";
+    progressSummary.style.color = "var(--accent-rose)";
+    progressSummary.style.display = "flex";
+    progressSummary.style.justifyContent = "space-between";
+    progressSummary.style.alignItems = "center";
+    
+    progressSummary.innerHTML = `
+        <span>Aproveitamento:</span>
+        <span>${ratioText}</span>
+    `;
+    tasksContainer.appendChild(progressSummary);
+    
+    // Lista todos os hábitos diferenciando concluídos de não concluídos
+    habitTitles.forEach((title, idx) => {
+        const isCompleted = record.habitsCompleted[idx];
+        const taskItem = document.createElement("div");
+        taskItem.className = `history-detail-task-item ${isCompleted ? 'completed' : 'uncompleted'}`;
+        
+        taskItem.innerHTML = `
+            <div class="task-check-icon" style="background: ${isCompleted ? 'var(--color-success)' : 'rgba(255, 255, 255, 0.05)'}; color: ${isCompleted ? '#120A0E' : 'rgba(255, 255, 255, 0.2)'};">
+                ${isCompleted ? '✓' : '✗'}
+            </div>
+            <span style="color: ${isCompleted ? '#fff' : 'rgba(255,255,255,0.35)'}; font-weight: ${isCompleted ? '600' : '400'}; text-decoration: ${isCompleted ? 'none' : 'line-through'};">${title}</span>
+        `;
+        
+        tasksContainer.appendChild(taskItem);
+    });
+    
+    const obsBox = document.getElementById("history-detail-obs-box");
+    if (record.observations) {
+        obsBox.innerText = record.observations;
+        obsBox.style.fontStyle = "normal";
+        obsBox.style.color = "#e0e0e0";
+    } else {
+        obsBox.innerText = "Nenhuma observação registrada para este dia.";
+        obsBox.style.fontStyle = "italic";
+        obsBox.style.color = "var(--text-secondary)";
+    }
+    
+    openModal("modal-history-detail");
+}
+
+// Configurações e Listeners de Redefinição/Edição de Perfil na aba Configurações
+document.addEventListener("DOMContentLoaded", () => {
+    const btnReset = document.getElementById("btn-reset-app");
+    if (btnReset) {
+        btnReset.addEventListener("click", () => {
+            if (confirm("⚠️ Tem certeza que deseja redefinir todos os seus dados e progresso? Esta ação não pode ser desfeita.")) {
+                localStorage.clear();
+                alert("Todos os dados foram redefinidos. O aplicativo será recarregado.");
+                window.location.reload();
+            }
+        });
+    }
+    
+    const btnSaveName = document.getElementById("btn-save-name");
+    const inputProfileName = document.getElementById("input-profile-name");
+    if (btnSaveName && inputProfileName) {
+        // Inicializa input de saudação com o nome atual ao restaurar
+        setTimeout(() => {
+            if (userState && userState.name) {
+                inputProfileName.value = userState.name;
+            }
+        }, 1000);
+        
+        btnSaveName.addEventListener("click", () => {
+            const newName = inputProfileName.value.trim();
+            if (newName) {
+                userState.name = newName;
+                if (currentUserEmail && usersDB[currentUserEmail]) {
+                    usersDB[currentUserEmail].userState = userState;
+                }
+                saveStateToStorage();
+                document.getElementById("user-display-name").innerText = newName;
+                document.getElementById("profile-display-name").innerText = newName;
+                alert("Nome de perfil atualizado com sucesso!");
+            } else {
+                alert("Por favor, digite um nome válido.");
+            }
+        });
+    }
+
+    // Auto-salva quando o usuário digita na caixa de observações
+    const obsTextarea = document.getElementById("daily-observations");
+    if (obsTextarea) {
+        obsTextarea.addEventListener("input", autoSaveDailyRecord);
+    }
+});
