@@ -148,10 +148,22 @@ const defaultState = {
     currentMeals: [],
     hasLoggedIn: false,
     anamneseConcluida: false,
-    
+    // Identificação e Registro de Compras
+    user_id: "",
+    createdAt: "",
+    communityJoinedAt: null,
+    purchasedAt: null,
+    purchasedProduct: null,
+    purchaseStatus: null,
+    processedTransactions: [],
+    lastActiveAt: "",
+
     // Configurações do Desafio Core R$ 19,99
-    challengeSubscribed: false,
+    challengeSubscribed: false, // true se comprou
+    challengeAccess: false,     // permissão de acesso ao Desafio
+    challengeStartedAt: null,   // data de início (YYYY-MM-DD)
     challengeTasksCompleted: [false, false, false, false, false, false],
+    challengeProgress: {},      // histórico diário: { "1": { date, tasksCompleted, pointsEarned, completedAt } }
     challengePoints: 210,
     dailyHistory: []
 };
@@ -205,9 +217,104 @@ if (usersDB["duda@fuse.com"]) {
     usersDB["duda@fuse.com"].userState.profilePhoto = "assets/img/duda-avatar.jpg";
     usersDB["duda@fuse.com"].userState.name = "Duda Meister";
 }
-localStorage.setItem("fuse_users_db", JSON.stringify(usersDB));
+// Funções auxiliares globais de identificação e datas
+function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+
+function getTodayStr() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+function getChallengeDay(startDateStr) {
+    if (!startDateStr) return 1;
+    // Força cálculo à meia-noite local para evitar variações do fuso horário
+    const start = new Date(startDateStr + "T00:00:00");
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const diffTime = today - start;
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays + 1;
+}
+
+// Função de Migração de Esquema do Banco de Dados Local
+function migrateDatabaseSchema() {
+    let migrated = false;
+    
+    for (let email in usersDB) {
+        const user = usersDB[email];
+        if (!user.userState) continue;
+        
+        const state = user.userState;
+        
+        // 1. Gera UUID único se não existir
+        if (!state.user_id) {
+            state.user_id = generateUUID();
+            migrated = true;
+        }
+        
+        // 2. Data de criação
+        if (!state.createdAt) {
+            state.createdAt = new Date().toISOString();
+            migrated = true;
+        }
+        
+        // 3. processedTransactions
+        if (!state.processedTransactions) {
+            state.processedTransactions = [];
+            migrated = true;
+        }
+        
+        // 4. Parâmetros de liberação do Desafio
+        if (state.challengeAccess === undefined) {
+            state.challengeAccess = state.challengeSubscribed || false;
+            migrated = true;
+        }
+        
+        if (state.challengeSubscribed && !state.challengeStartedAt) {
+            state.challengeStartedAt = "2026-08-23"; // Data padrão do desafio
+            migrated = true;
+        }
+        
+        // 5. Histórico e progresso granular do Desafio
+        if (!state.challengeProgress) {
+            state.challengeProgress = {};
+            migrated = true;
+        }
+        
+        // Se já tinha progresso nas tarefas ativas mas não tinha no histórico, migra para o dia atual do desafio
+        if (state.challengeSubscribed && Object.keys(state.challengeProgress).length === 0) {
+            const currentDay = getChallengeDay(state.challengeStartedAt);
+            if (currentDay >= 1 && currentDay <= 10) {
+                state.challengeProgress[String(currentDay)] = {
+                    date: getTodayStr(),
+                    tasksCompleted: state.challengeTasksCompleted ? [...state.challengeTasksCompleted] : [false, false, false, false, false, false],
+                    pointsEarned: state.challengeTasksCompleted ? state.challengeTasksCompleted.filter(Boolean).length * 20 : 0,
+                    completedAt: new Date().toISOString()
+                };
+                migrated = true;
+            }
+        }
+    }
+    
+    if (migrated) {
+        localStorage.setItem("fuse_users_db", JSON.stringify(usersDB));
+        console.log("🛠️ Migração de esquema de banco de dados executada com sucesso!");
+    }
+}
+
+// Executa a migração imediatamente
+migrateDatabaseSchema();
 
 let userState = defaultState;
+let selectedChallengeViewDay = null;
 
 if (currentUserEmail && usersDB[currentUserEmail]) {
     userState = usersDB[currentUserEmail].userState;
@@ -512,8 +619,26 @@ async function handleAuth(isLoginButton) {
         if (verify.success) {
             // Cria a conta automaticamente usando a senha informada
             userState = JSON.parse(JSON.stringify(defaultState));
+            userState.user_id = generateUUID();
+            userState.createdAt = new Date().toISOString();
+            userState.email = emailVal;
             userState.name = verify.customerName;
             userState.hasLoggedIn = false; // Inicia na Anamnese
+            
+            // Atribui os acessos corretos baseados nos produtos comprados
+            if (verify.purchasedProducts) {
+                if (verify.purchasedProducts.includes("FUSE")) {
+                    userState.communityJoinedAt = new Date().toISOString();
+                }
+                if (verify.purchasedProducts.includes("Desafio Core")) {
+                    userState.challengeSubscribed = true;
+                    userState.challengeAccess = true;
+                    userState.challengeStartedAt = "2026-08-23"; // Data de início do desafio
+                    userState.purchasedAt = new Date().toISOString();
+                    userState.purchasedProduct = "Desafio Core";
+                    userState.purchaseStatus = "paid";
+                }
+            }
             
             usersDB[emailVal] = {
                 password: passVal,
@@ -2095,17 +2220,82 @@ function updateWeightModal() {
 
 // 9. SISTEMA DE DESAFIOS GAMIFICADOS (TAXA R$ 19,99)
 
+function selectChallengeDay(dayNum) {
+    const currentChallengeDay = getChallengeDay(userState.challengeStartedAt);
+    if (dayNum > currentChallengeDay) {
+        alert("Este dia está bloqueado. Aguarde a data correspondente para realizar as tarefas.");
+        return;
+    }
+    selectedChallengeViewDay = dayNum;
+    renderChallengeUI();
+}
+
 function renderChallengeUI() {
-    if (userState.challengeSubscribed) {
+    if (userState.challengeAccess || userState.challengeSubscribed) {
         document.getElementById("challenge-paywall-box").style.display = "none";
         document.getElementById("challenge-active-box").style.display = "block";
         
-        // Carrega estado das tarefas concluídas do Dia 1
+        const currentChallengeDay = getChallengeDay(userState.challengeStartedAt);
+        
+        // Define o dia de exibição padrão se não estiver definido
+        if (selectedChallengeViewDay === null) {
+            selectedChallengeViewDay = currentChallengeDay;
+            if (selectedChallengeViewDay < 1) selectedChallengeViewDay = 1;
+            if (selectedChallengeViewDay > 10) selectedChallengeViewDay = 10;
+        }
+        
+        // Atualiza cabeçalhos principais do desafio
+        const activeTitleEl = document.querySelector(".active-challenge-title");
+        if (activeTitleEl) {
+            if (currentChallengeDay < 1) {
+                activeTitleEl.innerText = "Desafio Core: Em breve (Não iniciado)";
+            } else if (currentChallengeDay > 10) {
+                activeTitleEl.innerText = "Desafio Core: Finalizado! 🎉";
+            } else {
+                activeTitleEl.innerText = `Desafio Core: Dia ${currentChallengeDay} de 10`;
+            }
+        }
+        
+        const daysLeftEl = document.getElementById("challenge-days-left");
+        if (daysLeftEl) {
+            const left = 10 - currentChallengeDay;
+            daysLeftEl.innerText = left >= 0 ? `${left} dias` : "Encerrado";
+        }
+        
+        const tasksTitleEl = document.getElementById("challenge-tasks-title");
+        if (tasksTitleEl) {
+            if (selectedChallengeViewDay === currentChallengeDay) {
+                tasksTitleEl.innerText = `📋 Minhas Tarefas de Hoje (Dia ${selectedChallengeViewDay})`;
+            } else if (selectedChallengeViewDay < currentChallengeDay) {
+                tasksTitleEl.innerText = `📋 Minhas Tarefas (Dia ${selectedChallengeViewDay} - Concluído/Passado)`;
+            } else {
+                tasksTitleEl.innerText = `📋 Minhas Tarefas (Dia ${selectedChallengeViewDay} - Bloqueado)`;
+            }
+        }
+        
+        // Inicializa o progresso do dia selecionado se não existir
+        const dayKey = String(selectedChallengeViewDay);
+        if (!userState.challengeProgress) userState.challengeProgress = {};
+        if (!userState.challengeProgress[dayKey]) {
+            userState.challengeProgress[dayKey] = {
+                date: getTodayStr(),
+                tasksCompleted: [false, false, false, false, false, false],
+                pointsEarned: 0,
+                completedAt: null
+            };
+        }
+        
+        const dayProgress = userState.challengeProgress[dayKey];
+        
+        // Carrega estado das tarefas concluídas do Dia selecionado
         const taskKeys = ["workout", "diet", "weight", "water", "checkin", "community"];
         let completedCount = 0;
         
+        const isFutureDay = selectedChallengeViewDay > currentChallengeDay;
+        const isPastDay = selectedChallengeViewDay < currentChallengeDay;
+        
         taskKeys.forEach((key, idx) => {
-            const isCompleted = userState.challengeTasksCompleted[idx];
+            const isCompleted = dayProgress.tasksCompleted[idx];
             const row = document.getElementById(`ch-task-${key}`);
             const btn = row.querySelector(".btn-complete-task");
             
@@ -2117,23 +2307,57 @@ function renderChallengeUI() {
                 completedCount++;
             } else {
                 row.classList.remove("completed");
-                btn.innerText = "Concluir";
                 btn.classList.remove("completed");
-                btn.disabled = false;
+                
+                if (isFutureDay) {
+                    btn.innerText = "Bloqueado";
+                    btn.disabled = true;
+                } else if (isPastDay) {
+                    btn.innerText = "Não Concluído";
+                    btn.disabled = true;
+                } else {
+                    btn.innerText = "Concluir";
+                    btn.disabled = false;
+                }
             }
         });
         
-        // Calcula porcentagem do progresso do dia/desafio
+        // Calcula porcentagem do progresso do dia selecionado
         const percentage = Math.round((completedCount / taskKeys.length) * 100);
         document.getElementById("challenge-percent-txt").innerText = `${percentage}% concluído`;
         document.getElementById("challenge-progress-fill").style.width = `${percentage}%`;
         
-        // Atualiza a bolinha D1 no calendário se concluído
-        const dayCircle1 = document.querySelector(".calendar-day-circle.active");
-        if (completedCount === taskKeys.length) {
-            dayCircle1.classList.add("completed");
-        } else {
-            dayCircle1.classList.remove("completed");
+        // Atualiza a linha do tempo do calendário dinamicamente
+        const calendarGrid = document.getElementById("challenge-calendar-grid");
+        if (calendarGrid) {
+            calendarGrid.innerHTML = "";
+            for (let d = 1; d <= 10; d++) {
+                const circle = document.createElement("div");
+                const progressForDay = userState.challengeProgress[String(d)];
+                const doneTasks = progressForDay ? progressForDay.tasksCompleted.filter(Boolean).length : 0;
+                const isFullyCompleted = doneTasks === 6;
+                
+                let dayClass = "";
+                let clickAction = `selectChallengeDay(${d})`;
+                
+                if (d === currentChallengeDay) {
+                    dayClass = "active";
+                } else if (d < currentChallengeDay) {
+                    dayClass = isFullyCompleted ? "completed" : "past";
+                } else {
+                    dayClass = "locked";
+                    clickAction = `alert('Este dia está bloqueado. Aguarde a data correspondente para realizar as tarefas.')`;
+                }
+                
+                if (d === selectedChallengeViewDay) {
+                    dayClass += " selected-view";
+                }
+                
+                circle.className = `calendar-day-circle ${dayClass}`;
+                circle.setAttribute("onclick", clickAction);
+                circle.innerText = `D${d}`;
+                calendarGrid.appendChild(circle);
+            }
         }
         
         // Atualiza o ranking
@@ -2142,7 +2366,6 @@ function renderChallengeUI() {
         // Reordena dinamicamente a tabela de classificação (ranking)
         const rankingContainer = document.querySelector(".ranking-table");
         
-        // Mapeia os dados atuais para ordenar
         const players = [
             { posText: "🥇 1º", name: "Camila Silva", pts: 240, class: "gold-pos" },
             { posText: "🥈 2º", name: "Mariana Costa", pts: 220, class: "silver-pos" },
@@ -2150,26 +2373,21 @@ function renderChallengeUI() {
             { posText: "4º", name: "Luana Mendes", pts: 180, class: "" }
         ];
         
-        // Ordena decrescente por pontos
         players.sort((a, b) => b.pts - a.pts);
         
-        // Atualiza posições textuais e medalhas
         players.forEach((p, index) => {
             let medal = `${index + 1}º`;
             if (index === 0) medal = "🥇 1º";
             else if (index === 1) medal = "🥈 2º";
             else if (index === 2) medal = "🥉 3º";
-            
             p.posText = medal;
             
-            // Define classes de destaque
             if (index === 0) p.class = "gold-pos";
             else if (index === 1) p.class = "silver-pos";
             else if (index === 2) p.class = "bronze-pos";
             else p.class = "";
         });
         
-        // Recria o HTML do Ranking
         rankingContainer.innerHTML = "";
         players.forEach(p => {
             const rowDiv = document.createElement("div");
@@ -2254,17 +2472,48 @@ function confirmChallengePayment() {
 }
 
 function completeChallengeTask(taskKey, btnEl) {
+    const currentChallengeDay = getChallengeDay(userState.challengeStartedAt);
+    if (currentChallengeDay < 1 || currentChallengeDay > 10) {
+        alert("O desafio não está ativo no momento. Verifique as datas correspondentes.");
+        return;
+    }
+    
     const taskKeys = ["workout", "diet", "weight", "water", "checkin", "community"];
     const idx = taskKeys.indexOf(taskKey);
-    if (idx === -1 || userState.challengeTasksCompleted[idx]) return;
+    if (idx === -1) return;
     
-    // Marca como completado
+    const dayKey = String(currentChallengeDay);
+    if (!userState.challengeProgress) userState.challengeProgress = {};
+    if (!userState.challengeProgress[dayKey]) {
+        userState.challengeProgress[dayKey] = {
+            date: getTodayStr(),
+            tasksCompleted: [false, false, false, false, false, false],
+            pointsEarned: 0,
+            completedAt: null
+        };
+    }
+    
+    const dayProgress = userState.challengeProgress[dayKey];
+    if (dayProgress.tasksCompleted[idx]) return;
+    
+    // Marca como completado no dia do desafio
+    dayProgress.tasksCompleted[idx] = true;
+    dayProgress.pointsEarned += 20;
+    
+    // Sincroniza com as tarefas de hoje para manter compatibilidade e exibição na Home se necessário
     userState.challengeTasksCompleted[idx] = true;
+    
+    // Incrementa pontos globais
     userState.challengePoints += 20;
+    
+    // Verifica se completou todas as 6 tarefas do dia
+    if (dayProgress.tasksCompleted.every(t => t)) {
+        dayProgress.completedAt = new Date().toISOString();
+    }
     
     addXP(15); // Ganha XP geral
     
-    alert(`🌟 Incrível! Você completou a tarefa do desafio: +20 Pontos & +15 XP Geral!`);
+    alert(`🌟 Incrível! Você completou a tarefa do desafio (Dia ${currentChallengeDay}): +20 Pontos & +15 XP Geral!`);
     
     renderChallengeUI();
     saveStateToStorage();
@@ -2414,6 +2663,9 @@ function checkCaktoUrlParams() {
     if (caktoEmail && caktoStatus === "approved") {
         const emailClean = caktoEmail.trim().toLowerCase();
         const nameClean = caktoName ? decodeURIComponent(caktoName).trim() : "Cliente FUSE";
+        const productParam = urlParams.get("cakto_product") || "fuse";
+        const isChallenge = productParam.toLowerCase().includes("desafio");
+        const transactionId = urlParams.get("transaction_id") || "trans_redirect_" + Date.now();
         
         // Cria usuário se não existir ou atualiza status de pagamento
         if (!usersDB[emailClean]) {
@@ -2421,26 +2673,52 @@ function checkCaktoUrlParams() {
                 password: "senha123", // senha padrão de ativação automática
                 userState: {
                     ...defaultState,
+                    user_id: generateUUID(),
+                    createdAt: new Date().toISOString(),
                     name: nameClean,
+                    email: emailClean,
                     hasLoggedIn: false
                 }
             };
         }
         
+        const state = usersDB[emailClean].userState;
+        
+        // Idempotência no redirect
+        if (!state.processedTransactions) state.processedTransactions = [];
+        if (!state.processedTransactions.includes(transactionId)) {
+            state.processedTransactions.push(transactionId);
+            
+            if (isChallenge) {
+                state.challengeSubscribed = true;
+                state.challengeAccess = true;
+                state.challengeStartedAt = "2026-08-23"; // Data de início do desafio
+                state.purchasedAt = new Date().toISOString();
+                state.purchasedProduct = "Desafio Core";
+                state.purchaseStatus = "paid";
+            } else {
+                state.communityJoinedAt = new Date().toISOString();
+            }
+        }
+        
         currentUserEmail = emailClean;
-        userState = usersDB[emailClean].userState;
+        userState = state;
         saveStateToStorage();
         
         // Limpa os parâmetros da URL
         const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
         window.history.replaceState({ path: cleanUrl }, "", cleanUrl);
         
-        alert(`🎉 Assinatura Aprovada via Cakto!\n\nBem-vinda, ${nameClean}! Seu acesso ao FUSE Premium foi liberado com sucesso. Vamos configurar o seu perfil!`);
-        
-        // Vai direto para o onboarding
-        document.getElementById("auth-screen").classList.remove("active");
-        document.getElementById("onboarding-screen").classList.add("active");
-        updateOnboardingStepUI();
+        if (isChallenge) {
+            alert(`🎉 Inscrição no Desafio Aprovada via Cakto!\n\nBem-vinda, ${nameClean}! Seu acesso ao Desafio Core foi liberado com sucesso.`);
+            switchTab("challenge");
+        } else {
+            alert(`🎉 Assinatura FUSE Premium Aprovada via Cakto!\n\nBem-vinda, ${nameClean}! Seu acesso foi liberado com sucesso. Vamos configurar o seu perfil!`);
+            // Vai direto para o onboarding
+            document.getElementById("auth-screen").classList.remove("active");
+            document.getElementById("onboarding-screen").classList.add("active");
+            updateOnboardingStepUI();
+        }
         return true;
     }
     return false;
@@ -2449,32 +2727,64 @@ function checkCaktoUrlParams() {
 function simulateCaktoWebhook() {
     const nameInput = document.getElementById("cakto-sim-name").value.trim();
     const emailInput = document.getElementById("cakto-sim-email").value.trim().toLowerCase();
+    const productSelect = document.getElementById("cakto-sim-product");
+    const productVal = productSelect ? productSelect.value : "FUSE";
     
     if (!nameInput || !emailInput) {
         alert("Por favor, preencha o nome e e-mail para simular o Webhook.");
         return;
     }
     
-    // Simula a requisição POST que a Cakto envia no background
+    const transactionId = "trans_webhook_" + Date.now();
+    const isChallenge = productVal === "Desafio Core";
+    
+    // Cria ou recupera o usuário no banco de dados local simulado
     if (!usersDB[emailInput]) {
         usersDB[emailInput] = {
             password: "senha123",
             userState: {
                 ...defaultState,
+                user_id: generateUUID(),
+                createdAt: new Date().toISOString(),
                 name: nameInput,
+                email: emailInput,
                 hasLoggedIn: false
             }
         };
-        localStorage.setItem("fuse_users_db", JSON.stringify(usersDB));
-        alert(`⚡ [WEBHOOK CAKTO - SIMULAÇÃO]\n\nEvento: purchase_approved\nCliente: ${nameInput}\nE-mail: ${emailInput}\n\nResultado: Conta criada com sucesso no banco de dados FUSE! A cliente agora já pode fazer login direto com a senha padrão 'senha123'.`);
-    } else {
-        alert(`⚡ [WEBHOOK CAKTO - SIMULAÇÃO]\n\nResultado: A conta para o e-mail '${emailInput}' já existe no banco de dados FUSE.`);
     }
+    
+    const state = usersDB[emailInput].userState;
+    if (!state.processedTransactions) state.processedTransactions = [];
+    
+    // Idempotência
+    if (state.processedTransactions.includes(transactionId)) {
+        alert(`⚠️ [SIMULAÇÃO WEBHOOK]\n\nTransação ${transactionId} já processada (Idempotência).`);
+        return;
+    }
+    
+    state.processedTransactions.push(transactionId);
+    
+    if (isChallenge) {
+        state.challengeSubscribed = true;
+        state.challengeAccess = true;
+        state.challengeStartedAt = "2026-08-23"; // Data de início do desafio
+        state.purchasedAt = new Date().toISOString();
+        state.purchasedProduct = "Desafio Core";
+        state.purchaseStatus = "paid";
+    } else {
+        state.communityJoinedAt = new Date().toISOString();
+    }
+    
+    localStorage.setItem("fuse_users_db", JSON.stringify(usersDB));
+    
+    alert(`⚡ [WEBHOOK CAKTO - SIMULAÇÃO]\n\nEvento: purchase_approved\nID Transação: ${transactionId}\nCliente: ${nameInput}\nE-mail: ${emailInput}\nProduto: ${productVal}\n\nResultado: Compra registrada e acesso liberado com sucesso no banco de dados FUSE!`);
 }
 
 function simulateCaktoRedirect() {
     const nameInput = document.getElementById("cakto-sim-name").value.trim();
     const emailInput = document.getElementById("cakto-sim-email").value.trim().toLowerCase();
+    const productSelect = document.getElementById("cakto-sim-product");
+    const productVal = productSelect ? productSelect.value : "FUSE";
     
     if (!nameInput || !emailInput) {
         alert("Por favor, preencha o nome e e-mail para simular.");
@@ -2482,7 +2792,9 @@ function simulateCaktoRedirect() {
     }
     
     const encodedName = encodeURIComponent(nameInput);
-    const redirectUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}?cakto_email=${emailInput}&cakto_name=${encodedName}&cakto_status=approved`;
+    const prodParam = productVal === "Desafio Core" ? "desafio" : "fuse";
+    const transactionId = "trans_redirect_" + Date.now();
+    const redirectUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}?cakto_email=${emailInput}&cakto_name=${encodedName}&cakto_status=approved&cakto_product=${prodParam}&transaction_id=${transactionId}`;
     
     alert(`🔗 Redirecionando para a URL de Retorno da Cakto:\n\n${redirectUrl}`);
     window.location.href = redirectUrl;
@@ -2661,8 +2973,9 @@ function selectPresetAvatar(src, el) {
     userState.profilePhoto = src;
 }
 
-// VARIÁVEL TEMPORÁRIA PARA ARMAZENAR E-MAIL VERIFICADO NO PRIMEIRO ACESSO
+// VARIÁVEL TEMPORÁRIA PARA ARMAZENAR E-MAIL E RESULTADO VERIFICADO NO PRIMEIRO ACESSO
 let verifiedFirstAccessEmail = "";
+let verifiedFirstAccessResult = null;
 
 async function verifyFirstAccessEmail() {
     const emailInput = document.getElementById("first-access-email");
@@ -2685,6 +2998,7 @@ async function verifyFirstAccessEmail() {
         
         if (result.success) {
             verifiedFirstAccessEmail = email;
+            verifiedFirstAccessResult = result;
             alert(`🎉 Compra ativa confirmada via API Cakto!\n\nAgora defina o seu nome e sua senha de acesso para ativar a sua conta.`);
             
             // Avança para o Passo 2
@@ -2731,18 +3045,51 @@ function createFirstAccessPassword() {
     
     // Registra ou atualiza no simulated usersDB
     if (!usersDB[email]) {
+        const state = JSON.parse(JSON.stringify(defaultState));
+        state.user_id = generateUUID();
+        state.createdAt = new Date().toISOString();
+        state.email = email;
+        state.name = name;
+        state.hasLoggedIn = false;
+        
+        // Atribui acessos dos produtos verificados
+        if (verifiedFirstAccessResult && verifiedFirstAccessResult.purchasedProducts) {
+            if (verifiedFirstAccessResult.purchasedProducts.includes("FUSE")) {
+                state.communityJoinedAt = new Date().toISOString();
+            }
+            if (verifiedFirstAccessResult.purchasedProducts.includes("Desafio Core")) {
+                state.challengeSubscribed = true;
+                state.challengeAccess = true;
+                state.challengeStartedAt = "2026-08-23";
+                state.purchasedAt = new Date().toISOString();
+                state.purchasedProduct = "Desafio Core";
+                state.purchaseStatus = "paid";
+            }
+        }
+        
         usersDB[email] = {
             password: pass,
-            userState: {
-                ...defaultState,
-                name: name,
-                hasLoggedIn: false // Inicia Anamnese obrigatoriamente
-            }
+            userState: state
         };
     } else {
         usersDB[email].password = pass;
         usersDB[email].userState.name = name;
-        usersDB[email].userState.hasLoggedIn = false; // Garante fazer a anamnese no primeiro acesso
+        usersDB[email].userState.hasLoggedIn = false;
+        
+        if (verifiedFirstAccessResult && verifiedFirstAccessResult.purchasedProducts) {
+            const state = usersDB[email].userState;
+            if (verifiedFirstAccessResult.purchasedProducts.includes("FUSE")) {
+                state.communityJoinedAt = state.communityJoinedAt || new Date().toISOString();
+            }
+            if (verifiedFirstAccessResult.purchasedProducts.includes("Desafio Core")) {
+                state.challengeSubscribed = true;
+                state.challengeAccess = true;
+                state.challengeStartedAt = state.challengeStartedAt || "2026-08-23";
+                state.purchasedAt = state.purchasedAt || new Date().toISOString();
+                state.purchasedProduct = "Desafio Core";
+                state.purchaseStatus = "paid";
+            }
+        }
     }
     
     // Salva o banco de dados atualizado

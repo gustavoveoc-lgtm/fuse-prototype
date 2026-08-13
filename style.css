@@ -2801,6 +2801,17 @@ body {
     cursor: not-allowed;
 }
 
+.calendar-day-circle.past {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.calendar-day-circle.selected-view {
+    box-shadow: 0 0 0 2px var(--bg-primary), 0 0 0 4px var(--accent-rose);
+    transform: scale(1.1);
+}
+
 /* Ranking Table */
 .ranking-table {
     display: flex;

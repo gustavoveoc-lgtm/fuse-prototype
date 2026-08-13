@@ -37,7 +37,8 @@ export default async function handler(req, res) {
             email: emailClean,
             status: 'paid',
             orderId: 'trusted_' + Date.now(),
-            paidAt: new Date().toISOString()
+            paidAt: new Date().toISOString(),
+            purchasedProducts: ['FUSE', 'Desafio Core']
         });
     }
 
@@ -94,27 +95,52 @@ export default async function handler(req, res) {
         // Resultados retornados pela API na listagem paginada (array results)
         const orders = ordersData.results || [];
 
-        // Filtra por compras pagas ou ativas do produto da FUSE
-        const activeOrder = orders.find(order => {
+        const purchasedProducts = [];
+        let customerName = 'Cliente FUSE';
+        let latestOrder = null;
+
+        orders.forEach(order => {
             const status = order.status;
-            return status === 'paid' || status === 'authorized' || status === 'processing';
+            const isPaid = status === 'paid' || status === 'authorized' || status === 'processing';
+            if (isPaid) {
+                if (!latestOrder || new Date(order.createdAt) > new Date(latestOrder.createdAt)) {
+                    latestOrder = order;
+                }
+                if (order.customer && order.customer.name) {
+                    customerName = order.customer.name;
+                }
+                if (order.product) {
+                    const prodName = (order.product.name || '').toLowerCase();
+                    if (prodName.includes('desafio')) {
+                        if (!purchasedProducts.includes('Desafio Core')) {
+                            purchasedProducts.push('Desafio Core');
+                        }
+                    } else {
+                        if (!purchasedProducts.includes('FUSE')) {
+                            purchasedProducts.push('FUSE');
+                        }
+                    }
+                }
+            }
         });
 
-        if (activeOrder) {
+        if (purchasedProducts.length > 0) {
             return res.status(200).json({
                 success: true,
-                message: 'Compra premium aprovada encontrada!',
-                customerName: activeOrder.customer ? activeOrder.customer.name : 'Cliente FUSE',
+                message: 'Compras ativas encontradas!',
+                customerName: customerName,
                 email: emailClean,
-                status: activeOrder.status,
-                orderId: activeOrder.id,
-                paidAt: activeOrder.paidAt
+                status: 'paid',
+                orderId: latestOrder ? (latestOrder.refId || latestOrder.id) : 'order_' + Date.now(),
+                paidAt: latestOrder ? latestOrder.paidAt : new Date().toISOString(),
+                purchasedProducts: purchasedProducts
             });
         }
 
         return res.status(200).json({
             success: false,
-            message: 'Nenhum pagamento aprovado ou ativo foi encontrado para este e-mail no Cakto.'
+            message: 'Nenhum pagamento aprovado ou ativo foi encontrado para este e-mail no Cakto.',
+            purchasedProducts: []
         });
 
     } catch (error) {
