@@ -407,6 +407,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // Inicializa Lucide Icons
     lucide.createIcons();
 
+    // Mostra painel de simulação se debug ou sim for true na URL
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("debug") === "true" || urlParams.get("sim") === "true") {
+        const devBox = document.querySelector(".dev-tools-box");
+        if (devBox) devBox.style.display = "block";
+    }
+
     // Inicia cronômetro do Splash de 3 segundos
     setTimeout(() => {
         const splash = document.getElementById("splash-screen");
