@@ -292,7 +292,7 @@ function migrateDatabaseSchema() {
         // Se já tinha progresso nas tarefas ativas mas não tinha no histórico, migra para o dia atual do desafio
         if (state.challengeSubscribed && Object.keys(state.challengeProgress).length === 0) {
             const currentDay = getChallengeDay(state.challengeStartedAt);
-            if (currentDay >= 1 && currentDay <= 10) {
+            if (currentDay >= 1 && currentDay <= 21) {
                 state.challengeProgress[String(currentDay)] = {
                     date: getTodayStr(),
                     tasksCompleted: state.challengeTasksCompleted ? [...state.challengeTasksCompleted] : [false, false, false, false, false, false],
@@ -2248,7 +2248,7 @@ function renderChallengeUI() {
         if (selectedChallengeViewDay === null) {
             selectedChallengeViewDay = currentChallengeDay;
             if (selectedChallengeViewDay < 1) selectedChallengeViewDay = 1;
-            if (selectedChallengeViewDay > 10) selectedChallengeViewDay = 10;
+            if (selectedChallengeViewDay > 21) selectedChallengeViewDay = 21;
         }
         
         // Atualiza cabeçalhos principais do desafio
@@ -2256,16 +2256,16 @@ function renderChallengeUI() {
         if (activeTitleEl) {
             if (currentChallengeDay < 1) {
                 activeTitleEl.innerText = "Desafio Core: Em breve (Não iniciado)";
-            } else if (currentChallengeDay > 10) {
+            } else if (currentChallengeDay > 21) {
                 activeTitleEl.innerText = "Desafio Core: Finalizado! 🎉";
             } else {
-                activeTitleEl.innerText = `Desafio Core: Dia ${currentChallengeDay} de 10`;
+                activeTitleEl.innerText = `Desafio Core: Dia ${currentChallengeDay} de 21`;
             }
         }
         
         const daysLeftEl = document.getElementById("challenge-days-left");
         if (daysLeftEl) {
-            const left = 10 - currentChallengeDay;
+            const left = 21 - currentChallengeDay;
             daysLeftEl.innerText = left >= 0 ? `${left} dias` : "Encerrado";
         }
         
@@ -2338,7 +2338,7 @@ function renderChallengeUI() {
         const calendarGrid = document.getElementById("challenge-calendar-grid");
         if (calendarGrid) {
             calendarGrid.innerHTML = "";
-            for (let d = 1; d <= 10; d++) {
+            for (let d = 1; d <= 21; d++) {
                 const circle = document.createElement("div");
                 const progressForDay = userState.challengeProgress[String(d)];
                 const doneTasks = progressForDay ? progressForDay.tasksCompleted.filter(Boolean).length : 0;
@@ -2471,7 +2471,7 @@ function confirmChallengePayment() {
     userState.challengeSubscribed = true;
     closeModal("modal-payment");
     
-    alert("🎉 Inscrição Confirmada! Você acaba de entrar no Desafio Core: 10 Dias de Disciplina. Vamos transformar nossos hábitos juntas!");
+    alert("🎉 Inscrição Confirmada! Você acaba de entrar no Desafio Core: 21 Dias de Disciplina. Vamos transformar nossos hábitos juntas!");
     
     renderChallengeUI();
     saveStateToStorage();
@@ -2480,7 +2480,7 @@ function confirmChallengePayment() {
 
 function completeChallengeTask(taskKey, btnEl) {
     const currentChallengeDay = getChallengeDay(userState.challengeStartedAt);
-    if (currentChallengeDay < 1 || currentChallengeDay > 10) {
+    if (currentChallengeDay < 1 || currentChallengeDay > 21) {
         alert("O desafio não está ativo no momento. Verifique as datas correspondentes.");
         return;
     }
