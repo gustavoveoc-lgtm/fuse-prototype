@@ -272,13 +272,14 @@ function migrateDatabaseSchema() {
             migrated = true;
         }
         
-        // 4. Parâmetros de liberação do Desafio
-        if (state.challengeAccess === undefined) {
-            state.challengeAccess = state.challengeSubscribed || false;
+        // 4. Parâmetros de liberação do Desafio (Liberado para todas por padrão)
+        if (!state.challengeAccess || !state.challengeSubscribed) {
+            state.challengeAccess = true;
+            state.challengeSubscribed = true;
             migrated = true;
         }
         
-        if (state.challengeSubscribed && !state.challengeStartedAt) {
+        if (!state.challengeStartedAt) {
             state.challengeStartedAt = "2026-08-23"; // Data padrão do desafio
             migrated = true;
         }
@@ -632,20 +633,14 @@ async function handleAuth(isLoginButton) {
             userState.name = verify.customerName;
             userState.hasLoggedIn = false; // Inicia na Anamnese
             
-            // Atribui os acessos corretos baseados nos produtos comprados
-            if (verify.purchasedProducts) {
-                if (verify.purchasedProducts.includes("FUSE")) {
-                    userState.communityJoinedAt = new Date().toISOString();
-                }
-                if (verify.purchasedProducts.includes("Desafio Core")) {
-                    userState.challengeSubscribed = true;
-                    userState.challengeAccess = true;
-                    userState.challengeStartedAt = "2026-08-23"; // Data de início do desafio
-                    userState.purchasedAt = new Date().toISOString();
-                    userState.purchasedProduct = "Desafio Core";
-                    userState.purchaseStatus = "paid";
-                }
-            }
+            // Atribui os acessos (Sempre libera Comunidade e Desafio para quem loga)
+            userState.communityJoinedAt = new Date().toISOString();
+            userState.challengeSubscribed = true;
+            userState.challengeAccess = true;
+            userState.challengeStartedAt = "2026-08-23"; // Data de início do desafio
+            userState.purchasedAt = new Date().toISOString();
+            userState.purchasedProduct = "FUSE Premium + Desafio Core";
+            userState.purchaseStatus = "paid";
             
             usersDB[emailVal] = {
                 password: passVal,
@@ -2696,16 +2691,13 @@ function checkCaktoUrlParams() {
         if (!state.processedTransactions.includes(transactionId)) {
             state.processedTransactions.push(transactionId);
             
-            if (isChallenge) {
-                state.challengeSubscribed = true;
-                state.challengeAccess = true;
-                state.challengeStartedAt = "2026-08-23"; // Data de início do desafio
-                state.purchasedAt = new Date().toISOString();
-                state.purchasedProduct = "Desafio Core";
-                state.purchaseStatus = "paid";
-            } else {
-                state.communityJoinedAt = new Date().toISOString();
-            }
+            state.communityJoinedAt = new Date().toISOString();
+            state.challengeSubscribed = true;
+            state.challengeAccess = true;
+            state.challengeStartedAt = "2026-08-23"; // Data de início do desafio
+            state.purchasedAt = new Date().toISOString();
+            state.purchasedProduct = "FUSE Premium + Desafio Core";
+            state.purchaseStatus = "paid";
         }
         
         currentUserEmail = emailClean;
@@ -2716,12 +2708,11 @@ function checkCaktoUrlParams() {
         const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
         window.history.replaceState({ path: cleanUrl }, "", cleanUrl);
         
-        if (isChallenge) {
-            alert(`🎉 Inscrição no Desafio Aprovada via Cakto!\n\nBem-vinda, ${nameClean}! Seu acesso ao Desafio Core foi liberado com sucesso.`);
-            switchTab("challenge");
+        alert(`🎉 Bem-vinda ao FUSE, ${nameClean}!\n\nSeu acesso à Comunidade e ao Desafio Core foi liberado com sucesso.`);
+        
+        if (state.hasLoggedIn || state.anamneseConcluida) {
+            restoreSession();
         } else {
-            alert(`🎉 Assinatura FUSE Premium Aprovada via Cakto!\n\nBem-vinda, ${nameClean}! Seu acesso foi liberado com sucesso. Vamos configurar o seu perfil!`);
-            // Vai direto para o onboarding
             document.getElementById("auth-screen").classList.remove("active");
             document.getElementById("onboarding-screen").classList.add("active");
             updateOnboardingStepUI();
@@ -3059,20 +3050,14 @@ function createFirstAccessPassword() {
         state.name = name;
         state.hasLoggedIn = false;
         
-        // Atribui acessos dos produtos verificados
-        if (verifiedFirstAccessResult && verifiedFirstAccessResult.purchasedProducts) {
-            if (verifiedFirstAccessResult.purchasedProducts.includes("FUSE")) {
-                state.communityJoinedAt = new Date().toISOString();
-            }
-            if (verifiedFirstAccessResult.purchasedProducts.includes("Desafio Core")) {
-                state.challengeSubscribed = true;
-                state.challengeAccess = true;
-                state.challengeStartedAt = "2026-08-23";
-                state.purchasedAt = new Date().toISOString();
-                state.purchasedProduct = "Desafio Core";
-                state.purchaseStatus = "paid";
-            }
-        }
+        // Sempre libera acesso completo
+        state.communityJoinedAt = new Date().toISOString();
+        state.challengeSubscribed = true;
+        state.challengeAccess = true;
+        state.challengeStartedAt = "2026-08-23";
+        state.purchasedAt = new Date().toISOString();
+        state.purchasedProduct = "FUSE Premium + Desafio Core";
+        state.purchaseStatus = "paid";
         
         usersDB[email] = {
             password: pass,
@@ -3083,20 +3068,14 @@ function createFirstAccessPassword() {
         usersDB[email].userState.name = name;
         usersDB[email].userState.hasLoggedIn = false;
         
-        if (verifiedFirstAccessResult && verifiedFirstAccessResult.purchasedProducts) {
-            const state = usersDB[email].userState;
-            if (verifiedFirstAccessResult.purchasedProducts.includes("FUSE")) {
-                state.communityJoinedAt = state.communityJoinedAt || new Date().toISOString();
-            }
-            if (verifiedFirstAccessResult.purchasedProducts.includes("Desafio Core")) {
-                state.challengeSubscribed = true;
-                state.challengeAccess = true;
-                state.challengeStartedAt = state.challengeStartedAt || "2026-08-23";
-                state.purchasedAt = state.purchasedAt || new Date().toISOString();
-                state.purchasedProduct = "Desafio Core";
-                state.purchaseStatus = "paid";
-            }
-        }
+        const state = usersDB[email].userState;
+        state.communityJoinedAt = state.communityJoinedAt || new Date().toISOString();
+        state.challengeSubscribed = true;
+        state.challengeAccess = true;
+        state.challengeStartedAt = state.challengeStartedAt || "2026-08-23";
+        state.purchasedAt = state.purchasedAt || new Date().toISOString();
+        state.purchasedProduct = "FUSE Premium + Desafio Core";
+        state.purchaseStatus = "paid";
     }
     
     // Salva o banco de dados atualizado
