@@ -27,7 +27,8 @@ export default async function handler(req, res) {
         'fernanda@fuse.com',
         'fernanda@fuse.com.br',
         'amanda@fuse.com.br',
-        'fer@gmail.com'
+        'fer@gmail.com',
+        'pratsroberta@gmail.com'
     ];
 
     if (trustedEmails.includes(emailClean) || emailClean.endsWith('@fuse.com') || emailClean.endsWith('@fuse.com.br')) {
