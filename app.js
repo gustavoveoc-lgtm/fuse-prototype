@@ -3010,8 +3010,7 @@ async function verifyFirstAccessEmail() {
                 document.getElementById("first-access-name").value = result.customerName;
             }
         } else {
-            alert("Nenhuma compra aprovada foi encontrada para este e-mail no Cakto. Redirecionando para a nossa página de assinatura...");
-            window.location.href = "https://www.fusedudameister.site/";
+            alert("Nenhuma compra aprovada foi encontrada para este e-mail no Cakto.\n\nPor favor, confira se o e-mail digitado é exatamente o mesmo utilizado no momento da compra.");
         }
     } catch (error) {
         console.error("Erro na requisição:", error);
