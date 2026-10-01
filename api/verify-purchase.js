@@ -75,10 +75,8 @@ export default async function handler(req, res) {
         const tokenData = await tokenResponse.json();
         const accessToken = tokenData.access_token;
 
+        // 2. Consulta pedidos da cliente com limite expandido
         let orders = [];
-
-        // 2. Consulta pedidos pagos com limite expandido (evita que tentativas pendentes/abandonadas mascarem o pagamento)
-        // Tentativa 1: Busca direta por status=paid com limit=100
         const paidOrdersUrl = `https://api.cakto.com.br/public_api/orders/?customer=${encodeURIComponent(emailClean)}&status=paid&limit=100`;
         const paidOrdersResp = await fetch(paidOrdersUrl, {
             method: 'GET',
@@ -95,83 +93,147 @@ export default async function handler(req, res) {
             }
         }
 
-        // Tentativa 2: Se não encontrou pedidos com status=paid, busca geral com limit=100
-        // (cobre status autorizados ou em processamento)
-        if (orders.length === 0) {
-            const allOrdersUrl = `https://api.cakto.com.br/public_api/orders/?customer=${encodeURIComponent(emailClean)}&limit=100`;
-            const allOrdersResp = await fetch(allOrdersUrl, {
+        // Busca geral para verificar pedidos de outros status, cancelamentos ou estornos
+        const allOrdersUrl = `https://api.cakto.com.br/public_api/orders/?customer=${encodeURIComponent(emailClean)}&limit=100`;
+        const allOrdersResp = await fetch(allOrdersUrl, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (allOrdersResp.ok) {
+            const allData = await allOrdersResp.json();
+            if (allData && Array.isArray(allData.results)) {
+                const existingIds = new Set(orders.map(o => o.id));
+                allData.results.forEach(o => {
+                    if (!existingIds.has(o.id)) orders.push(o);
+                });
+            }
+        }
+
+        // 3. Consulta o status das assinaturas da usuária na Cakto
+        let userSubs = [];
+        try {
+            const subsUrl = `https://api.cakto.com.br/public_api/subscriptions/?search=${encodeURIComponent(emailClean)}`;
+            const subsResp = await fetch(subsUrl, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
                     'Content-Type': 'application/json'
                 }
             });
+            if (subsResp.ok) {
+                const subsData = await subsResp.json();
+                if (subsData && Array.isArray(subsData.results)) {
+                    userSubs = subsData.results.filter(s => 
+                        s.customer && s.customer.email && s.customer.email.toLowerCase().trim() === emailClean
+                    );
+                }
+            }
+        } catch (subErr) {
+            console.warn('Erro ao consultar assinaturas:', subErr);
+        }
 
-            if (allOrdersResp.ok) {
-                const allData = await allOrdersResp.json();
-                if (allData && Array.isArray(allData.results)) {
-                    orders = allData.results;
+        // Fallback: se a busca de assinaturas por e-mail não retornou nada, consulta direto pelo subscriptionId do pedido
+        if (userSubs.length === 0) {
+            const subId = orders.map(o => o.subscription).find(s => !!s);
+            if (subId) {
+                try {
+                    const singleSubResp = await fetch(`https://api.cakto.com.br/public_api/subscriptions/${subId}/`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${accessToken}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    if (singleSubResp.ok) {
+                        const singleSubData = await singleSubResp.json();
+                        if (singleSubData && singleSubData.id) {
+                            userSubs.push(singleSubData);
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Erro ao consultar assinatura individual:', e);
                 }
             }
         }
 
-        const purchasedProducts = [];
+        const hasActiveSubscription = userSubs.some(s => (s.status || '').toLowerCase() === 'active');
+        const hasSubscriptions = userSubs.length > 0;
+
+        // 4. Analisa cancelamentos, estornos e validade do período mensal
         let customerName = 'Cliente FUSE';
-        let latestOrder = null;
+        let latestPaidOrder = null;
+        let hasRefundOrChargeback = false;
 
         orders.forEach(order => {
             const status = (order.status || '').toLowerCase();
-            const isApproved = status === 'paid' || status === 'authorized' || status === 'processing';
-            
-            if (isApproved) {
-                if (!latestOrder || new Date(order.createdAt || 0) > new Date(latestOrder.createdAt || 0)) {
-                    latestOrder = order;
+            if (status === 'refunded' || status === 'chargedback') {
+                hasRefundOrChargeback = true;
+            }
+            if (status === 'paid' || status === 'authorized' || status === 'processing') {
+                const orderDate = new Date(order.paidAt || order.createdAt || 0);
+                if (!latestPaidOrder || orderDate > new Date(latestPaidOrder.paidAt || latestPaidOrder.createdAt || 0)) {
+                    latestPaidOrder = order;
                 }
                 if (order.customer && order.customer.name) {
                     customerName = order.customer.name;
                 }
-                if (order.product) {
-                    const prodName = (order.product.name || '').toLowerCase();
-                    if (prodName.includes('desafio')) {
-                        if (!purchasedProducts.includes('Desafio Core')) {
-                            purchasedProducts.push('Desafio Core');
-                        }
-                    } else {
-                        if (!purchasedProducts.includes('FUSE')) {
-                            purchasedProducts.push('FUSE');
-                        }
-                    }
-                } else {
-                    if (!purchasedProducts.includes('FUSE')) {
-                        purchasedProducts.push('FUSE');
-                    }
-                }
             }
         });
 
-        // Libera SEMPRE ambos os produtos para qualquer cliente com compra aprovada
-        if (purchasedProducts.length > 0 || latestOrder) {
-            if (!purchasedProducts.includes('FUSE')) {
-                purchasedProducts.push('FUSE');
-            }
-            if (!purchasedProducts.includes('Desafio Core')) {
-                purchasedProducts.push('Desafio Core');
-            }
+        // REGRAS DE REVOGAÇÃO DE ACESSO:
+        // Quem cancelou o mês, estornou ou não renovou perde o acesso imediatamente
+        let isCanceled = false;
+        let cancelReason = '';
 
+        if (hasSubscriptions && !hasActiveSubscription) {
+            isCanceled = true;
+            cancelReason = 'Sua assinatura mensal foi cancelada na Cakto.';
+        } else if (hasRefundOrChargeback && !hasActiveSubscription) {
+            isCanceled = true;
+            cancelReason = 'O pagamento da sua assinatura foi estornado ou cancelado.';
+        } else if (latestPaidOrder && latestPaidOrder.type === 'subscription' && !hasActiveSubscription) {
+            const lastPaidDate = new Date(latestPaidOrder.paidAt || latestPaidOrder.createdAt);
+            const daysSince = (Date.now() - lastPaidDate.getTime()) / (1000 * 60 * 60 * 24);
+            if (daysSince > 32) {
+                isCanceled = true;
+                cancelReason = 'O período da sua assinatura mensal expirou e não foi renovado.';
+            }
+        }
+
+        // Se a assinatura foi cancelada, bloqueia o acesso
+        if (isCanceled) {
+            return res.status(200).json({
+                success: false,
+                isCanceled: true,
+                message: cancelReason || 'Sua assinatura foi cancelada. Renove seu plano para continuar com acesso.',
+                customerName: customerName,
+                email: emailClean,
+                purchasedProducts: []
+            });
+        }
+
+        // Se possui assinatura ativa ou pagamento vigente aprovado, libera os acessos
+        if (hasActiveSubscription || latestPaidOrder) {
             return res.status(200).json({
                 success: true,
-                message: 'Compras ativas encontradas!',
+                isCanceled: false,
+                message: 'Assinatura ativa encontrada!',
                 customerName: customerName,
                 email: emailClean,
                 status: 'paid',
-                orderId: latestOrder ? (latestOrder.refId || latestOrder.id) : 'order_' + Date.now(),
-                paidAt: latestOrder ? (latestOrder.paidAt || latestOrder.createdAt) : new Date().toISOString(),
-                purchasedProducts: purchasedProducts
+                orderId: latestPaidOrder ? (latestPaidOrder.refId || latestPaidOrder.id) : 'sub_' + Date.now(),
+                paidAt: latestPaidOrder ? (latestPaidOrder.paidAt || latestPaidOrder.createdAt) : new Date().toISOString(),
+                purchasedProducts: ['FUSE', 'Desafio Core']
             });
         }
 
         return res.status(200).json({
             success: false,
+            isCanceled: false,
             message: 'Nenhum pagamento aprovado ou ativo foi encontrado para este e-mail no Cakto.',
             purchasedProducts: []
         });

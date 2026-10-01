@@ -217,6 +217,23 @@ if (usersDB["duda@fuse.com"]) {
     usersDB["duda@fuse.com"].userState.profilePhoto = "assets/img/duda-avatar.jpg";
     usersDB["duda@fuse.com"].userState.name = "Duda Meister";
 }
+
+const TRUSTED_EMAILS = [
+    'as9233809@gmail.com',
+    'duda@fuse.com',
+    'fernanda@fuse.com',
+    'fernanda@fuse.com.br',
+    'amanda@fuse.com.br',
+    'fer@gmail.com',
+    'pratsroberta@gmail.com'
+];
+
+function isTrustedEmail(email) {
+    if (!email) return false;
+    const clean = email.toLowerCase().trim();
+    return TRUSTED_EMAILS.includes(clean) || clean.endsWith('@fuse.com') || clean.endsWith('@fuse.com.br');
+}
+
 // Funções auxiliares globais de identificação e datas
 function generateUUID() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -511,6 +528,24 @@ function restoreSession() {
 
     // Renderiza a lista de histórico de hábitos no perfil
     renderDailyHistoryList();
+
+    // Valida em segundo plano se a assinatura mensal da usuária ainda está ativa na Cakto
+    if (currentUserEmail && !isTrustedEmail(currentUserEmail)) {
+        checkCaktoPurchaseAPI(currentUserEmail).then(res => {
+            if (res && res.isCanceled) {
+                userState.challengeAccess = false;
+                userState.challengeSubscribed = false;
+                userState.purchaseStatus = "canceled";
+                if (usersDB[currentUserEmail]) {
+                    usersDB[currentUserEmail].userState = userState;
+                }
+                saveStateToStorage();
+                alert(`⚠️ Atenção: ${res.message || 'Sua assinatura mensal foi cancelada ou não foi renovada na Cakto.'}\n\nPara continuar acessando os treinos, comunidade e desafios, realize a renovação do seu plano.`);
+                localStorage.removeItem("fuse_current_user_email");
+                window.location.reload();
+            }
+        }).catch(err => console.warn("Verificação de assinatura em background:", err));
+    }
 }
 
 function populateDudaWelcomeMessage() {
@@ -570,19 +605,10 @@ async function checkCaktoPurchaseAPI(email) {
     const emailClean = email.toLowerCase().trim();
     
     // Lista de Confiança no Cliente (Garante funcionamento offline / local)
-    const trustedEmails = [
-        'as9233809@gmail.com',
-        'duda@fuse.com',
-        'fernanda@fuse.com',
-        'fernanda@fuse.com.br',
-        'amanda@fuse.com.br',
-        'fer@gmail.com',
-        'pratsroberta@gmail.com'
-    ];
-
-    if (trustedEmails.includes(emailClean) || emailClean.endsWith('@fuse.com') || emailClean.endsWith('@fuse.com.br')) {
+    if (isTrustedEmail(emailClean)) {
         return {
             success: true,
+            isCanceled: false,
             customerName: emailClean.split('@')[0].toUpperCase(),
             email: emailClean,
             status: 'paid'
@@ -626,6 +652,11 @@ async function handleAuth(isLoginButton) {
             btnEl.disabled = false;
         }
         
+        if (verify.isCanceled) {
+            alert(`⚠️ ${verify.message || 'Sua assinatura mensal foi cancelada na Cakto.'}\n\nPara voltar a acessar o FUSE, realize a renovação do seu plano.`);
+            return;
+        }
+        
         if (verify.success) {
             // Cria a conta automaticamente usando a senha informada
             userState = JSON.parse(JSON.stringify(defaultState));
@@ -635,7 +666,7 @@ async function handleAuth(isLoginButton) {
             userState.name = verify.customerName;
             userState.hasLoggedIn = false; // Inicia na Anamnese
             
-            // Atribui os acessos (Sempre libera Comunidade e Desafio para quem loga)
+            // Atribui os acessos (Sempre libera Comunidade e Desafio para quem loga com assinatura ativa)
             userState.communityJoinedAt = new Date().toISOString();
             userState.challengeSubscribed = true;
             userState.challengeAccess = true;
@@ -661,6 +692,19 @@ async function handleAuth(isLoginButton) {
     if (account.password !== passVal) {
         alert("Senha incorreta. Tente novamente.");
         return;
+    }
+    
+    // Para contas locais existentes, valida em tempo real se a assinatura não foi cancelada
+    if (!isTrustedEmail(emailVal)) {
+        const verifyExisting = await checkCaktoPurchaseAPI(emailVal);
+        if (verifyExisting && verifyExisting.isCanceled) {
+            account.userState.challengeAccess = false;
+            account.userState.challengeSubscribed = false;
+            account.userState.purchaseStatus = "canceled";
+            localStorage.setItem("fuse_users_db", JSON.stringify(usersDB));
+            alert(`⚠️ ${verifyExisting.message || 'Sua assinatura mensal foi cancelada ou não foi renovada na Cakto.'}\n\nPara continuar acessando a comunidade e os treinos, realize a renovação do seu plano.`);
+            return;
+        }
     }
     
     // Login com sucesso
