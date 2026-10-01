@@ -228,6 +228,63 @@ const TRUSTED_EMAILS = [
     'pratsroberta@gmail.com'
 ];
 
+const VERIFIED_CUSTOMERS = {
+    // Clientes com assinatura ativa confirmada
+    "pricilaoliveiras21@gmail.com": { name: "Pricila Oliveira Rocha", status: "active" },
+    "camillyleticiaramos@gmail.com": { name: "Camilly Gerhardt Gerhardt", status: "active" },
+    "bebelsantos534@gmail.com": { name: "Isabelys dos Santos da Silva", status: "active" },
+    "jacquelinemesqui@gmail.com": { name: "Jacqueline Mesquita", status: "active" },
+    "juliaschaefer10@gmail.com": { name: "Julia schaefer", status: "active" },
+    "marinavilacac@gmail.com": { name: "Marina Vilaça", status: "active" },
+    "thaismoreirasap@gmail.com": { name: "Thais Moreira", status: "active" },
+    "ehriikaa17@hotmail.com": { name: "Érika Nascimento Santos", status: "active" },
+    "anneorzechowsky695@gmail.com": { name: "Anne Orzechowsky", status: "active" },
+    "mariaanaviann7@gmail.com": { name: "Mariaana Klein Viana", status: "active" },
+    "gabioff1234@gmail.com": { name: "Gabriela  Nascimento de Carvalho", status: "active" },
+    "bruninhavidal25@hotmail.com": { name: "Bruna A Vidal", status: "active" },
+    "luanacosta.2619@gmail.com": { name: "Raiza Luana de Miranda Costa da Silva", status: "active" },
+    "amariles_rodrigues@outlook.com": { name: "Amariles Paloma Rodrigues", status: "active" },
+    "monteiro20al@gmail.com": { name: "Aline Monteiro", status: "active" },
+    "nluana683@gmail.com": { name: "Luana Nunes da Cunha", status: "active" },
+    "jujugabriele.r@gmail.com": { name: "Julia Gabriele Paulino", status: "active" },
+    "demouramarcele@gmail.com": { name: "Marcele Dias de Moura", status: "active" },
+    "larissa_silvestre01@hotmail.com": { name: "Larissa Silvestre", status: "active" },
+    "l.almeida1391@gmail.com": { name: "Lais Borges de Almeida", status: "active" },
+    "carolyne.xavier@hotmail.com": { name: "Ana Carolyne Xavier dos Santos", status: "active" },
+    "enfabeatriz@outlook.com": { name: "Beatriz Oliveira", status: "active" },
+    "itsbrubarbosa@gmail.com": { name: "Bruna Barbosa", status: "active" },
+    "tininha.benitz@gmail.com": { name: "Albertina Benitz dos Santos", status: "active" },
+    "janiellyssantos26@gmail.com": { name: "Janielly da Silva Santos", status: "active" },
+    "jennyffer2301@gmail.com": { name: "Jennyffer Ribeiro da Silva", status: "active" },
+    "souzalidiane03@gmail.com": { name: "Lidiane de Souza Santana dos Santos", status: "active" },
+    "solanginhasol@hotmail.com": { name: "Solange Santos", status: "active" },
+    "nutri.stephanieduarte@gmail.com": { name: "Stephanie Duarte", status: "active" },
+    "as9233809@gmail.com": { name: "Amanda Caroline dos Santos Ferreira", status: "active" },
+    "mirellihi@hotmail.com": { name: "Mirelli Lopes Vasconcelos", status: "active" },
+    "gi_blho@hotmail.com": { name: "Gisele Evelyn Dantas Santos", status: "active" },
+    "gabriela.fernanda@redesupermercado.com.br": { name: "Gabriela Fernanda", status: "active" },
+    "mscontabil_@outlook.com": { name: "Milena Souza Souza", status: "active" },
+    "scryslayne9@gmail.com": { name: "Cryslayne Santos", status: "active" },
+    "sarah.heggler@gmail.com": { name: "Sarah Hegler", status: "active" },
+    "leticiahegler@gmail.com": { name: "Letícia Hegler", status: "active" },
+    "cribeiral@gmail.com": { name: "Clara Gomes Ribeiral", status: "active" },
+    "larahmagela@gmail.com": { name: "LARAH CAMACHO MAGELA", status: "active" },
+    "malurodriguesdelima@gmail.com": { name: "Maria Luiza Rodrigues de lima", status: "active" },
+    "cailaner38@gmail.com": { name: "Cailane Ribeiro", status: "active" },
+
+    // Clientes canceladas / inativas (acesso expressamente revogado)
+    "andressadasilvadasilva32491@gmail.com": { name: "Andressa Bezerra da Silva", status: "canceled" },
+    "amaintegrare@gmail.com": { name: "Amanda Rodrigues", status: "canceled" },
+    "marquesray86@gmail.com": { name: "Rayssa Millena Marques", status: "canceled" },
+    "souz2kelly@gmail.com": { name: "Kelly Souza Silva", status: "canceled" },
+    "lolysilvaalves3@gmail.com": { name: "Lorena Alves", status: "canceled" },
+    "fabi.casturina123@gmail.com": { name: "Fabiana Casturina Ferreira", status: "canceled" },
+    "eduardaaleixosm@gmail.com": { name: "Eduarda do Carmo Aleixo", status: "canceled" },
+    "tomanari.gabrielle@gmail.com": { name: "Gabrielle Tomanari", status: "canceled" },
+    "franciara_fran@hotmail.com": { name: "Franciara Lima", status: "canceled" },
+    "rayanemeneses70@gmail.com": { name: "RAIANE ALINE SILVA DE MENESES", status: "canceled" }
+};
+
 function isTrustedEmail(email) {
     if (!email) return false;
     const clean = email.toLowerCase().trim();
@@ -617,12 +674,37 @@ async function checkCaktoPurchaseAPI(email) {
 
     try {
         const response = await fetch(`/api/verify-purchase?email=${encodeURIComponent(email)}`);
-        if (!response.ok) return { success: false };
-        return await response.json();
+        if (response.ok) {
+            const data = await response.json();
+            return data;
+        }
     } catch (e) {
-        console.error("Erro ao chamar API de verificação:", e);
-        return { success: false };
+        console.warn("API de verificação remota não respondeu, consultando catálogo de contingência:", e);
     }
+
+    // Fallback de alta disponibilidade com catálogo verificado do mês
+    if (typeof VERIFIED_CUSTOMERS !== 'undefined' && VERIFIED_CUSTOMERS[emailClean]) {
+        const v = VERIFIED_CUSTOMERS[emailClean];
+        if (v.status === 'canceled' || v.status === 'inactive') {
+            return {
+                success: false,
+                isCanceled: true,
+                message: 'Sua assinatura mensal foi cancelada na Cakto.',
+                customerName: v.name,
+                email: emailClean
+            };
+        } else if (v.status === 'active') {
+            return {
+                success: true,
+                isCanceled: false,
+                customerName: v.name,
+                email: emailClean,
+                status: 'paid'
+            };
+        }
+    }
+
+    return { success: false };
 }
 
 async function handleAuth(isLoginButton) {
