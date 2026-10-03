@@ -582,7 +582,10 @@ function restoreSession() {
     // 1. ATUALIZA TEXTOS E HEADERS DA HOME E PERFIL
     document.getElementById("user-display-name").innerText = userState.name;
     document.getElementById("profile-display-name").innerText = userState.name;
-    document.getElementById("workout-tab-sub").innerText = `Foco no seu objetivo: ${userState.goal.charAt(0).toUpperCase() + userState.goal.slice(1)}`;
+    const workoutTabSubEl = document.getElementById("workout-tab-sub");
+    if (workoutTabSubEl) {
+        workoutTabSubEl.innerText = `Foco no seu objetivo: ${userState.goal.charAt(0).toUpperCase() + userState.goal.slice(1)}`;
+    }
     document.getElementById("home-workout-chk-desc").innerText = `Treinar na ${userState.place} (${userState.idealDuration} min)`;
     
     // Atualiza Banners Rápidos
@@ -2779,7 +2782,10 @@ function changeNutritionConfig() {
 
     // Atualiza home atalhos
     document.getElementById("home-diet-btn-sub").innerText = `Meta de Kcal do dia: ${userState.targetCalories}`;
-    document.getElementById("workout-tab-sub").innerText = `Foco no seu objetivo: ${selectedGoal.charAt(0).toUpperCase() + selectedGoal.slice(1)}`;
+    const workoutTabSubEl = document.getElementById("workout-tab-sub");
+    if (workoutTabSubEl) {
+        workoutTabSubEl.innerText = `Foco no seu objetivo: ${selectedGoal.charAt(0).toUpperCase() + selectedGoal.slice(1)}`;
+    }
 
     // Gera plano baseado no Objetivo + Filtros combinados
     generateDynamicCardapio(selectedGoal, userState.activeDietFilters || []);
