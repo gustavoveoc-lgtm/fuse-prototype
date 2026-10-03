@@ -2484,34 +2484,7 @@ function togglePropositoCheckin() {
 }
 
 function savePropositoReflection() {
-    ensurePropositoState();
-    const activeDay = userState.proposito.activeDay;
-    const dayKey = String(activeDay);
-    
-    const mainEl = document.getElementById("proposito-main-reflection");
-    const verseEl = document.getElementById("proposito-opt-verse");
-    const teachingEl = document.getElementById("proposito-opt-teaching");
-    const surrenderEl = document.getElementById("proposito-opt-surrender");
-    const practiceEl = document.getElementById("proposito-opt-practice");
-    const feedbackEl = document.getElementById("proposito-save-feedback");
-    
-    userState.proposito.reflections[dayKey] = {
-        main: mainEl ? mainEl.value : "",
-        verse: verseEl ? verseEl.value : "",
-        teaching: teachingEl ? teachingEl.value : "",
-        surrender: surrenderEl ? surrenderEl.value : "",
-        practice: practiceEl ? practiceEl.value : "",
-        updatedAt: new Date().toISOString()
-    };
-    
-    saveStateToStorage();
-    
-    if (feedbackEl) {
-        feedbackEl.style.display = "inline";
-        setTimeout(() => {
-            feedbackEl.style.display = "none";
-        }, 3000);
-    }
+    // Guia de anotações manuais no caderno / Bíblia
 }
 
 function renderPropositoUI() {
@@ -2526,11 +2499,6 @@ function renderPropositoUI() {
     const checkinBtn = document.getElementById("btn-proposito-checkin");
     const checkinBoxIcon = document.getElementById("checkin-checkbox-icon");
     const checkinBtnLabel = document.getElementById("checkin-btn-label");
-    const mainReflection = document.getElementById("proposito-main-reflection");
-    const optVerse = document.getElementById("proposito-opt-verse");
-    const optTeaching = document.getElementById("proposito-opt-teaching");
-    const optSurrender = document.getElementById("proposito-opt-surrender");
-    const optPractice = document.getElementById("proposito-opt-practice");
     const completionCard = document.getElementById("proposito-completion-card");
     
     if (!counterEl || !fillEl || !daysContainer) return;
@@ -2616,16 +2584,6 @@ function renderPropositoUI() {
             checkinBtn.style.color = "#ffffff";
         }
     }
-    
-    // Carrega reflexões salvas do dia ativo
-    const dayKey = String(activeDay);
-    const saved = userState.proposito.reflections[dayKey] || {};
-    
-    if (mainReflection) mainReflection.value = saved.main || "";
-    if (optVerse) optVerse.value = saved.verse || "";
-    if (optTeaching) optTeaching.value = saved.teaching || "";
-    if (optSurrender) optSurrender.value = saved.surrender || "";
-    if (optPractice) optPractice.value = saved.practice || "";
     
     // Exibe ou oculta card de conclusão final
     if (completionCard) {
