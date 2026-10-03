@@ -1,0 +1,67 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#180f15" />
+      <stop offset="50%" stop-color="#120a0f" />
+      <stop offset="100%" stop-color="#0b0609" />
+    </linearGradient>
+    <radialGradient id="glowRose" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#e8a598" stop-opacity="0.22" />
+      <stop offset="100%" stop-color="#e8a598" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="roseAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f0b6aa" />
+      <stop offset="100%" stop-color="#d6877b" />
+    </linearGradient>
+    <linearGradient id="femaleSkin" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f2cfb8" />
+      <stop offset="100%" stop-color="#dfb398" />
+    </linearGradient>
+    <linearGradient id="apparelDark" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2c1e26" />
+      <stop offset="100%" stop-color="#1a1117" />
+    </linearGradient>
+    <filter id="shadowDrop" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <!-- Fundo escuro luxo FUSE -->
+  <rect width="800" height="800" fill="url(#bgGrad)" />
+  <circle cx="400" cy="420" r="320" fill="url(#glowRose)" />
+  <line x1="100" y1="680" x2="700" y2="680" stroke="rgba(255,255,255,0.06)" stroke-width="2" />
+  <ellipse cx="400" cy="680" rx="260" ry="22" fill="rgba(0,0,0,0.4)" filter="url(#shadowDrop)" />
+
+  <!-- Topo -->
+  <g transform="translate(40, 45)">
+    <rect width="180" height="32" rx="16" fill="rgba(232,165,152,0.12)" stroke="rgba(232,165,152,0.3)" stroke-width="1" />
+    <text x="90" y="21" fill="#e8a598" font-family="'Outfit', sans-serif" font-size="12" font-weight="700" text-anchor="middle" letter-spacing="1">GUIA EDUCATIVO</text>
+  </g>
+  <text x="760" y="68" fill="rgba(255,255,255,0.4)" font-family="'Outfit', sans-serif" font-size="13" font-weight="600" text-anchor="end" letter-spacing="0.5">FUSE FITNESS</text>
+
+  <!-- Destaque Muscular Ativado -->
+  <g transform="translate(40, 105)">
+    <text x="0" y="0" fill="#e8a598" font-family="'Outfit', sans-serif" font-size="13" font-weight="800" letter-spacing="0.5">DELTOIDE LATERAL</text>
+    <text x="0" y="22" fill="rgba(255,255,255,0.6)" font-family="'Outfit', sans-serif" font-size="12" font-weight="600">â€¢ ARCO LATERAL SUAVE</text>
+  </g>
+
+  <!-- IlustraÃ§Ã£o da Mulher Executando o Movimento -->
+      <circle cx="400" cy="220" r="26" fill="url(#femaleSkin)" />
+    <circle cx="400" cy="195" r="14" fill="#2d1d17" />
+    <path d="M 400 250 L 400 420" stroke="url(#apparelDark)" stroke-width="46" stroke-linecap="round" />
+    <circle cx="360" cy="270" r="18" fill="url(#roseAccent)" />
+    <circle cx="440" cy="270" r="18" fill="url(#roseAccent)" />
+    <path d="M 385 440 L 380 640" stroke="url(#apparelDark)" stroke-width="26" stroke-linecap="round" />
+    <path d="M 415 440 L 420 640" stroke="url(#apparelDark)" stroke-width="26" stroke-linecap="round" />
+    <path d="M 360 270 L 240 280" stroke="url(#femaleSkin)" stroke-width="16" stroke-linecap="round" />
+    <path d="M 440 270 L 560 280" stroke="url(#femaleSkin)" stroke-width="16" stroke-linecap="round" />
+    <g transform="translate(235, 280)"><rect x="-6" y="-18" width="12" height="36" rx="3" fill="#2b2327" stroke="#e8a598" stroke-width="1.5" /></g>
+    <g transform="translate(565, 280)"><rect x="-6" y="-18" width="12" height="36" rx="3" fill="#2b2327" stroke="#e8a598" stroke-width="1.5" /></g>
+    <path d="M 290 370 A 90 90 0 0 1 250 300" fill="none" stroke="#e8a598" stroke-width="3" stroke-dasharray="5,4" />
+    <path d="M 510 370 A 90 90 0 0 0 550 300" fill="none" stroke="#e8a598" stroke-width="3" stroke-dasharray="5,4" />
+
+  <!-- RodapÃ© com Metadados Oficiais -->
+  <rect x="40" y="710" width="720" height="50" rx="12" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.06)" stroke-width="1" />
+  <text x="60" y="741" fill="#ffffff" font-family="'Outfit', sans-serif" font-size="14" font-weight="700">02 â€” ELEVAÃ‡ÃƒO LATERAL COM HALTERES</text>
+  <text x="720" y="741" fill="#e8a598" font-family="'Outfit', sans-serif" font-size="13" font-weight="600" text-anchor="end">4 sÃ©ries Ã— 12 reps â€¢ Descanso 90s</text>
+</svg>

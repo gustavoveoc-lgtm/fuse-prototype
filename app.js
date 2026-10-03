@@ -1219,70 +1219,81 @@ const WEEKLY_WORKOUT_SCHEDULE = [
         dayIndex: 0,
         dayName: "SEGUNDA-FEIRA",
         shortName: "SEG",
-        title: "TREINO DE PERNAS & COXAS",
-        subtitle: "Foco em quadríceps e tonificação de membros inferiores",
-        duration: 40,
-        kcal: 260,
+        title: "Glúteo day 🍑",
+        subtitle: "Inferiores com foco prioritário em volume e contorno glúteo",
+        category: "INFERIORES",
+        duration: 50,
+        kcal: 320,
         exercises: [
             {
                 number: "01",
-                name: "Agachamento Livre com Barra",
+                name: "Abdutora",
                 sets: 4,
-                repsRange: "8–10 repetições",
-                targetReps: 10,
-                defaultWeight: 45,
-                image: "assets/img/agachamento-livre.jpg",
-                muscles: "Quadríceps, Glúteos, Core",
-                instructions: "Mantenha os pés alinhados aos ombros. Desça flexionando quadris e joelhos até 90 graus, mantendo o peito ereto e a coluna neutra.",
-                errors: "Evite curvar as costas, projetar os joelhos para dentro ou levantar os calcanhares do chão."
+                repsRange: "12 reps (progredindo carga)",
+                targetReps: 12,
+                rest: "90s (1m30s)",
+                restSeconds: 90,
+                defaultWeight: 40,
+                image: "assets/img/abdutora.jpg",
+                muscles: "Glúteo Médio, Glúteo Mínimo",
+                instructions: "Ajuste o encosto para manter a coluna lombar bem apoiada. Posicione as pernas firmes nas almofadas laterais. Realize a abertura afastando os joelhos contra a resistência até a máxima contração glútea, segure 1 segundo e retorne com velocidade controlada sem deixar os pesos colidirem.",
+                errors: "Evite impulsos com o tronco para frente ou para trás, e não deixe as pernas fecharem rapidamente sem resistir ao peso."
             },
             {
                 number: "02",
-                name: "Leg Press 45°",
+                name: "Glúteo na polia com perna esticada",
                 sets: 4,
-                repsRange: "10–12 repetições",
-                targetReps: 10,
-                defaultWeight: 120,
-                image: "assets/img/leg-press.jpg",
-                muscles: "Quadríceps, Glúteos",
-                instructions: "Apoie os pés na largura dos ombros no meio da plataforma. Destrave a máquina e desça flexionando os joelhos sem descolar a lombar do encosto.",
-                errors: "Não estenda os joelhos até travar a articulação no final do movimento."
+                repsRange: "12 reps (progredindo carga)",
+                targetReps: 12,
+                rest: "90s (1m30s)",
+                restSeconds: 90,
+                defaultWeight: 15,
+                image: "assets/img/gluteo-polia-esticada.jpg",
+                muscles: "Glúteo Máximo",
+                instructions: "Fixe a tornozeleira na polia baixa. Apoie as mãos firmes na estrutura do aparelho, incline suavemente o tronco e trave o abdômen. Eleve a perna para trás mantendo o joelho estendido até a altura do quadril, contraindo intensamente o glúteo no pico. Retorne de forma lenta.",
+                errors: "Não arqueie nem faça hiperextensão da coluna lombar; o movimento deve acontecer estritamente pela articulação do quadril."
             },
             {
                 number: "03",
-                name: "Cadeira Extensora",
-                sets: 3,
-                repsRange: "12–15 repetições",
+                name: "Levantamento terra sumô",
+                sets: 4,
+                repsRange: "12 reps (progredindo carga)",
                 targetReps: 12,
-                defaultWeight: 35,
-                image: "assets/img/leg-press.jpg",
-                muscles: "Quadríceps isolado",
-                instructions: "Ajuste o rolo sobre os tornozelos. Estenda as pernas totalmente contraindo o quadríceps por 1 segundo no pico do movimento.",
-                errors: "Evite impulsos rápidos ou usar o tronco para movimentar a carga."
+                rest: "90s (1m30s)",
+                restSeconds: 90,
+                defaultWeight: 40,
+                image: "assets/img/levantamento-terra-sumo.jpg",
+                muscles: "Glúteos, Adutores, Posterior de Coxa",
+                instructions: "Posicione os pés bem afastados (além da largura dos ombros) com as pontas viradas para fora a 45°. Mantendo o peito aberto, escápulas travadas e coluna neutra, projete o quadril para trás e flexione os joelhos para segurar o peso. Suba empurrando o chão pelos calcanhares e aperte os glúteos no topo.",
+                errors: "Nunca arredonde a coluna lombar e jamais permita que os joelhos colapsem para dentro durante o levantamento."
             },
             {
                 number: "04",
-                name: "Passada com Halteres",
-                sets: 3,
-                repsRange: "10–12 passos cada perna",
-                targetReps: 10,
-                defaultWeight: 16,
-                image: "assets/img/stiff.jpg",
-                muscles: "Quadríceps, Glúteos, Equilíbrio",
-                instructions: "Dê um passo largo à frente, descendo até que o joelho de trás quase toque o chão e a coxa da frente fique paralela ao solo.",
-                errors: "Não incline excessivamente o tronco para a frente e mantenha o ritmo controlado."
+                name: "Búlgaro",
+                sets: 4,
+                repsRange: "12 reps (progredindo carga)",
+                targetReps: 12,
+                rest: "90s (1m30s)",
+                restSeconds: 90,
+                defaultWeight: 12,
+                image: "assets/img/bulgaro.svg",
+                muscles: "Glúteo Máximo, Quadríceps",
+                instructions: "Apoie o peito de um dos pés no banco ou suporte atrás de você. Dê um passo largo à frente com a outra perna. Mantenha o tronco com uma suave inclinação à frente e desça verticalmente flexionando o joelho dianteiro até 90°. Empurre o chão com toda a força do calcanhar da perna da frente para retornar.",
+                errors: "Evite transferir o esforço para a perna de trás ou deixar o joelho dianteiro ultrapassar excessivamente a ponta do pé."
             },
             {
                 number: "05",
-                name: "Panturrilhas em Pé",
+                name: "RDL com halteres",
                 sets: 4,
-                repsRange: "15–20 repetições",
-                targetReps: 15,
-                defaultWeight: 30,
-                image: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&q=80&w=400",
-                muscles: "Gastrocnêmio, Sóleo",
-                instructions: "Eleve os calcanhares ao máximo na ponta dos pés, sustente a contração por 1 segundo e desça alongando bem.",
-                errors: "Evite quicar no movimento; mantenha controle na subida e na descida."
+                repsRange: "12 reps (progredindo carga)",
+                targetReps: 12,
+                rest: "90s (1m30s)",
+                restSeconds: 90,
+                defaultWeight: 20,
+                image: "assets/img/rdl-halteres.svg",
+                muscles: "Glúteos, Isquiotibiais (Posterior)",
+                instructions: "Em pé com os pés na largura dos quadris, segure os halteres à frente das coxas. Mantenha os joelhos apenas semiflexionados (fixos nesse ângulo) e empurre o quadril o mais para trás possível, descendo os halteres colados às canelas até sentir os glúteos e posteriores alongarem ao máximo. Retorne puxando pelos glúteos.",
+                errors: "Não transforme o exercício em agachamento flexionando os joelhos em demasia e mantenha o alinhamento da coluna cervical e lombar."
             }
         ]
     },
@@ -1290,58 +1301,81 @@ const WEEKLY_WORKOUT_SCHEDULE = [
         dayIndex: 1,
         dayName: "TERÇA-FEIRA",
         shortName: "TER",
-        title: "COSTAS, OMBROS & CORE",
-        subtitle: "Postura elegante, costas desenhadas e abdômen firme",
-        duration: 35,
-        kcal: 220,
+        title: "Dia de ombro + costas 🧅",
+        subtitle: "Deltoides esculpidos, costas desenhadas e postura impecável",
+        category: "SUPERIORES",
+        duration: 45,
+        kcal: 280,
         exercises: [
             {
                 number: "01",
-                name: "Puxada Aberta no Pulley",
+                name: "Elevação frontal com halteres",
                 sets: 4,
-                repsRange: "10–12 repetições",
-                targetReps: 10,
-                defaultWeight: 30,
-                image: "assets/img/superiores-workout.jpg",
-                muscles: "Dorsais, Bíceps, Ombros",
-                instructions: "Puxe a barra em direção ao peitoral superior, aproximando as escápulas e mantendo os cotovelos direcionados para baixo.",
-                errors: "Evite puxar atrás da nuca ou balançar o tronco para trás."
+                repsRange: "12 reps (progredindo carga)",
+                targetReps: 12,
+                rest: "90s (1m30s)",
+                restSeconds: 90,
+                defaultWeight: 6,
+                image: "assets/img/elevacao-frontal.svg",
+                muscles: "Deltoide Anterior (Frente do Ombro)",
+                instructions: "Em pé com pés na largura do quadril, postura alinhada e abdômen firme. Segure os halteres à frente das coxas e eleve os braços à frente até a linha dos olhos, mantendo uma leve flexão nos cotovelos. Pause no pico por 1 segundo e desça com controle total.",
+                errors: "Evite utilizar o balanço do tronco ou elevar a carga acima do nível dos ombros com excesso de velocidade."
             },
             {
                 number: "02",
-                name: "Remada Baixa com Triângulo",
+                name: "Elevação lateral com halteres",
                 sets: 4,
-                repsRange: "10–12 repetições",
-                targetReps: 10,
-                defaultWeight: 25,
-                image: "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?auto=format&fit=crop&q=80&w=400",
-                muscles: "Costas (Romboides, Grande Dorsal)",
-                instructions: "Puxe a manopla em direção ao umbigo mantendo a coluna ereta, peito estufado e cotovelos rentes ao tronco.",
-                errors: "Não curve a lombar e evite usar impulso excessivo."
+                repsRange: "12 reps (progredindo carga)",
+                targetReps: 12,
+                rest: "90s (1m30s)",
+                restSeconds: 90,
+                defaultWeight: 6,
+                image: "assets/img/elevacao-lateral.svg",
+                muscles: "Deltoide Lateral (Ombro Redondo)",
+                instructions: "Com o tronco levemente inclinado para frente, eleve os halteres lateralmente com os cotovelos ligeiramente flexionados até atingir a altura dos ombros. Foque em conduzir o movimento pelos cotovelos, sem encolher o pescoço, e desça cadenciadamente.",
+                errors: "Não dê impulsos com as pernas ou lombar e não levante os punhos mais alto do que os cotovelos."
             },
             {
                 number: "03",
-                name: "Desenvolvimento de Ombros com Halteres",
-                sets: 3,
-                repsRange: "10–12 repetições",
-                targetReps: 10,
-                defaultWeight: 12,
-                image: "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&q=80&w=400",
-                muscles: "Deltoides (Ombros), Tríceps",
-                instructions: "Empurre os halteres para cima a partir da altura das orelhas sem esticar os cotovelos de forma brusca no topo.",
-                errors: "Não arquear a lombar durante a subida dos halteres."
+                name: "Pull down com corda",
+                sets: 4,
+                repsRange: "12 reps (progredindo carga)",
+                targetReps: 12,
+                rest: "90s (1m30s)",
+                restSeconds: 90,
+                defaultWeight: 20,
+                image: "assets/img/pull-down-corda.svg",
+                muscles: "Latíssimo do Dorso (Dorsais)",
+                instructions: "De frente para a polia alta segurando a ponta da corda, incline o tronco para frente em cerca de 30° com joelhos destravados. Mantendo os cotovelos quase retos, puxe a corda em arco até a lateral do quadril, expandindo o tórax e contraindo as dorsais ao máximo.",
+                errors: "Evite dobrar os cotovelos convertendo a puxada em tríceps na corda e não movimente a coluna durante o arco."
             },
             {
                 number: "04",
-                name: "Prancha Isométrica",
-                sets: 3,
-                repsRange: "45 segundos",
-                targetReps: 45,
-                defaultWeight: 0,
-                image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&q=80&w=400",
-                muscles: "Abdômen, Core, Lombar",
-                instructions: "Apoie os antebraços e pontas dos pés no chão formando uma linha reta dos calcanhares à cabeça.",
-                errors: "Não deixe o quadril cair ou levantar em formato de pirâmide."
+                name: "Remada baixa",
+                sets: 4,
+                repsRange: "12 reps (progredindo carga)",
+                targetReps: 12,
+                rest: "90s (1m30s)",
+                restSeconds: 90,
+                defaultWeight: 25,
+                image: "assets/img/remada-baixa.svg",
+                muscles: "Romboides, Grande Dorsal, Miolo das Costas",
+                instructions: "Sentada no aparelho de remada com os pés bem apoiados e joelhos ligeiramente destravados. Puxe o triângulo ou puxador em direção ao umbigo, abrindo o peito e aproximando vigorosamente as escápulas atrás. Alongue as costas controlando a volta.",
+                errors: "Evite jogar as costas para trás no final da puxada ou deixar os ombros rodarem para frente na volta."
+            },
+            {
+                number: "05",
+                name: "Desenvolvimento com halteres",
+                sets: 4,
+                repsRange: "12 reps (progredindo carga)",
+                targetReps: 12,
+                rest: "90s (1m30s)",
+                restSeconds: 90,
+                defaultWeight: 8,
+                image: "assets/img/desenvolvimento-halteres.svg",
+                muscles: "Deltoides Completo, Trapézio Superior",
+                instructions: "Sentada em banco com encosto em cerca de 75-80°, inicie com os halteres na altura das orelhas e cotovelos posicionados no plano escapular (ligeiramente à frente). Empurre os pesos para cima até a extensão quase completa, sem colidir os halteres no topo. Desça com cadência.",
+                errors: "Não desça a carga de forma desgovernada e evite projetar os cotovelos totalmente abertos para os lados."
             }
         ]
     },
@@ -1349,70 +1383,81 @@ const WEEKLY_WORKOUT_SCHEDULE = [
         dayIndex: 2,
         dayName: "QUARTA-FEIRA",
         shortName: "QUA",
-        title: "TREINO DE GLÚTEOS",
-        subtitle: "Hipertrofia e modelagem glútea de alta ativação",
-        duration: 40,
-        kcal: 250,
+        title: "O pior de todos 😭",
+        subtitle: "Quadríceps intenso, força e queima calórica máxima",
+        category: "QUADRÍCEPS",
+        duration: 55,
+        kcal: 360,
         exercises: [
             {
                 number: "01",
-                name: "Elevação Pélvica com Barra",
+                name: "Agachamento smith",
                 sets: 4,
-                repsRange: "10–12 repetições",
-                targetReps: 10,
-                defaultWeight: 60,
-                image: "assets/img/elevacao-pelvica.png",
-                muscles: "Glúteo Máximo, Isquiotibiais",
-                instructions: "Apoie as escápulas no banco e posicione a barra sobre o quadril. Eleve o quadril contraindo fortemente os glúteos no topo por 2 segundos.",
-                errors: "Não hiperestenda a coluna lombar; o esforço deve vir puramente dos glúteos."
+                repsRange: "12 reps (progredindo carga)",
+                targetReps: 12,
+                rest: "90s (1m30s)",
+                restSeconds: 90,
+                defaultWeight: 30,
+                image: "assets/img/agachamento-smith.svg",
+                muscles: "Quadríceps, Glúteos",
+                instructions: "Apoie a barra do Smith na musculatura dos trapézios e posicione os pés ligeiramente à frente da linha da barra na largura dos ombros. Destrave e desça flexionando quadris e joelhos até 90 graus mantendo a coluna ereta. Empurre o solo pelos calcanhares até estender.",
+                errors: "Evite posicionar os pés diretamente embaixo do quadril e nunca deixe a coluna curvar na descida."
             },
             {
                 number: "02",
-                name: "Agachamento Sumô com Halter",
+                name: "Extensora",
                 sets: 4,
-                repsRange: "10–12 repetições",
-                targetReps: 10,
-                defaultWeight: 20,
-                image: "assets/img/agachamento-livre.jpg",
-                muscles: "Glúteos, Adutores, Quadríceps",
-                instructions: "Pés bem afastados com pontas viradas para fora a 45°. Segure o halter centralizado e agache com a coluna alinhada.",
-                errors: "Evite deixar os joelhos cederem para dentro durante a subida."
+                repsRange: "12 reps (progredindo carga)",
+                targetReps: 12,
+                rest: "90s (1m30s)",
+                restSeconds: 90,
+                defaultWeight: 30,
+                image: "assets/img/extensora.svg",
+                muscles: "Quadríceps Isolado",
+                instructions: "Regule o aparelho para que o eixo de rotação fique exatamente alinhado aos seus joelhos e o rolete fique posicionado no peito do pé. Estenda as pernas até a contração total dos quadríceps, segure 1 segundo no pico e desça lentamente resistindo à descida.",
+                errors: "Não descole os glúteos do banco nem use impulsos bruscos com o tronco para iniciar o movimento."
             },
             {
                 number: "03",
-                name: "Mesa Flexora",
+                name: "Leg press 45°",
                 sets: 4,
-                repsRange: "10–12 repetições",
+                repsRange: "12 reps (progredindo carga)",
                 targetReps: 12,
-                defaultWeight: 30,
-                image: "assets/img/stiff.jpg",
-                muscles: "Posterior de Coxa",
-                instructions: "Deite de bruços e flexione os joelhos trazendo o rolo em direção aos glúteos, controlando a descida.",
-                errors: "Não descole o quadril do banco para forçar a carga."
+                rest: "90s (1m30s)",
+                restSeconds: 90,
+                defaultWeight: 100,
+                image: "assets/img/leg-press-45.svg",
+                muscles: "Quadríceps, Glúteos",
+                instructions: "Acomode-se com as costas e a lombar perfeitamente apoiadas no encosto. Pés na largura dos ombros no meio da plataforma. Destrave e flexione os joelhos trazendo a carga com segurança até formar 90 graus. Empurre a plataforma com a base dos pés sem travar os joelhos.",
+                errors: "Nunca bloqueie/estale os joelhos em hiperextensão no topo e jamais permita que o quadril levante do banco."
             },
             {
                 number: "04",
-                name: "Afundo Búlgaro",
-                sets: 3,
-                repsRange: "10–12 repetições cada perna",
-                targetReps: 10,
-                defaultWeight: 14,
-                image: "assets/img/stiff.jpg",
-                muscles: "Glúteos, Quadríceps",
-                instructions: "Apoie a ponta de um pé no banco atrás de você e flexione a perna da frente descendo o quadril na vertical.",
-                errors: "Não projete o joelho muito à frente da ponta do pé."
+                name: "Adutora",
+                sets: 4,
+                repsRange: "12 reps (progredindo carga)",
+                targetReps: 12,
+                rest: "90s (1m30s)",
+                restSeconds: 90,
+                defaultWeight: 35,
+                image: "assets/img/adutora.svg",
+                muscles: "Adutores da Coxa (Parte Interna)",
+                instructions: "Sente-se com as costas apoiadas e as pernas abertas sobre as almofadas. Una as pernas aproximando as almofadas com força controlada focando nos adutores. Segure a contração por 1 segundo no centro e afaste suavemente com controle total da carga.",
+                errors: "Não deixe as pernas abrirem de forma descontrolada ou além da flexibilidade confortável da virilha."
             },
             {
                 number: "05",
-                name: "Cadeira Abdutora",
+                name: "Búlgaro",
                 sets: 4,
-                repsRange: "15 repetições",
-                targetReps: 15,
-                defaultWeight: 45,
-                image: "assets/img/gluteos-workout.png",
-                muscles: "Glúteo Médio e Mínimo",
-                instructions: "Incline o tronco levemente à frente e afaste as pernas contra a resistência, pausando 1 segundo na abertura máxima.",
-                errors: "Não use impulso; controle a fase excêntrica de fechamento."
+                repsRange: "12 reps (progredindo carga)",
+                targetReps: 12,
+                rest: "90s (1m30s)",
+                restSeconds: 90,
+                defaultWeight: 12,
+                image: "assets/img/bulgaro.svg",
+                muscles: "Quadríceps, Glúteo Máximo",
+                instructions: "Pé de apoio firme à frente e o outro pé apoiado no banco atrás. Mantenha o tronco reto e desça na vertical até que a coxa dianteira fique paralela ao chão, ativando intensamente o quadríceps e estabilizando com o core. Suba com firmeza empurrando o chão.",
+                errors: "Evite oscilar lateralmente o joelho da perna da frente; mantenha o joelho alinhado com a ponta do pé."
             }
         ]
     },
@@ -1420,58 +1465,81 @@ const WEEKLY_WORKOUT_SCHEDULE = [
         dayIndex: 3,
         dayName: "QUINTA-FEIRA",
         shortName: "QUI",
-        title: "CARDIO HIIT & CORE",
-        subtitle: "Queima calórica acelerada e fortalecimento do abdômen",
-        duration: 25,
-        kcal: 230,
+        title: "Superiores completo",
+        subtitle: "Bíceps, tríceps, costas e ombros para simetria elegante",
+        category: "SUPERIORES",
+        duration: 45,
+        kcal: 270,
         exercises: [
             {
                 number: "01",
-                name: "Polichinelos Dinâmicos",
+                name: "Rosca direta com halteres",
                 sets: 4,
-                repsRange: "45 segundos",
-                targetReps: 45,
-                defaultWeight: 0,
-                image: "assets/img/cardio-workout.jpg",
-                muscles: "Cardio, Panturrilhas, Ombros",
-                instructions: "Salte abrindo pernas e braços simultaneamente e feche ritmadamente amortecendo na ponta dos pés.",
-                errors: "Evite bater os calcanhares no chão com impacto excessivo."
+                repsRange: "12 reps (progredindo carga)",
+                targetReps: 12,
+                rest: "90s (1m30s)",
+                restSeconds: 90,
+                defaultWeight: 7,
+                image: "assets/img/rosca-direta.svg",
+                muscles: "Bíceps Braquial",
+                instructions: "Em pé com postura ereta e abdômen contraído, cotovelos colados às laterais do tronco. Flexione os antebraços trazendo os halteres para cima com as palmas voltadas para você. No topo, aperte os bíceps e desça de maneira lenta e contínua.",
+                errors: "Não balance o corpo para impulsionar a carga e não movimente os cotovelos para frente durante a subida."
             },
             {
                 number: "02",
-                name: "Corrida Estacionária Joelho Alto",
+                name: "Tríceps na polia com corda",
                 sets: 4,
-                repsRange: "45 segundos",
-                targetReps: 45,
-                defaultWeight: 0,
-                image: "https://images.unsplash.com/photo-1486218119243-13883505764c?auto=format&fit=crop&q=80&w=400",
-                muscles: "Cardio, Quadríceps, Core",
-                instructions: "Eleve os joelhos até a altura dos quadris em ritmo contínuo, movimentando os braços.",
-                errors: "Não curve a coluna para trás enquanto eleva as pernas."
+                repsRange: "12 reps (progredindo carga)",
+                targetReps: 12,
+                rest: "90s (1m30s)",
+                restSeconds: 90,
+                defaultWeight: 15,
+                image: "assets/img/triceps-polia-corda.svg",
+                muscles: "Tríceps Braquial (Todas as Porções)",
+                instructions: "De frente para a polia alta, segure a corda com as palmas voltadas uma para a outra. Mantenha os cotovelos estritamente fixos ao lado das costelas e empurre a corda para baixo até a extensão dos braços, afastando as extremidades da corda no final.",
+                errors: "Evite movimentar os cotovelos ou encolher os ombros; o braço deve permanecer como uma alavanca fixa."
             },
             {
                 number: "03",
-                name: "Burpees Adaptados FUSE",
-                sets: 3,
-                repsRange: "30 segundos",
-                targetReps: 30,
-                defaultWeight: 0,
-                image: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&q=80&w=400",
-                muscles: "Full Body, Cardio",
-                instructions: "Mãos no chão, pernas para trás em prancha, retorne e fique em pé com extensão de braços.",
-                errors: "Não relaxe o abdômen ao estender os pés para trás."
+                name: "Face pull com corda",
+                sets: 4,
+                repsRange: "12 reps (progredindo carga)",
+                targetReps: 12,
+                rest: "90s (1m30s)",
+                restSeconds: 90,
+                defaultWeight: 15,
+                image: "assets/img/face-pull-corda.svg",
+                muscles: "Deltoide Posterior, Manguito Rotador, Trapézio",
+                instructions: "Ajuste a polia na altura do rosto. Segure a corda com os polegares apontando para trás. Puxe a corda em direção ao nariz abrindo as mãos para as laterais, mantendo os cotovelos sempre elevados e rodando os ombros para trás com força.",
+                errors: "Não deixe os cotovelos caírem abaixo da linha dos ombros nem projete a cabeça para frente na puxada."
             },
             {
                 number: "04",
-                name: "Abdominal Supra Remador",
+                name: "Puxada alta aberta",
                 sets: 4,
-                repsRange: "20 repetições",
-                targetReps: 20,
-                defaultWeight: 0,
-                image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&q=80&w=400",
-                muscles: "Reto Abdominal",
-                instructions: "Deitada com braços e pernas estendidos, suba abraçando os joelhos contra o peito.",
-                errors: "Evite puxar o pescoço com as mãos."
+                repsRange: "12 reps (progredindo carga)",
+                targetReps: 12,
+                rest: "90s (1m30s)",
+                restSeconds: 90,
+                defaultWeight: 30,
+                image: "assets/img/puxada-alta-aberta.svg",
+                muscles: "Latíssimo do Dorso, Bíceps",
+                instructions: "Sente-se no aparelho travando os joelhos sob as almofadas. Segure a barra aberta com pegada pronada. Incline sutilmente o tronco para trás, abra o peito e puxe a barra em direção à parte superior do tórax puxando com as costas. Retorne alongando.",
+                errors: "Nunca puxe a barra por trás do pescoço e não dê solavancos inclinando as costas excessivamente."
+            },
+            {
+                number: "05",
+                name: "Rosca martelo com halteres",
+                sets: 4,
+                repsRange: "12 reps (progredindo carga)",
+                targetReps: 12,
+                rest: "90s (1m30s)",
+                restSeconds: 90,
+                defaultWeight: 7,
+                image: "assets/img/rosca-martelo.svg",
+                muscles: "Braquial, Braquiorradial, Bíceps",
+                instructions: "Em pé com os halteres alinhados às coxas e as palmas voltadas uma para a outra (pegada neutra). Flexione os antebraços mantendo os cotovelos fixos ao lado do corpo até a máxima contração dos braços e desça controladamente.",
+                errors: "Evite movimentar o quadril ou jogar os ombros para trás para erguer a carga."
             }
         ]
     },
@@ -1479,58 +1547,81 @@ const WEEKLY_WORKOUT_SCHEDULE = [
         dayIndex: 4,
         dayName: "SEXTA-FEIRA",
         shortName: "SEX",
-        title: "SUPER MEMBROS SUPERIORES",
-        subtitle: "Braços torneados, tríceps firme e deltoides harmônicos",
-        duration: 35,
-        kcal: 210,
+        title: "Posterior e glúteo 🍑",
+        subtitle: "Cadeia posterior completa, definição de isquiotibiais e glúteos",
+        category: "INFERIORES",
+        duration: 50,
+        kcal: 310,
         exercises: [
             {
                 number: "01",
-                name: "Desenvolvimento com Halteres",
+                name: "Flexora sentada",
                 sets: 4,
-                repsRange: "10–12 repetições",
-                targetReps: 10,
-                defaultWeight: 12,
-                image: "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&q=80&w=400",
-                muscles: "Ombros (Deltoides)",
-                instructions: "Suba os halteres em trajetória controlada, mantendo o abdômen contraído.",
-                errors: "Evite bater os halteres no alto do movimento."
+                repsRange: "12 reps (progredindo carga)",
+                targetReps: 12,
+                rest: "90s (1m30s)",
+                restSeconds: 90,
+                defaultWeight: 35,
+                image: "assets/img/flexora-sentada.svg",
+                muscles: "Isquiotibiais (Posterior de Coxa)",
+                instructions: "Ajuste o encosto para que a articulação do joelho fique alinhada ao eixo da máquina e trave firmemente a almofada sobre as coxas. Flexione as pernas para baixo trazendo os calcanhares para trás com potência muscular, pause 1 segundo e retorne com cadência.",
+                errors: "Evite descolar as costas ou o quadril do banco e não deixe a perna retornar batendo o peso."
             },
             {
                 number: "02",
-                name: "Rosca Martelo Unilateral",
-                sets: 3,
-                repsRange: "12 repetições",
+                name: "Stiff com halteres",
+                sets: 4,
+                repsRange: "12 reps (progredindo carga)",
                 targetReps: 12,
-                defaultWeight: 8,
-                image: "assets/img/superiores-workout.jpg",
-                muscles: "Bíceps, Antebraço",
-                instructions: "Com pegada neutra (palmas para dentro), flexione o cotovelo sem movimentar o ombro.",
-                errors: "Não balance o corpo para ajudar a levantar o peso."
+                rest: "90s (1m30s)",
+                restSeconds: 90,
+                defaultWeight: 20,
+                image: "assets/img/stiff-halteres.svg",
+                muscles: "Isquiotibiais, Glúteo Máximo",
+                instructions: "Pés na largura dos quadris, joelhos levemente destravados. Com o peito aberto e a coluna em posição neutra, projete os quadris para trás descendo os halteres rente às pernas até sentir os posteriores de coxa alongarem intensamente. Suba empurrando o chão e contraia os glúteos.",
+                errors: "Nunca curve as costas em cifose e não afaste os halteres da linha das pernas durante a descida."
             },
             {
                 number: "03",
-                name: "Tríceps no Banco",
-                sets: 3,
-                repsRange: "12–15 repetições",
+                name: "Abdutora",
+                sets: 4,
+                repsRange: "12 reps (progredindo carga)",
                 targetReps: 12,
-                defaultWeight: 0,
-                image: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&q=80&w=400",
-                muscles: "Tríceps",
-                instructions: "Apoie as mãos na borda do banco e desça flexionando os cotovelos a 90 graus rente ao banco.",
-                errors: "Não afaste as costas do banco durante a descida."
+                rest: "90s (1m30s)",
+                restSeconds: 90,
+                defaultWeight: 45,
+                image: "assets/img/abdutora.jpg",
+                muscles: "Glúteo Médio e Mínimo",
+                instructions: "Sente-se com as costas apoiadas, pés firmes nas plataformas. Afaste as pernas contra a resistência até a abertura máxima, sustentando a contração por 1 segundo no pico para recrutar as fibras laterais dos glúteos. Retorne com amplitude cadenciada.",
+                errors: "Evite fechar as pernas rápido demais sem controlar a fase excêntrica do movimento."
             },
             {
                 number: "04",
-                name: "Elevação Lateral com Halteres",
+                name: "Elevação pélvica",
                 sets: 4,
-                repsRange: "12–15 repetições",
+                repsRange: "12 reps (progredindo carga)",
                 targetReps: 12,
-                defaultWeight: 6,
-                image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=400",
-                muscles: "Deltoide Lateral",
-                instructions: "Eleve os braços lateralmente até a altura dos ombros com os cotovelos levemente flexionados.",
-                errors: "Não encolha os ombros em direção às orelhas."
+                rest: "90s (1m30s)",
+                restSeconds: 90,
+                defaultWeight: 50,
+                image: "assets/img/elevacao-pelvica.svg",
+                muscles: "Glúteo Máximo Isolado",
+                instructions: "Apoie a linha das escápulas na borda de um banco estável e posicione a barra/carga sobre a dobra do quadril com proteção. Pés firmes na largura dos ombros. Eleve os quadris até o tronco e as coxas formarem uma linha reta paralela ao chão, apertando os glúteos com intensidade máxima por 2 segundos.",
+                errors: "Não arqueie a lombar em excesso no topo; mantenha o queixo apontado para o peito e faça a força exclusivamente com os glúteos."
+            },
+            {
+                number: "05",
+                name: "Flexora deitada",
+                sets: 4,
+                repsRange: "12 reps (progredindo carga)",
+                targetReps: 12,
+                rest: "90s (1m30s)",
+                restSeconds: 90,
+                defaultWeight: 30,
+                image: "assets/img/flexora-deitada.svg",
+                muscles: "Isquiotibiais (Posterior de Coxa)",
+                instructions: "Deite de bruços no aparelho com o rolete acolchoado posicionado logo acima do tendão de Aquiles. Segure firme nos apoios de mão e flexione as pernas trazendo os calcanhares na direção dos glúteos. Segure a contração por 1 segundo e desça resistindo à descida.",
+                errors: "Não empine o quadril descolando-o do estofado durante a puxada; mantenha a bacia colada ao banco."
             }
         ]
     },
@@ -1538,70 +1629,39 @@ const WEEKLY_WORKOUT_SCHEDULE = [
         dayIndex: 5,
         dayName: "SÁBADO",
         shortName: "SÁB",
-        title: "GLÚTEOS MÁXIMO & ATIVAÇÃO",
-        subtitle: "Foco na curvatura, elevação e densidade dos glúteos",
-        duration: 40,
-        kcal: 240,
+        title: "Descanso Ativo & Cardio Leve 🌿",
+        subtitle: "Recuperação ativa para otimizar o metabolismo e a circulação",
+        category: "DESCANSO ATIVO",
+        duration: 30,
+        kcal: 180,
         exercises: [
             {
                 number: "01",
-                name: "Elevação Pélvica Unilateral",
-                sets: 4,
-                repsRange: "12–15 repetições",
-                targetReps: 12,
-                defaultWeight: 20,
-                image: "assets/img/elevacao-pelvica.png",
-                muscles: "Glúteo Máximo",
-                instructions: "Com um pé no chão e o outro estendido, eleve o quadril com força e contraia o glúteo no topo.",
-                errors: "Evite torcer a bacia durante o movimento unilateral."
+                name: "Caminhada Rápida / Esteira Inclinada",
+                sets: 1,
+                repsRange: "30 minutos constantes",
+                targetReps: 30,
+                rest: "Sem descanso (contínuo)",
+                restSeconds: 0,
+                defaultWeight: 0,
+                image: "assets/img/cardio-workout.jpg",
+                muscles: "Sistema Cardiovascular, Pernas",
+                instructions: "Mantenha um ritmo moderado e respiração nasal profunda, sem impacto excessivo nas articulações.",
+                errors: "Evite caminhar curvada olhando para o celular; mantenha peito aberto e postura ereta."
             },
             {
                 number: "02",
-                name: "Stiff com Halteres",
-                sets: 4,
-                repsRange: "10–12 repetições",
-                targetReps: 10,
-                defaultWeight: 24,
-                image: "assets/img/stiff.jpg",
-                muscles: "Isquiotibiais, Glúteos",
-                instructions: "Incline o tronco para a frente empurrando o quadril para trás, descendo os halteres rentes às pernas.",
-                errors: "Nunca curve a coluna lombar; mantenha a curvatura fisiológica natural."
-            },
-            {
-                number: "03",
-                name: "Quatro Apoios com Caneleira",
+                name: "Mobilidade Dinâmica de Quadril e Tornozelos",
                 sets: 3,
-                repsRange: "15 repetições",
-                targetReps: 15,
-                defaultWeight: 5,
-                image: "assets/img/gluteos-workout.png",
-                muscles: "Glúteos",
-                instructions: "Em quatro apoios, eleve a perna flexionada empurrando o calcanhar em direção ao teto.",
-                errors: "Não balance a coluna lombar ao elevar a perna."
-            },
-            {
-                number: "04",
-                name: "Agachamento Búlgaro com Carga",
-                sets: 3,
-                repsRange: "10–12 repetições",
-                targetReps: 10,
-                defaultWeight: 14,
-                image: "assets/img/agachamento-livre.jpg",
-                muscles: "Glúteos, Quadríceps",
-                instructions: "Pé de trás apoiado no banco, desça o quadril na vertical até sentir grande alongamento glúteo.",
-                errors: "Mantenha o tronco firme e o pé da frente bem plantado no chão."
-            },
-            {
-                number: "05",
-                name: "Cadeira Abdutora Tronco Inclinado",
-                sets: 4,
-                repsRange: "15 repetições",
-                targetReps: 15,
-                defaultWeight: 50,
-                image: "assets/img/gluteos-workout.png",
-                muscles: "Glúteo Médio",
-                instructions: "Incline o tronco à frente a 45 graus e afaste as coxas contra a resistência com controle.",
-                errors: "Não impulsione as pernas; controle cada centímetro da abertura."
+                repsRange: "12 repetições cada lado",
+                targetReps: 12,
+                rest: "60 segundos",
+                restSeconds: 60,
+                defaultWeight: 0,
+                image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&q=80&w=400",
+                muscles: "Quadris, Tornozelos, Cadeia Posterior",
+                instructions: "Realize círculos controlados com o quadril e rotações articulares suaves para soltar a musculatura trabalhada na semana.",
+                errors: "Não force a amplitude além do seu limite confortável de alongamento."
             }
         ]
     },
@@ -1609,10 +1669,11 @@ const WEEKLY_WORKOUT_SCHEDULE = [
         dayIndex: 6,
         dayName: "DOMINGO",
         shortName: "DOM",
-        title: "ALONGAMENTO & MOBILIDADE",
-        subtitle: "Relaxamento profundo, alívio de tensões e descompressão",
-        duration: 20,
-        kcal: 80,
+        title: "Alongamento & Mobilidade 🧘‍♀️",
+        subtitle: "Relaxamento profundo, alívio de tensões e descompressão muscular",
+        category: "RECUPERAÇÃO",
+        duration: 25,
+        kcal: 90,
         exercises: [
             {
                 number: "01",
@@ -1620,11 +1681,13 @@ const WEEKLY_WORKOUT_SCHEDULE = [
                 sets: 3,
                 repsRange: "60 segundos",
                 targetReps: 60,
+                rest: "30 segundos",
+                restSeconds: 30,
                 defaultWeight: 0,
                 image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=400",
                 muscles: "Costas, Quadris, Ombros",
-                instructions: "Sente-se nos calcanhares, estenda os braços à frente no tapete e apoie a testa no chão respirando fundo.",
-                errors: "Evite prender a respiração."
+                instructions: "Sente-se nos calcanhares, estenda os braços à frente no tapete e apoie a testa no chão respirando profundamente.",
+                errors: "Evite prender a respiração durante o relaxamento."
             },
             {
                 number: "02",
@@ -1632,34 +1695,26 @@ const WEEKLY_WORKOUT_SCHEDULE = [
                 sets: 3,
                 repsRange: "60 segundos",
                 targetReps: 60,
+                rest: "30 segundos",
+                restSeconds: 30,
                 defaultWeight: 0,
                 image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=400",
                 muscles: "Coluna Vertebral",
-                instructions: "Em quatro apoios, alterne suavemente entre arquear as costas para cima e curvar olhando para o alto.",
-                errors: "Não faça movimentos bruscos; sincronize com a respiração."
+                instructions: "Em quatro apoios, alterne suavemente entre arquear as costas para cima e curvar olhando para o alto, no ritmo da respiração.",
+                errors: "Não faça movimentos bruscos ou rápidos."
             },
             {
                 number: "03",
-                name: "Torção de Coluna Deitada",
-                sets: 2,
-                repsRange: "45 segundos cada lado",
-                targetReps: 45,
-                defaultWeight: 0,
-                image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=400",
-                muscles: "Lombar, Glúteos, Torácica",
-                instructions: "Deite de costas, cruze um dos joelhos sobre o corpo e olhe para o lado oposto com os ombros no chão.",
-                errors: "Não tire o ombro oposto do chão."
-            },
-            {
-                number: "04",
                 name: "Alongamento de Isquiotibiais e Glúteos",
                 sets: 3,
                 repsRange: "45 segundos cada lado",
                 targetReps: 45,
+                rest: "30 segundos",
+                restSeconds: 30,
                 defaultWeight: 0,
                 image: "https://images.unsplash.com/photo-1599447421416-3414500d18a5?auto=format&fit=crop&q=80&w=400",
                 muscles: "Posterior de Coxa, Glúteos",
-                instructions: "Puxe uma das pernas estendida em direção ao tronco sentindo alongar a parte posterior da coxa.",
+                instructions: "Deitada, puxe uma das pernas estendida em direção ao tronco sentindo alongar a parte posterior da coxa e glúteo.",
                 errors: "Evite flexionar o joelho da perna que está sendo alongada."
             }
         ]
@@ -1874,6 +1929,7 @@ function renderWorkoutTab() {
                         <h4 style="font-size: 13.5px; font-weight: 700; color: #fff; margin: 0 0 3px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${ex.name}</h4>
                         <div style="font-size: 11px; color: var(--text-secondary); display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
                             <span>${ex.sets} séries × ${ex.repsRange}</span>
+                            ${ex.rest ? `<span style="color: rgba(232, 165, 152, 0.9); font-weight: 600;">• Descanso: ${ex.rest}</span>` : ''}
                             ${loadInfo}
                         </div>
                     </div>
@@ -1929,6 +1985,7 @@ function openDedicatedExercise(exerciseIndex) {
 }
 
 function closeDedicatedExercise() {
+    stopRestTimer();
     const modal = document.getElementById("modal-workout-dedicated");
     if (modal) modal.style.display = "none";
     renderWorkoutTab();
@@ -2077,6 +2134,52 @@ function toggleExecutionGuide() {
     }
 }
 
+let workoutRestInterval = null;
+let workoutRestSecondsRemaining = 90;
+
+function startRestTimer(seconds = 90) {
+    if (workoutRestInterval) clearInterval(workoutRestInterval);
+    workoutRestSecondsRemaining = seconds;
+    
+    const overlay = document.getElementById("ded-rest-overlay");
+    if (!overlay) return;
+    
+    updateRestTimerDisplay();
+    overlay.style.display = "flex";
+    if (window.lucide && lucide.createIcons) lucide.createIcons();
+    
+    workoutRestInterval = setInterval(() => {
+        workoutRestSecondsRemaining--;
+        if (workoutRestSecondsRemaining <= 0) {
+            stopRestTimer();
+        } else {
+            updateRestTimerDisplay();
+        }
+    }, 1000);
+}
+
+function updateRestTimerDisplay() {
+    const timerDisplay = document.getElementById("ded-rest-timer-display");
+    if (!timerDisplay) return;
+    const mins = Math.floor(workoutRestSecondsRemaining / 60);
+    const secs = workoutRestSecondsRemaining % 60;
+    timerDisplay.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+function adjustRestTimer(delta) {
+    workoutRestSecondsRemaining = Math.max(0, workoutRestSecondsRemaining + delta);
+    updateRestTimerDisplay();
+}
+
+function stopRestTimer() {
+    if (workoutRestInterval) {
+        clearInterval(workoutRestInterval);
+        workoutRestInterval = null;
+    }
+    const overlay = document.getElementById("ded-rest-overlay");
+    if (overlay) overlay.style.display = "none";
+}
+
 function completeCurrentSet() {
     const workout = WEEKLY_WORKOUT_SCHEDULE[currentWorkoutSession.dayIndex];
     if (!workout) return;
@@ -2095,10 +2198,11 @@ function completeCurrentSet() {
     };
     saveStateToStorage();
     
-    // Avança para a próxima série ou próximo exercício
+    // Avança para a próxima série ou próximo exercício com descanso
     if (currentWorkoutSession.currentSet < ex.sets) {
         currentWorkoutSession.currentSet++;
         updateDedicatedExerciseUI();
+        startRestTimer(ex.restSeconds || 90);
     } else {
         // Concluiu todas as séries deste exercício
         if (currentWorkoutSession.exerciseIndex < workout.exercises.length - 1) {
@@ -2112,8 +2216,10 @@ function completeCurrentSet() {
             currentWorkoutSession.setsCompleted = new Array(nextEx.sets).fill(false);
             
             updateDedicatedExerciseUI();
+            startRestTimer(ex.restSeconds || 90);
         } else {
             // Concluiu todos os exercícios do treino!
+            stopRestTimer();
             finishWorkoutSession();
         }
     }
