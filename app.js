@@ -1629,95 +1629,27 @@ const WEEKLY_WORKOUT_SCHEDULE = [
         dayIndex: 5,
         dayName: "SÁBADO",
         shortName: "SÁB",
-        title: "Descanso Ativo & Cardio Leve 🌿",
-        subtitle: "Recuperação ativa para otimizar o metabolismo e a circulação",
-        category: "DESCANSO ATIVO",
-        duration: 30,
-        kcal: 180,
-        exercises: [
-            {
-                number: "01",
-                name: "Caminhada Rápida / Esteira Inclinada",
-                sets: 1,
-                repsRange: "30 minutos constantes",
-                targetReps: 30,
-                rest: "Sem descanso (contínuo)",
-                restSeconds: 0,
-                defaultWeight: 0,
-                image: "assets/img/cardio-workout.jpg",
-                muscles: "Sistema Cardiovascular, Pernas",
-                instructions: "Mantenha um ritmo moderado e respiração nasal profunda, sem impacto excessivo nas articulações.",
-                errors: "Evite caminhar curvada olhando para o celular; mantenha peito aberto e postura ereta."
-            },
-            {
-                number: "02",
-                name: "Mobilidade Dinâmica de Quadril e Tornozelos",
-                sets: 3,
-                repsRange: "12 repetições cada lado",
-                targetReps: 12,
-                rest: "60 segundos",
-                restSeconds: 60,
-                defaultWeight: 0,
-                image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&q=80&w=400",
-                muscles: "Quadris, Tornozelos, Cadeia Posterior",
-                instructions: "Realize círculos controlados com o quadril e rotações articulares suaves para soltar a musculatura trabalhada na semana.",
-                errors: "Não force a amplitude além do seu limite confortável de alongamento."
-            }
-        ]
+        title: "ABS E CARDIO",
+        subtitle: "1h do cardio da sua preferência",
+        category: "ABS E CARDIO",
+        duration: 60,
+        kcal: 350,
+        isCustomCardio: true,
+        customDescription: "1h do cardio da sua preferência",
+        exercises: []
     },
     {
         dayIndex: 6,
         dayName: "DOMINGO",
         shortName: "DOM",
-        title: "Alongamento & Mobilidade 🧘‍♀️",
-        subtitle: "Relaxamento profundo, alívio de tensões e descompressão muscular",
-        category: "RECUPERAÇÃO",
-        duration: 25,
-        kcal: 90,
-        exercises: [
-            {
-                number: "01",
-                name: "Postura da Criança (Child Pose)",
-                sets: 3,
-                repsRange: "60 segundos",
-                targetReps: 60,
-                rest: "30 segundos",
-                restSeconds: 30,
-                defaultWeight: 0,
-                image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=400",
-                muscles: "Costas, Quadris, Ombros",
-                instructions: "Sente-se nos calcanhares, estenda os braços à frente no tapete e apoie a testa no chão respirando profundamente.",
-                errors: "Evite prender a respiração durante o relaxamento."
-            },
-            {
-                number: "02",
-                name: "Alongamento Gato-Vaca",
-                sets: 3,
-                repsRange: "60 segundos",
-                targetReps: 60,
-                rest: "30 segundos",
-                restSeconds: 30,
-                defaultWeight: 0,
-                image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=400",
-                muscles: "Coluna Vertebral",
-                instructions: "Em quatro apoios, alterne suavemente entre arquear as costas para cima e curvar olhando para o alto, no ritmo da respiração.",
-                errors: "Não faça movimentos bruscos ou rápidos."
-            },
-            {
-                number: "03",
-                name: "Alongamento de Isquiotibiais e Glúteos",
-                sets: 3,
-                repsRange: "45 segundos cada lado",
-                targetReps: 45,
-                rest: "30 segundos",
-                restSeconds: 30,
-                defaultWeight: 0,
-                image: "https://images.unsplash.com/photo-1599447421416-3414500d18a5?auto=format&fit=crop&q=80&w=400",
-                muscles: "Posterior de Coxa, Glúteos",
-                instructions: "Deitada, puxe uma das pernas estendida em direção ao tronco sentindo alongar a parte posterior da coxa e glúteo.",
-                errors: "Evite flexionar o joelho da perna que está sendo alongada."
-            }
-        ]
+        title: "DESCANSO",
+        subtitle: "Descanso",
+        category: "DESCANSO",
+        duration: 0,
+        kcal: 0,
+        isRestDay: true,
+        customDescription: "Descanso",
+        exercises: []
     }
 ];
 
@@ -1857,29 +1789,64 @@ function renderWorkoutTab() {
         if (titleEl) titleEl.innerText = activeWorkout.title;
         
         const countEl = document.getElementById("hero-workout-count");
-        if (countEl) countEl.innerHTML = `<i data-lucide="dumbbell" style="width: 14px; height: 14px; color: var(--accent-rose);"></i> ${activeWorkout.exercises.length} exercícios`;
-        
         const durEl = document.getElementById("hero-workout-dur");
-        if (durEl) durEl.innerHTML = `<i data-lucide="clock" style="width: 14px; height: 14px;"></i> ${activeWorkout.duration} min`;
-        
         const kcalEl = document.getElementById("hero-workout-kcal");
-        if (kcalEl) kcalEl.innerHTML = `<i data-lucide="flame" style="width: 14px; height: 14px; color: #f97316;"></i> ~${activeWorkout.kcal} kcal`;
+        const btnHeroStart = document.getElementById("btn-hero-start-workout");
+        
+        const isCompleted = userState.workoutSessionProgress && userState.workoutSessionProgress[selectedDay] && userState.workoutSessionProgress[selectedDay].completed;
+        
+        if (activeWorkout.isRestDay) {
+            if (countEl) countEl.innerHTML = `<i data-lucide="heart" style="width: 14px; height: 14px; color: var(--accent-rose);"></i> Descanso`;
+            if (durEl) durEl.innerHTML = `<i data-lucide="moon" style="width: 14px; height: 14px;"></i> Regeneração`;
+            if (kcalEl) kcalEl.innerHTML = `<i data-lucide="sparkles" style="width: 14px; height: 14px; color: var(--accent-rose);"></i> Paz & Bem-estar`;
+            
+            if (btnHeroStart) {
+                btnHeroStart.innerHTML = `<i data-lucide="heart" style="width: 16px; height: 16px; fill: currentColor;"></i> <span>${isCompleted ? '✓ DESCANSO REGISTRADO' : 'APROVEITAR O DESCANSO 🤍'}</span>`;
+                btnHeroStart.style.background = isCompleted ? 'rgba(255,255,255,0.08)' : 'linear-gradient(135deg, rgba(232, 165, 152, 0.35), rgba(232, 165, 152, 0.15))';
+                btnHeroStart.style.color = '#fff';
+                btnHeroStart.style.boxShadow = 'none';
+                btnHeroStart.onclick = () => completeRestDay(selectedDay);
+            }
+        } else if (activeWorkout.isCustomCardio) {
+            if (countEl) countEl.innerHTML = `<i data-lucide="activity" style="width: 14px; height: 14px; color: var(--accent-rose);"></i> Cardio Livre`;
+            if (durEl) durEl.innerHTML = `<i data-lucide="clock" style="width: 14px; height: 14px;"></i> 1 hora`;
+            if (kcalEl) kcalEl.innerHTML = `<i data-lucide="flame" style="width: 14px; height: 14px; color: #f97316;"></i> ~350 kcal`;
+            
+            if (btnHeroStart) {
+                btnHeroStart.innerHTML = `<i data-lucide="${isCompleted ? 'check-check' : 'check'}" style="width: 16px; height: 16px;"></i> <span>${isCompleted ? '✓ 1H DE CARDIO CONCLUÍDO' : 'CONCLUIR 1H DE CARDIO'}</span>`;
+                btnHeroStart.style.background = isCompleted ? 'rgba(74, 222, 128, 0.2)' : 'linear-gradient(135deg, var(--accent-rose), #d6877b)';
+                btnHeroStart.style.color = isCompleted ? '#4ade80' : '#120a0e';
+                btnHeroStart.style.boxShadow = isCompleted ? 'none' : '0 6px 20px rgba(232, 165, 152, 0.35)';
+                btnHeroStart.onclick = () => completeCardioSession(selectedDay);
+            }
+        } else {
+            if (countEl) countEl.innerHTML = `<i data-lucide="dumbbell" style="width: 14px; height: 14px; color: var(--accent-rose);"></i> ${activeWorkout.exercises.length} exercícios`;
+            if (durEl) durEl.innerHTML = `<i data-lucide="clock" style="width: 14px; height: 14px;"></i> ${activeWorkout.duration} min`;
+            if (kcalEl) kcalEl.innerHTML = `<i data-lucide="flame" style="width: 14px; height: 14px; color: #f97316;"></i> ~${activeWorkout.kcal} kcal`;
+            
+            if (btnHeroStart) {
+                btnHeroStart.innerHTML = `<i data-lucide="play" style="width: 16px; height: 16px; fill: currentColor;"></i> <span>${isCompleted ? 'REFAZER TREINO' : 'COMEÇAR TREINO'}</span>`;
+                btnHeroStart.style.background = 'linear-gradient(135deg, var(--accent-rose), #d6877b)';
+                btnHeroStart.style.color = '#120a0e';
+                btnHeroStart.style.boxShadow = '0 6px 20px rgba(232, 165, 152, 0.35)';
+                btnHeroStart.onclick = () => startWorkoutSession(selectedDay);
+            }
+        }
         
         const statusTagEl = document.getElementById("hero-workout-status-tag");
         if (statusTagEl) {
-            const isCompleted = userState.workoutSessionProgress && userState.workoutSessionProgress[selectedDay] && userState.workoutSessionProgress[selectedDay].completed;
             if (isCompleted) {
                 statusTagEl.innerText = "✓ Concluído";
                 statusTagEl.style.background = "rgba(74, 222, 128, 0.15)";
                 statusTagEl.style.color = "#4ade80";
                 statusTagEl.style.border = "1px solid rgba(74, 222, 128, 0.3)";
             } else if (selectedDay === realToday) {
-                statusTagEl.innerText = "Treino de Hoje 🔥";
+                statusTagEl.innerText = activeWorkout.isRestDay ? "Hoje é Descanso 🤍" : "Treino de Hoje 🔥";
                 statusTagEl.style.background = "rgba(232, 165, 152, 0.15)";
                 statusTagEl.style.color = "var(--accent-rose)";
                 statusTagEl.style.border = "1px solid rgba(232, 165, 152, 0.3)";
             } else {
-                statusTagEl.innerText = "Treino Programado";
+                statusTagEl.innerText = activeWorkout.isRestDay ? "Descanso" : "Treino Programado";
                 statusTagEl.style.background = "rgba(255,255,255,0.08)";
                 statusTagEl.style.color = "#fff";
                 statusTagEl.style.border = "none";
@@ -1887,65 +1854,150 @@ function renderWorkoutTab() {
         }
     }
 
-    // 4. Renderiza Lista Compacta de Exercícios do Dia
+    // 4. Renderiza Lista Compacta de Exercícios / Área do Dia
     const exercisesListContainer = document.getElementById("workout-exercises-list");
     const badgeCountEl = document.getElementById("exercises-badge-count");
+    const sectionTitleEl = document.getElementById("workout-section-title");
+    const sectionHintEl = document.getElementById("workout-section-hint");
+    
     if (exercisesListContainer && activeWorkout) {
         exercisesListContainer.innerHTML = "";
-        if (badgeCountEl) badgeCountEl.innerText = activeWorkout.exercises.length;
+        const isCompleted = userState.workoutSessionProgress && userState.workoutSessionProgress[selectedDay] && userState.workoutSessionProgress[selectedDay].completed;
         
-        activeWorkout.exercises.forEach((ex, idx) => {
-            const stats = userState.exerciseStats && userState.exerciseStats[ex.name];
-            let loadInfo = "";
-            if (stats && stats.lastWeight !== undefined) {
-                loadInfo = `<span style="color: var(--accent-rose); font-weight: 600;">• Carga: ${stats.lastWeight} kg</span>`;
-            } else if (ex.defaultWeight > 0) {
-                loadInfo = `<span style="color: var(--text-secondary);">• Carga sugerida: ${ex.defaultWeight} kg</span>`;
-            }
+        if (activeWorkout.isRestDay) {
+            if (sectionTitleEl) sectionTitleEl.innerText = "DESCANSO";
+            if (sectionHintEl) sectionHintEl.innerText = "Recuperação";
+            if (badgeCountEl) badgeCountEl.innerText = "0";
             
-            const cardDiv = document.createElement("div");
-            cardDiv.className = "workout-compact-ex-card";
-            cardDiv.onclick = () => openDedicatedExercise(idx);
-            
-            cardDiv.style.cssText = `
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                background: rgba(255, 255, 255, 0.025);
-                border: 1px solid rgba(255, 255, 255, 0.07);
-                border-radius: 14px;
-                padding: 12px 14px;
-                cursor: pointer;
-                transition: all 0.2s ease;
+            exercisesListContainer.innerHTML = `
+                <div style="background: rgba(255, 255, 255, 0.02); border: 1px dashed rgba(255, 255, 255, 0.12); border-radius: 14px; padding: 28px 18px; text-align: center;">
+                    <span style="font-size: 32px; display: block; margin-bottom: 8px;">🤍</span>
+                    <h4 style="font-size: 16px; font-weight: 800; color: #fff; margin: 0 0 6px 0; font-family: var(--font-header); letter-spacing: 0.8px;">DESCANSO</h4>
+                    <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin: 0;">Descanso</p>
+                </div>
             `;
+        } else if (activeWorkout.isCustomCardio) {
+            if (sectionTitleEl) sectionTitleEl.innerText = "ABS E CARDIO";
+            if (sectionHintEl) sectionHintEl.innerText = "1 hora";
+            if (badgeCountEl) badgeCountEl.innerText = "1h";
             
-            cardDiv.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
-                    <span style="font-size: 13px; font-weight: 800; color: var(--accent-rose); font-family: var(--font-header); min-width: 22px;">${ex.number}</span>
-                    <div style="width: 48px; height: 48px; border-radius: 10px; overflow: hidden; background: #1a1217; border: 1px solid rgba(255,255,255,0.08); flex-shrink: 0;">
-                        <img src="${ex.image}" alt="${ex.name}" style="width: 100%; height: 100%; object-fit: cover;">
-                    </div>
-                    <div style="min-width: 0;">
-                        <h4 style="font-size: 13.5px; font-weight: 700; color: #fff; margin: 0 0 3px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${ex.name}</h4>
-                        <div style="font-size: 11px; color: var(--text-secondary); display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
-                            <span>${ex.sets} séries × ${ex.repsRange}</span>
-                            ${ex.rest ? `<span style="color: rgba(232, 165, 152, 0.9); font-weight: 600;">• Descanso: ${ex.rest}</span>` : ''}
-                            ${loadInfo}
+            exercisesListContainer.innerHTML = `
+                <div style="background: rgba(255, 255, 255, 0.025); border: 1px solid rgba(232, 165, 152, 0.2); border-radius: 14px; padding: 18px 16px;">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+                        <div style="width: 44px; height: 44px; border-radius: 10px; background: rgba(232, 165, 152, 0.15); border: 1px solid var(--accent-rose); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
+                            🏃‍♀️
+                        </div>
+                        <div>
+                            <span style="font-size: 10.5px; font-weight: 800; color: var(--accent-rose); text-transform: uppercase; letter-spacing: 0.8px; display: block;">SÁBADO — ABS E CARDIO</span>
+                            <h4 style="font-size: 15px; font-weight: 700; color: #fff; margin: 2px 0 0 0;">1h do cardio da sua preferência</h4>
                         </div>
                     </div>
-                </div>
-                <div style="display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.04); color: var(--text-secondary); flex-shrink: 0; margin-left: 8px;">
-                    <i data-lucide="chevron-right" style="width: 16px; height: 16px;"></i>
+                    <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin: 0 0 14px 0;">
+                        1h do cardio da sua preferência
+                    </p>
+                    <button type="button" onclick="completeCardioSession(${selectedDay})" style="width: 100%; padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 800; border: none; background: ${isCompleted ? 'rgba(74, 222, 128, 0.2)' : 'linear-gradient(135deg, var(--accent-rose), #d6877b)'}; color: ${isCompleted ? '#4ade80' : '#120a0e'}; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                        <i data-lucide="${isCompleted ? 'check-check' : 'check'}" style="width: 15px; height: 15px;"></i>
+                        <span>${isCompleted ? '✓ 1h de Cardio Concluído' : 'Marcar 1h de Cardio como Concluído'}</span>
+                    </button>
                 </div>
             `;
+        } else {
+            if (sectionTitleEl) sectionTitleEl.innerText = "EXERCÍCIOS DO DIA";
+            if (sectionHintEl) sectionHintEl.innerText = "Toque para abrir";
+            if (badgeCountEl) badgeCountEl.innerText = activeWorkout.exercises.length;
             
-            exercisesListContainer.appendChild(cardDiv);
-        });
+            activeWorkout.exercises.forEach((ex, idx) => {
+                const stats = userState.exerciseStats && userState.exerciseStats[ex.name];
+                let loadInfo = "";
+                if (stats && stats.lastWeight !== undefined) {
+                    loadInfo = `<span style="color: var(--accent-rose); font-weight: 600;">• Carga: ${stats.lastWeight} kg</span>`;
+                } else if (ex.defaultWeight > 0) {
+                    loadInfo = `<span style="color: var(--text-secondary);">• Carga sugerida: ${ex.defaultWeight} kg</span>`;
+                }
+                
+                const cardDiv = document.createElement("div");
+                cardDiv.className = "workout-compact-ex-card";
+                cardDiv.onclick = () => openDedicatedExercise(idx);
+                
+                cardDiv.style.cssText = `
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    background: rgba(255, 255, 255, 0.025);
+                    border: 1px solid rgba(255, 255, 255, 0.07);
+                    border-radius: 14px;
+                    padding: 12px 14px;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                `;
+                
+                cardDiv.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
+                        <span style="font-size: 13px; font-weight: 800; color: var(--accent-rose); font-family: var(--font-header); min-width: 22px;">${ex.number}</span>
+                        <div style="width: 48px; height: 48px; border-radius: 10px; overflow: hidden; background: #1a1217; border: 1px solid rgba(255,255,255,0.08); flex-shrink: 0;">
+                            <img src="${ex.image}" alt="${ex.name}" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <div style="min-width: 0;">
+                            <h4 style="font-size: 13.5px; font-weight: 700; color: #fff; margin: 0 0 3px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${ex.name}</h4>
+                            <div style="font-size: 11px; color: var(--text-secondary); display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
+                                <span>${ex.sets} séries × ${ex.repsRange}</span>
+                                ${ex.rest ? `<span style="color: rgba(232, 165, 152, 0.9); font-weight: 600;">• Descanso: ${ex.rest}</span>` : ''}
+                                ${loadInfo}
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.04); color: var(--text-secondary); flex-shrink: 0; margin-left: 8px;">
+                        <i data-lucide="chevron-right" style="width: 16px; height: 16px;"></i>
+                    </div>
+                `;
+                
+                exercisesListContainer.appendChild(cardDiv);
+            });
+        }
     }
 
     if (window.lucide && lucide.createIcons) {
         lucide.createIcons();
     }
+}
+
+function completeCardioSession(dayIndex = 5) {
+    ensureWorkoutState();
+    if (!userState.workoutSessionProgress) userState.workoutSessionProgress = {};
+    userState.workoutSessionProgress[dayIndex] = {
+        completed: true,
+        date: new Date().toISOString().slice(0, 10)
+    };
+    if (!userState.habitsCompleted[0]) {
+        toggleHabit(0);
+    }
+    addXP(50);
+    userState.completedWorkoutsCount = (userState.completedWorkoutsCount || 0) + 1;
+    saveStateToStorage();
+    
+    const modal = document.getElementById("modal-workout-completed");
+    const msgEl = document.getElementById("workout-completed-msg");
+    if (msgEl) msgEl.innerText = "Parabéns por cumprir 1 hora do seu cardio preferido hoje! ✨";
+    if (modal) modal.style.display = "flex";
+    
+    renderWorkoutTab();
+}
+
+function completeRestDay(dayIndex = 6) {
+    ensureWorkoutState();
+    if (!userState.workoutSessionProgress) userState.workoutSessionProgress = {};
+    userState.workoutSessionProgress[dayIndex] = {
+        completed: true,
+        date: new Date().toISOString().slice(0, 10)
+    };
+    saveStateToStorage();
+    
+    const modal = document.getElementById("modal-workout-completed");
+    const msgEl = document.getElementById("workout-completed-msg");
+    if (msgEl) msgEl.innerText = "Dia de descanso registrado! Desacelere, recarregue e cuide de você com carinho. 🤍";
+    if (modal) modal.style.display = "flex";
+    
+    renderWorkoutTab();
 }
 
 function selectWorkoutDay(dayIndex) {
@@ -1956,9 +2008,21 @@ function selectWorkoutDay(dayIndex) {
 
 function startWorkoutSession(dayIndex) {
     ensureWorkoutState();
-    if (dayIndex !== undefined) {
-        userState.workoutSelectedDay = dayIndex;
+    const d = dayIndex !== undefined ? dayIndex : (userState.workoutSelectedDay !== undefined ? userState.workoutSelectedDay : 0);
+    userState.workoutSelectedDay = d;
+    
+    const workout = WEEKLY_WORKOUT_SCHEDULE[d];
+    if (!workout) return;
+    
+    if (workout.isCustomCardio) {
+        completeCardioSession(d);
+        return;
     }
+    if (workout.isRestDay) {
+        completeRestDay(d);
+        return;
+    }
+    
     openDedicatedExercise(0);
 }
 
