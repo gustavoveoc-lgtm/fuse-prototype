@@ -172,7 +172,12 @@ const defaultState = {
         activeDay: 1,
         completedDays: [],
         reflections: {}
-    }
+    },
+
+    // Treinos Redesenhados FUSE
+    workoutSelectedDay: (new Date().getDay() + 6) % 7,
+    exerciseStats: {},
+    workoutSessionProgress: {}
 };
 
 // Banco de Dados de Usuárias Cadastradas (Simula banco de dados na nuvem)
@@ -393,6 +398,20 @@ function migrateDatabaseSchema() {
             };
             migrated = true;
         }
+
+        // 7. Treinos Redesenhados FUSE
+        if (state.workoutSelectedDay === undefined) {
+            state.workoutSelectedDay = (new Date().getDay() + 6) % 7;
+            migrated = true;
+        }
+        if (!state.exerciseStats) {
+            state.exerciseStats = {};
+            migrated = true;
+        }
+        if (!state.workoutSessionProgress) {
+            state.workoutSessionProgress = {};
+            migrated = true;
+        }
     }
     
     if (migrated) {
@@ -422,6 +441,17 @@ if (!userState.proposito) {
 if (!Array.isArray(userState.proposito.completedDays)) userState.proposito.completedDays = [];
 if (!userState.proposito.reflections || typeof userState.proposito.reflections !== 'object') userState.proposito.reflections = {};
 if (!userState.proposito.activeDay) userState.proposito.activeDay = 1;
+
+// Inicializa e valida estrutura de Treinos Redesenhados
+if (userState.workoutSelectedDay === undefined || userState.workoutSelectedDay === null) {
+    userState.workoutSelectedDay = (new Date().getDay() + 6) % 7;
+}
+if (!userState.exerciseStats || typeof userState.exerciseStats !== 'object') {
+    userState.exerciseStats = {};
+}
+if (!userState.workoutSessionProgress || typeof userState.workoutSessionProgress !== 'object') {
+    userState.workoutSessionProgress = {};
+}
 
 // Sincroniza estado de hábitos antigo se houver incompatibilidade
 if (!userState.habitsCompleted || userState.habitsCompleted.length !== 6) {
@@ -1055,6 +1085,9 @@ function switchTab(tabId) {
     if (tabId === "challenge") {
         renderPropositoUI();
     }
+    if (tabId === "workouts") {
+        renderWorkoutTab();
+    }
 }
 
 // DIÁRIO CHECK-IN DE METAS
@@ -1174,56 +1207,977 @@ function closeModal(id) {
     updateProgressUI();
 }
 
-// 5. SISTEMA DE PORTAL DE TREINO DILIGENTE
-function populateWorkoutsGrid() {
-    const container = document.getElementById("workouts-list-container");
-    container.innerHTML = "";
-    
-    workoutsDB.forEach(w => {
-        let img = "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&q=80&w=500";
-        if (w.category.includes("gluteos")) img = "assets/img/gluteos-workout.png";
-        else if (w.category.includes("pernas")) img = "assets/img/pernas-workout.png";
-        else if (w.category.includes("cardio")) img = "assets/img/cardio-workout.jpg";
-        else if (w.category.includes("alongamento")) img = "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=500";
-        else if (w.category.includes("braços") || w.category.includes("superiores")) img = "assets/img/superiores-workout.jpg";
+// =========================================================================
+// 5. REDESIGN COMPLETO DA ÁREA “TREINAR” (FUSE WORKOUTS)
+// =========================================================================
 
-        const card = document.createElement("div");
-        card.className = "workout-card-item";
-        card.setAttribute("data-cat", `${w.category} ${w.place}`);
-        card.onclick = () => openWorkoutDetail(w.id);
+const WEEKLY_WORKOUT_SCHEDULE = [
+    {
+        dayIndex: 0,
+        dayName: "SEGUNDA-FEIRA",
+        shortName: "SEG",
+        title: "TREINO DE PERNAS & COXAS",
+        subtitle: "Foco em quadríceps e tonificação de membros inferiores",
+        duration: 40,
+        kcal: 260,
+        exercises: [
+            {
+                number: "01",
+                name: "Agachamento Livre com Barra",
+                sets: 4,
+                repsRange: "8–10 repetições",
+                targetReps: 10,
+                defaultWeight: 45,
+                image: "assets/img/agachamento-livre.jpg",
+                muscles: "Quadríceps, Glúteos, Core",
+                instructions: "Mantenha os pés alinhados aos ombros. Desça flexionando quadris e joelhos até 90 graus, mantendo o peito ereto e a coluna neutra.",
+                errors: "Evite curvar as costas, projetar os joelhos para dentro ou levantar os calcanhares do chão."
+            },
+            {
+                number: "02",
+                name: "Leg Press 45°",
+                sets: 4,
+                repsRange: "10–12 repetições",
+                targetReps: 10,
+                defaultWeight: 120,
+                image: "assets/img/leg-press.jpg",
+                muscles: "Quadríceps, Glúteos",
+                instructions: "Apoie os pés na largura dos ombros no meio da plataforma. Destrave a máquina e desça flexionando os joelhos sem descolar a lombar do encosto.",
+                errors: "Não estenda os joelhos até travar a articulação no final do movimento."
+            },
+            {
+                number: "03",
+                name: "Cadeira Extensora",
+                sets: 3,
+                repsRange: "12–15 repetições",
+                targetReps: 12,
+                defaultWeight: 35,
+                image: "assets/img/leg-press.jpg",
+                muscles: "Quadríceps isolado",
+                instructions: "Ajuste o rolo sobre os tornozelos. Estenda as pernas totalmente contraindo o quadríceps por 1 segundo no pico do movimento.",
+                errors: "Evite impulsos rápidos ou usar o tronco para movimentar a carga."
+            },
+            {
+                number: "04",
+                name: "Passada com Halteres",
+                sets: 3,
+                repsRange: "10–12 passos cada perna",
+                targetReps: 10,
+                defaultWeight: 16,
+                image: "assets/img/stiff.jpg",
+                muscles: "Quadríceps, Glúteos, Equilíbrio",
+                instructions: "Dê um passo largo à frente, descendo até que o joelho de trás quase toque o chão e a coxa da frente fique paralela ao solo.",
+                errors: "Não incline excessivamente o tronco para a frente e mantenha o ritmo controlado."
+            },
+            {
+                number: "05",
+                name: "Panturrilhas em Pé",
+                sets: 4,
+                repsRange: "15–20 repetições",
+                targetReps: 15,
+                defaultWeight: 30,
+                image: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&q=80&w=400",
+                muscles: "Gastrocnêmio, Sóleo",
+                instructions: "Eleve os calcanhares ao máximo na ponta dos pés, sustente a contração por 1 segundo e desça alongando bem.",
+                errors: "Evite quicar no movimento; mantenha controle na subida e na descida."
+            }
+        ]
+    },
+    {
+        dayIndex: 1,
+        dayName: "TERÇA-FEIRA",
+        shortName: "TER",
+        title: "COSTAS, OMBROS & CORE",
+        subtitle: "Postura elegante, costas desenhadas e abdômen firme",
+        duration: 35,
+        kcal: 220,
+        exercises: [
+            {
+                number: "01",
+                name: "Puxada Aberta no Pulley",
+                sets: 4,
+                repsRange: "10–12 repetições",
+                targetReps: 10,
+                defaultWeight: 30,
+                image: "assets/img/superiores-workout.jpg",
+                muscles: "Dorsais, Bíceps, Ombros",
+                instructions: "Puxe a barra em direção ao peitoral superior, aproximando as escápulas e mantendo os cotovelos direcionados para baixo.",
+                errors: "Evite puxar atrás da nuca ou balançar o tronco para trás."
+            },
+            {
+                number: "02",
+                name: "Remada Baixa com Triângulo",
+                sets: 4,
+                repsRange: "10–12 repetições",
+                targetReps: 10,
+                defaultWeight: 25,
+                image: "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?auto=format&fit=crop&q=80&w=400",
+                muscles: "Costas (Romboides, Grande Dorsal)",
+                instructions: "Puxe a manopla em direção ao umbigo mantendo a coluna ereta, peito estufado e cotovelos rentes ao tronco.",
+                errors: "Não curve a lombar e evite usar impulso excessivo."
+            },
+            {
+                number: "03",
+                name: "Desenvolvimento de Ombros com Halteres",
+                sets: 3,
+                repsRange: "10–12 repetições",
+                targetReps: 10,
+                defaultWeight: 12,
+                image: "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&q=80&w=400",
+                muscles: "Deltoides (Ombros), Tríceps",
+                instructions: "Empurre os halteres para cima a partir da altura das orelhas sem esticar os cotovelos de forma brusca no topo.",
+                errors: "Não arquear a lombar durante a subida dos halteres."
+            },
+            {
+                number: "04",
+                name: "Prancha Isométrica",
+                sets: 3,
+                repsRange: "45 segundos",
+                targetReps: 45,
+                defaultWeight: 0,
+                image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&q=80&w=400",
+                muscles: "Abdômen, Core, Lombar",
+                instructions: "Apoie os antebraços e pontas dos pés no chão formando uma linha reta dos calcanhares à cabeça.",
+                errors: "Não deixe o quadril cair ou levantar em formato de pirâmide."
+            }
+        ]
+    },
+    {
+        dayIndex: 2,
+        dayName: "QUARTA-FEIRA",
+        shortName: "QUA",
+        title: "TREINO DE GLÚTEOS",
+        subtitle: "Hipertrofia e modelagem glútea de alta ativação",
+        duration: 40,
+        kcal: 250,
+        exercises: [
+            {
+                number: "01",
+                name: "Elevação Pélvica com Barra",
+                sets: 4,
+                repsRange: "10–12 repetições",
+                targetReps: 10,
+                defaultWeight: 60,
+                image: "assets/img/elevacao-pelvica.png",
+                muscles: "Glúteo Máximo, Isquiotibiais",
+                instructions: "Apoie as escápulas no banco e posicione a barra sobre o quadril. Eleve o quadril contraindo fortemente os glúteos no topo por 2 segundos.",
+                errors: "Não hiperestenda a coluna lombar; o esforço deve vir puramente dos glúteos."
+            },
+            {
+                number: "02",
+                name: "Agachamento Sumô com Halter",
+                sets: 4,
+                repsRange: "10–12 repetições",
+                targetReps: 10,
+                defaultWeight: 20,
+                image: "assets/img/agachamento-livre.jpg",
+                muscles: "Glúteos, Adutores, Quadríceps",
+                instructions: "Pés bem afastados com pontas viradas para fora a 45°. Segure o halter centralizado e agache com a coluna alinhada.",
+                errors: "Evite deixar os joelhos cederem para dentro durante a subida."
+            },
+            {
+                number: "03",
+                name: "Mesa Flexora",
+                sets: 4,
+                repsRange: "10–12 repetições",
+                targetReps: 12,
+                defaultWeight: 30,
+                image: "assets/img/stiff.jpg",
+                muscles: "Posterior de Coxa",
+                instructions: "Deite de bruços e flexione os joelhos trazendo o rolo em direção aos glúteos, controlando a descida.",
+                errors: "Não descole o quadril do banco para forçar a carga."
+            },
+            {
+                number: "04",
+                name: "Afundo Búlgaro",
+                sets: 3,
+                repsRange: "10–12 repetições cada perna",
+                targetReps: 10,
+                defaultWeight: 14,
+                image: "assets/img/stiff.jpg",
+                muscles: "Glúteos, Quadríceps",
+                instructions: "Apoie a ponta de um pé no banco atrás de você e flexione a perna da frente descendo o quadril na vertical.",
+                errors: "Não projete o joelho muito à frente da ponta do pé."
+            },
+            {
+                number: "05",
+                name: "Cadeira Abdutora",
+                sets: 4,
+                repsRange: "15 repetições",
+                targetReps: 15,
+                defaultWeight: 45,
+                image: "assets/img/gluteos-workout.png",
+                muscles: "Glúteo Médio e Mínimo",
+                instructions: "Incline o tronco levemente à frente e afaste as pernas contra a resistência, pausando 1 segundo na abertura máxima.",
+                errors: "Não use impulso; controle a fase excêntrica de fechamento."
+            }
+        ]
+    },
+    {
+        dayIndex: 3,
+        dayName: "QUINTA-FEIRA",
+        shortName: "QUI",
+        title: "CARDIO HIIT & CORE",
+        subtitle: "Queima calórica acelerada e fortalecimento do abdômen",
+        duration: 25,
+        kcal: 230,
+        exercises: [
+            {
+                number: "01",
+                name: "Polichinelos Dinâmicos",
+                sets: 4,
+                repsRange: "45 segundos",
+                targetReps: 45,
+                defaultWeight: 0,
+                image: "assets/img/cardio-workout.jpg",
+                muscles: "Cardio, Panturrilhas, Ombros",
+                instructions: "Salte abrindo pernas e braços simultaneamente e feche ritmadamente amortecendo na ponta dos pés.",
+                errors: "Evite bater os calcanhares no chão com impacto excessivo."
+            },
+            {
+                number: "02",
+                name: "Corrida Estacionária Joelho Alto",
+                sets: 4,
+                repsRange: "45 segundos",
+                targetReps: 45,
+                defaultWeight: 0,
+                image: "https://images.unsplash.com/photo-1486218119243-13883505764c?auto=format&fit=crop&q=80&w=400",
+                muscles: "Cardio, Quadríceps, Core",
+                instructions: "Eleve os joelhos até a altura dos quadris em ritmo contínuo, movimentando os braços.",
+                errors: "Não curve a coluna para trás enquanto eleva as pernas."
+            },
+            {
+                number: "03",
+                name: "Burpees Adaptados FUSE",
+                sets: 3,
+                repsRange: "30 segundos",
+                targetReps: 30,
+                defaultWeight: 0,
+                image: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&q=80&w=400",
+                muscles: "Full Body, Cardio",
+                instructions: "Mãos no chão, pernas para trás em prancha, retorne e fique em pé com extensão de braços.",
+                errors: "Não relaxe o abdômen ao estender os pés para trás."
+            },
+            {
+                number: "04",
+                name: "Abdominal Supra Remador",
+                sets: 4,
+                repsRange: "20 repetições",
+                targetReps: 20,
+                defaultWeight: 0,
+                image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&q=80&w=400",
+                muscles: "Reto Abdominal",
+                instructions: "Deitada com braços e pernas estendidos, suba abraçando os joelhos contra o peito.",
+                errors: "Evite puxar o pescoço com as mãos."
+            }
+        ]
+    },
+    {
+        dayIndex: 4,
+        dayName: "SEXTA-FEIRA",
+        shortName: "SEX",
+        title: "SUPER MEMBROS SUPERIORES",
+        subtitle: "Braços torneados, tríceps firme e deltoides harmônicos",
+        duration: 35,
+        kcal: 210,
+        exercises: [
+            {
+                number: "01",
+                name: "Desenvolvimento com Halteres",
+                sets: 4,
+                repsRange: "10–12 repetições",
+                targetReps: 10,
+                defaultWeight: 12,
+                image: "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&q=80&w=400",
+                muscles: "Ombros (Deltoides)",
+                instructions: "Suba os halteres em trajetória controlada, mantendo o abdômen contraído.",
+                errors: "Evite bater os halteres no alto do movimento."
+            },
+            {
+                number: "02",
+                name: "Rosca Martelo Unilateral",
+                sets: 3,
+                repsRange: "12 repetições",
+                targetReps: 12,
+                defaultWeight: 8,
+                image: "assets/img/superiores-workout.jpg",
+                muscles: "Bíceps, Antebraço",
+                instructions: "Com pegada neutra (palmas para dentro), flexione o cotovelo sem movimentar o ombro.",
+                errors: "Não balance o corpo para ajudar a levantar o peso."
+            },
+            {
+                number: "03",
+                name: "Tríceps no Banco",
+                sets: 3,
+                repsRange: "12–15 repetições",
+                targetReps: 12,
+                defaultWeight: 0,
+                image: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&q=80&w=400",
+                muscles: "Tríceps",
+                instructions: "Apoie as mãos na borda do banco e desça flexionando os cotovelos a 90 graus rente ao banco.",
+                errors: "Não afaste as costas do banco durante a descida."
+            },
+            {
+                number: "04",
+                name: "Elevação Lateral com Halteres",
+                sets: 4,
+                repsRange: "12–15 repetições",
+                targetReps: 12,
+                defaultWeight: 6,
+                image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=400",
+                muscles: "Deltoide Lateral",
+                instructions: "Eleve os braços lateralmente até a altura dos ombros com os cotovelos levemente flexionados.",
+                errors: "Não encolha os ombros em direção às orelhas."
+            }
+        ]
+    },
+    {
+        dayIndex: 5,
+        dayName: "SÁBADO",
+        shortName: "SÁB",
+        title: "GLÚTEOS MÁXIMO & ATIVAÇÃO",
+        subtitle: "Foco na curvatura, elevação e densidade dos glúteos",
+        duration: 40,
+        kcal: 240,
+        exercises: [
+            {
+                number: "01",
+                name: "Elevação Pélvica Unilateral",
+                sets: 4,
+                repsRange: "12–15 repetições",
+                targetReps: 12,
+                defaultWeight: 20,
+                image: "assets/img/elevacao-pelvica.png",
+                muscles: "Glúteo Máximo",
+                instructions: "Com um pé no chão e o outro estendido, eleve o quadril com força e contraia o glúteo no topo.",
+                errors: "Evite torcer a bacia durante o movimento unilateral."
+            },
+            {
+                number: "02",
+                name: "Stiff com Halteres",
+                sets: 4,
+                repsRange: "10–12 repetições",
+                targetReps: 10,
+                defaultWeight: 24,
+                image: "assets/img/stiff.jpg",
+                muscles: "Isquiotibiais, Glúteos",
+                instructions: "Incline o tronco para a frente empurrando o quadril para trás, descendo os halteres rentes às pernas.",
+                errors: "Nunca curve a coluna lombar; mantenha a curvatura fisiológica natural."
+            },
+            {
+                number: "03",
+                name: "Quatro Apoios com Caneleira",
+                sets: 3,
+                repsRange: "15 repetições",
+                targetReps: 15,
+                defaultWeight: 5,
+                image: "assets/img/gluteos-workout.png",
+                muscles: "Glúteos",
+                instructions: "Em quatro apoios, eleve a perna flexionada empurrando o calcanhar em direção ao teto.",
+                errors: "Não balance a coluna lombar ao elevar a perna."
+            },
+            {
+                number: "04",
+                name: "Agachamento Búlgaro com Carga",
+                sets: 3,
+                repsRange: "10–12 repetições",
+                targetReps: 10,
+                defaultWeight: 14,
+                image: "assets/img/agachamento-livre.jpg",
+                muscles: "Glúteos, Quadríceps",
+                instructions: "Pé de trás apoiado no banco, desça o quadril na vertical até sentir grande alongamento glúteo.",
+                errors: "Mantenha o tronco firme e o pé da frente bem plantado no chão."
+            },
+            {
+                number: "05",
+                name: "Cadeira Abdutora Tronco Inclinado",
+                sets: 4,
+                repsRange: "15 repetições",
+                targetReps: 15,
+                defaultWeight: 50,
+                image: "assets/img/gluteos-workout.png",
+                muscles: "Glúteo Médio",
+                instructions: "Incline o tronco à frente a 45 graus e afaste as coxas contra a resistência com controle.",
+                errors: "Não impulsione as pernas; controle cada centímetro da abertura."
+            }
+        ]
+    },
+    {
+        dayIndex: 6,
+        dayName: "DOMINGO",
+        shortName: "DOM",
+        title: "ALONGAMENTO & MOBILIDADE",
+        subtitle: "Relaxamento profundo, alívio de tensões e descompressão",
+        duration: 20,
+        kcal: 80,
+        exercises: [
+            {
+                number: "01",
+                name: "Postura da Criança (Child Pose)",
+                sets: 3,
+                repsRange: "60 segundos",
+                targetReps: 60,
+                defaultWeight: 0,
+                image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=400",
+                muscles: "Costas, Quadris, Ombros",
+                instructions: "Sente-se nos calcanhares, estenda os braços à frente no tapete e apoie a testa no chão respirando fundo.",
+                errors: "Evite prender a respiração."
+            },
+            {
+                number: "02",
+                name: "Alongamento Gato-Vaca",
+                sets: 3,
+                repsRange: "60 segundos",
+                targetReps: 60,
+                defaultWeight: 0,
+                image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=400",
+                muscles: "Coluna Vertebral",
+                instructions: "Em quatro apoios, alterne suavemente entre arquear as costas para cima e curvar olhando para o alto.",
+                errors: "Não faça movimentos bruscos; sincronize com a respiração."
+            },
+            {
+                number: "03",
+                name: "Torção de Coluna Deitada",
+                sets: 2,
+                repsRange: "45 segundos cada lado",
+                targetReps: 45,
+                defaultWeight: 0,
+                image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=400",
+                muscles: "Lombar, Glúteos, Torácica",
+                instructions: "Deite de costas, cruze um dos joelhos sobre o corpo e olhe para o lado oposto com os ombros no chão.",
+                errors: "Não tire o ombro oposto do chão."
+            },
+            {
+                number: "04",
+                name: "Alongamento de Isquiotibiais e Glúteos",
+                sets: 3,
+                repsRange: "45 segundos cada lado",
+                targetReps: 45,
+                defaultWeight: 0,
+                image: "https://images.unsplash.com/photo-1599447421416-3414500d18a5?auto=format&fit=crop&q=80&w=400",
+                muscles: "Posterior de Coxa, Glúteos",
+                instructions: "Puxe uma das pernas estendida em direção ao tronco sentindo alongar a parte posterior da coxa.",
+                errors: "Evite flexionar o joelho da perna que está sendo alongada."
+            }
+        ]
+    }
+];
+
+// Estado da Sessão Ativa de Treino
+let currentWorkoutSession = {
+    dayIndex: (new Date().getDay() + 6) % 7,
+    exerciseIndex: 0,
+    currentSet: 1,
+    currentWeight: 50,
+    currentReps: 10,
+    setsCompleted: []
+};
+
+function ensureWorkoutState() {
+    if (!userState) return;
+    if (userState.workoutSelectedDay === undefined || userState.workoutSelectedDay === null) {
+        userState.workoutSelectedDay = (new Date().getDay() + 6) % 7;
+    }
+    if (!userState.exerciseStats || typeof userState.exerciseStats !== 'object') {
+        userState.exerciseStats = {};
+    }
+    if (!userState.workoutSessionProgress || typeof userState.workoutSessionProgress !== 'object') {
+        userState.workoutSessionProgress = {};
+    }
+}
+
+function getWorkoutGreeting() {
+    const hr = new Date().getHours();
+    let timeGreeting = "Olá";
+    if (hr >= 5 && hr < 12) timeGreeting = "Bom dia";
+    else if (hr >= 12 && hr < 18) timeGreeting = "Boa tarde";
+    else timeGreeting = "Boa noite";
+    const name = userState && userState.name ? userState.name : "Amanda";
+    return `${timeGreeting}, ${name} ✨`;
+}
+
+function renderWorkoutTab() {
+    ensureWorkoutState();
+    
+    // 1. Saudação e Badge de Objetivo
+    const greetingEl = document.getElementById("workout-user-greeting");
+    if (greetingEl) greetingEl.innerText = getWorkoutGreeting();
+    
+    const goalBadgeEl = document.getElementById("workout-goal-badge");
+    if (goalBadgeEl && userState.goal) {
+        const goalMap = {
+            emagrecer: "Emagrecimento & Definição",
+            massa: "Ganho de Massa",
+            definicao: "Definição Muscular",
+            manter: "Constância & Saúde",
+            "hipertrofia-gluteos": "Glúteos & Definição"
+        };
+        goalBadgeEl.innerText = goalMap[userState.goal] || "Glúteos & Definição";
+    }
+
+    const realToday = (new Date().getDay() + 6) % 7; // 0=Seg ... 6=Dom
+    const selectedDay = userState.workoutSelectedDay !== undefined ? userState.workoutSelectedDay : realToday;
+    
+    // 2. Renderiza Calendário Horizontal dos 7 Dias
+    const calendarContainer = document.getElementById("workout-week-calendar");
+    if (calendarContainer) {
+        calendarContainer.innerHTML = "";
         
-        card.innerHTML = `
-            <div class="workout-thumbnail-box">
-                <img src="${img}" alt="${w.title}">
-                <span class="workout-duration">${w.duration} min</span>
-            </div>
-            <div class="workout-details">
-                <div class="workout-meta-row">
-                    <span class="workout-difficulty">${w.difficulty} • ${w.place.toUpperCase()}</span>
-                    <span class="workout-xp">+${w.kcal} kcal</span>
+        // Calcula as datas da semana atual (Segunda a Domingo)
+        const mondayDate = new Date();
+        mondayDate.setDate(mondayDate.getDate() - realToday);
+        
+        WEEKLY_WORKOUT_SCHEDULE.forEach((daySchedule, d) => {
+            const thisDayDate = new Date(mondayDate);
+            thisDayDate.setDate(mondayDate.getDate() + d);
+            const dayNum = thisDayDate.getDate();
+            
+            const isToday = d === realToday;
+            const isSelected = d === selectedDay;
+            const isCompleted = userState.workoutSessionProgress && userState.workoutSessionProgress[d] && userState.workoutSessionProgress[d].completed;
+            
+            const dayBtn = document.createElement("button");
+            dayBtn.type = "button";
+            dayBtn.onclick = () => selectWorkoutDay(d);
+            
+            let bg = "rgba(255, 255, 255, 0.03)";
+            let border = "1px solid rgba(255, 255, 255, 0.08)";
+            let textColor = "var(--text-secondary)";
+            let shadow = "none";
+            
+            if (isSelected) {
+                bg = "linear-gradient(135deg, rgba(232, 165, 152, 0.28) 0%, rgba(232, 165, 152, 0.12) 100%)";
+                border = "1.5px solid var(--accent-rose)";
+                textColor = "#ffffff";
+                shadow = "0 0 12px rgba(232, 165, 152, 0.25)";
+            } else if (isCompleted) {
+                bg = "rgba(232, 165, 152, 0.08)";
+                border = "1px solid rgba(232, 165, 152, 0.35)";
+                textColor = "var(--accent-rose)";
+            }
+            
+            dayBtn.style.cssText = `
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 10px 4px 8px 4px;
+                border-radius: 12px;
+                background: ${bg};
+                border: ${border};
+                color: ${textColor};
+                box-shadow: ${shadow};
+                cursor: pointer;
+                transition: all 0.2s ease;
+                gap: 2px;
+            `;
+            
+            let statusIndicator = `<span style="font-size: 8px; opacity: 0.3; margin-top: 2px;">•</span>`;
+            if (isCompleted) {
+                statusIndicator = `<span style="font-size: 10px; font-weight: 800; color: var(--accent-rose); line-height: 1;">✓</span>`;
+            } else if (isToday) {
+                statusIndicator = `<span style="font-size: 7.5px; font-weight: 800; color: var(--accent-rose); letter-spacing: 0.5px;">HOJE</span>`;
+            }
+            
+            dayBtn.innerHTML = `
+                <span style="font-size: 9.5px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;">${daySchedule.shortName}</span>
+                <span style="font-size: 14px; font-weight: 800; font-family: var(--font-header);">${dayNum}</span>
+                ${statusIndicator}
+            `;
+            
+            calendarContainer.appendChild(dayBtn);
+        });
+    }
+
+    // 3. Renderiza o Card Principal do Treino do Dia
+    const activeWorkout = WEEKLY_WORKOUT_SCHEDULE[selectedDay];
+    if (activeWorkout) {
+        const daynameEl = document.getElementById("hero-workout-dayname");
+        if (daynameEl) daynameEl.innerText = activeWorkout.dayName;
+        
+        const titleEl = document.getElementById("hero-workout-title");
+        if (titleEl) titleEl.innerText = activeWorkout.title;
+        
+        const countEl = document.getElementById("hero-workout-count");
+        if (countEl) countEl.innerHTML = `<i data-lucide="dumbbell" style="width: 14px; height: 14px; color: var(--accent-rose);"></i> ${activeWorkout.exercises.length} exercícios`;
+        
+        const durEl = document.getElementById("hero-workout-dur");
+        if (durEl) durEl.innerHTML = `<i data-lucide="clock" style="width: 14px; height: 14px;"></i> ${activeWorkout.duration} min`;
+        
+        const kcalEl = document.getElementById("hero-workout-kcal");
+        if (kcalEl) kcalEl.innerHTML = `<i data-lucide="flame" style="width: 14px; height: 14px; color: #f97316;"></i> ~${activeWorkout.kcal} kcal`;
+        
+        const statusTagEl = document.getElementById("hero-workout-status-tag");
+        if (statusTagEl) {
+            const isCompleted = userState.workoutSessionProgress && userState.workoutSessionProgress[selectedDay] && userState.workoutSessionProgress[selectedDay].completed;
+            if (isCompleted) {
+                statusTagEl.innerText = "✓ Concluído";
+                statusTagEl.style.background = "rgba(74, 222, 128, 0.15)";
+                statusTagEl.style.color = "#4ade80";
+                statusTagEl.style.border = "1px solid rgba(74, 222, 128, 0.3)";
+            } else if (selectedDay === realToday) {
+                statusTagEl.innerText = "Treino de Hoje 🔥";
+                statusTagEl.style.background = "rgba(232, 165, 152, 0.15)";
+                statusTagEl.style.color = "var(--accent-rose)";
+                statusTagEl.style.border = "1px solid rgba(232, 165, 152, 0.3)";
+            } else {
+                statusTagEl.innerText = "Treino Programado";
+                statusTagEl.style.background = "rgba(255,255,255,0.08)";
+                statusTagEl.style.color = "#fff";
+                statusTagEl.style.border = "none";
+            }
+        }
+    }
+
+    // 4. Renderiza Lista Compacta de Exercícios do Dia
+    const exercisesListContainer = document.getElementById("workout-exercises-list");
+    const badgeCountEl = document.getElementById("exercises-badge-count");
+    if (exercisesListContainer && activeWorkout) {
+        exercisesListContainer.innerHTML = "";
+        if (badgeCountEl) badgeCountEl.innerText = activeWorkout.exercises.length;
+        
+        activeWorkout.exercises.forEach((ex, idx) => {
+            const stats = userState.exerciseStats && userState.exerciseStats[ex.name];
+            let loadInfo = "";
+            if (stats && stats.lastWeight !== undefined) {
+                loadInfo = `<span style="color: var(--accent-rose); font-weight: 600;">• Carga: ${stats.lastWeight} kg</span>`;
+            } else if (ex.defaultWeight > 0) {
+                loadInfo = `<span style="color: var(--text-secondary);">• Carga sugerida: ${ex.defaultWeight} kg</span>`;
+            }
+            
+            const cardDiv = document.createElement("div");
+            cardDiv.className = "workout-compact-ex-card";
+            cardDiv.onclick = () => openDedicatedExercise(idx);
+            
+            cardDiv.style.cssText = `
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: rgba(255, 255, 255, 0.025);
+                border: 1px solid rgba(255, 255, 255, 0.07);
+                border-radius: 14px;
+                padding: 12px 14px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            `;
+            
+            cardDiv.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
+                    <span style="font-size: 13px; font-weight: 800; color: var(--accent-rose); font-family: var(--font-header); min-width: 22px;">${ex.number}</span>
+                    <div style="width: 48px; height: 48px; border-radius: 10px; overflow: hidden; background: #1a1217; border: 1px solid rgba(255,255,255,0.08); flex-shrink: 0;">
+                        <img src="${ex.image}" alt="${ex.name}" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <div style="min-width: 0;">
+                        <h4 style="font-size: 13.5px; font-weight: 700; color: #fff; margin: 0 0 3px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${ex.name}</h4>
+                        <div style="font-size: 11px; color: var(--text-secondary); display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
+                            <span>${ex.sets} séries × ${ex.repsRange}</span>
+                            ${loadInfo}
+                        </div>
+                    </div>
                 </div>
-                <h3 class="workout-title">${w.title}</h3>
-                <p class="workout-desc">${w.desc}</p>
-            </div>
-        `;
-        container.appendChild(card);
-    });
+                <div style="display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.04); color: var(--text-secondary); flex-shrink: 0; margin-left: 8px;">
+                    <i data-lucide="chevron-right" style="width: 16px; height: 16px;"></i>
+                </div>
+            `;
+            
+            exercisesListContainer.appendChild(cardDiv);
+        });
+    }
+
+    if (window.lucide && lucide.createIcons) {
+        lucide.createIcons();
+    }
+}
+
+function selectWorkoutDay(dayIndex) {
+    ensureWorkoutState();
+    userState.workoutSelectedDay = dayIndex;
+    renderWorkoutTab();
+}
+
+function startWorkoutSession(dayIndex) {
+    ensureWorkoutState();
+    if (dayIndex !== undefined) {
+        userState.workoutSelectedDay = dayIndex;
+    }
+    openDedicatedExercise(0);
+}
+
+function openDedicatedExercise(exerciseIndex) {
+    ensureWorkoutState();
+    currentWorkoutSession.dayIndex = userState.workoutSelectedDay !== undefined ? userState.workoutSelectedDay : 0;
+    currentWorkoutSession.exerciseIndex = exerciseIndex;
+    currentWorkoutSession.currentSet = 1;
+    
+    const workout = WEEKLY_WORKOUT_SCHEDULE[currentWorkoutSession.dayIndex];
+    if (!workout || !workout.exercises[exerciseIndex]) return;
+    
+    const ex = workout.exercises[exerciseIndex];
+    const stats = userState.exerciseStats && userState.exerciseStats[ex.name];
+    
+    currentWorkoutSession.currentWeight = (stats && stats.lastWeight !== undefined) ? stats.lastWeight : ex.defaultWeight;
+    currentWorkoutSession.currentReps = (stats && stats.lastReps !== undefined) ? stats.lastReps : ex.targetReps;
+    currentWorkoutSession.setsCompleted = new Array(ex.sets).fill(false);
+    
+    updateDedicatedExerciseUI();
+    
+    const modal = document.getElementById("modal-workout-dedicated");
+    if (modal) modal.style.display = "flex";
+}
+
+function closeDedicatedExercise() {
+    const modal = document.getElementById("modal-workout-dedicated");
+    if (modal) modal.style.display = "none";
+    renderWorkoutTab();
+}
+
+function updateDedicatedExerciseUI() {
+    const workout = WEEKLY_WORKOUT_SCHEDULE[currentWorkoutSession.dayIndex];
+    if (!workout) return;
+    const ex = workout.exercises[currentWorkoutSession.exerciseIndex];
+    if (!ex) return;
+    
+    // 1. Cabeçalho do Exercício e Barra de Progresso
+    const progressTxtEl = document.getElementById("ded-exercise-progress-txt");
+    if (progressTxtEl) progressTxtEl.innerText = `EXERCÍCIO ${currentWorkoutSession.exerciseIndex + 1} DE ${workout.exercises.length}`;
+    
+    const nameEl = document.getElementById("ded-exercise-name");
+    if (nameEl) nameEl.innerText = ex.name;
+    
+    const progressBar = document.getElementById("ded-workout-progress-bar");
+    if (progressBar) {
+        const totalSteps = workout.exercises.length;
+        const currentProgress = ((currentWorkoutSession.exerciseIndex + (currentWorkoutSession.currentSet - 1) / ex.sets) / totalSteps) * 100;
+        progressBar.style.width = `${Math.min(100, Math.round(currentProgress))}%`;
+    }
+    
+    // 2. Demonstração Visual e Guia de Execução
+    const imgEl = document.getElementById("ded-exercise-img");
+    if (imgEl) imgEl.src = ex.image;
+    
+    const instEl = document.getElementById("ded-exercise-instructions");
+    if (instEl) instEl.innerText = ex.instructions;
+    
+    const errorsEl = document.getElementById("ded-exercise-errors");
+    if (errorsEl) errorsEl.innerText = ex.errors;
+    
+    // 3. Série Atual e Indicadores de Série
+    const setLabelEl = document.getElementById("ded-current-set-label");
+    if (setLabelEl) setLabelEl.innerText = `SÉRIE ${currentWorkoutSession.currentSet} DE ${ex.sets}`;
+    
+    const setIndicatorsContainer = document.getElementById("ded-set-indicators");
+    if (setIndicatorsContainer) {
+        setIndicatorsContainer.innerHTML = "";
+        for (let s = 1; s <= ex.sets; s++) {
+            const isCompleted = currentWorkoutSession.setsCompleted[s - 1];
+            const isCurrent = s === currentWorkoutSession.currentSet;
+            
+            const dot = document.createElement("div");
+            dot.style.cssText = `
+                width: 22px;
+                height: 22px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 10px;
+                font-weight: 700;
+                transition: all 0.2s ease;
+                background: ${isCompleted ? 'var(--accent-rose)' : (isCurrent ? 'rgba(232, 165, 152, 0.2)' : 'rgba(255,255,255,0.06)')};
+                color: ${isCompleted ? '#120a0e' : (isCurrent ? 'var(--accent-rose)' : 'var(--text-secondary)')};
+                border: ${isCurrent ? '1.5px solid var(--accent-rose)' : '1px solid transparent'};
+            `;
+            dot.innerText = isCompleted ? '✓' : s;
+            setIndicatorsContainer.appendChild(dot);
+        }
+    }
+    
+    // 4. Histórico Anterior (Semana passada / Último treino)
+    const prevTextEl = document.getElementById("ded-previous-session-txt");
+    const stats = userState.exerciseStats && userState.exerciseStats[ex.name];
+    if (prevTextEl) {
+        if (stats && stats.lastWeight !== undefined) {
+            prevTextEl.innerText = `Semana passada: ${stats.lastWeight} kg × ${stats.lastReps} reps`;
+        } else {
+            prevTextEl.innerText = `Referência sugerida: ${ex.defaultWeight > 0 ? ex.defaultWeight + ' kg' : 'Peso corporal'} × ${ex.targetReps}`;
+        }
+    }
+    
+    // 5. Displays de Carga e Repetições
+    const weightDisplay = document.getElementById("ded-weight-display");
+    if (weightDisplay) {
+        weightDisplay.innerText = currentWorkoutSession.currentWeight === 0 ? "LIVRE" : `${currentWorkoutSession.currentWeight} KG`;
+    }
+    
+    const repsDisplay = document.getElementById("ded-reps-display");
+    if (repsDisplay) {
+        repsDisplay.innerText = currentWorkoutSession.currentReps;
+    }
+    
+    // 6. Botão Concluir Série Text
+    const btnConcludeTxt = document.getElementById("btn-conclude-set-txt");
+    if (btnConcludeTxt) {
+        if (currentWorkoutSession.currentSet === ex.sets && currentWorkoutSession.exerciseIndex === workout.exercises.length - 1) {
+            btnConcludeTxt.innerText = "CONCLUIR SÉRIE & FINALIZAR TREINO";
+        } else if (currentWorkoutSession.currentSet === ex.sets) {
+            btnConcludeTxt.innerText = "CONCLUIR SÉRIE & PRÓXIMO EXERCÍCIO";
+        } else {
+            btnConcludeTxt.innerText = "CONCLUIR SÉRIE";
+        }
+    }
+    
+    // 7. Navegação Anterior / Próximo
+    const btnPrev = document.getElementById("btn-prev-ex");
+    if (btnPrev) {
+        btnPrev.disabled = currentWorkoutSession.exerciseIndex === 0;
+        btnPrev.style.opacity = currentWorkoutSession.exerciseIndex === 0 ? "0.4" : "1";
+    }
+    
+    const btnNext = document.getElementById("btn-next-ex");
+    if (btnNext) {
+        btnNext.disabled = currentWorkoutSession.exerciseIndex === workout.exercises.length - 1;
+        btnNext.style.opacity = currentWorkoutSession.exerciseIndex === workout.exercises.length - 1 ? "0.4" : "1";
+    }
+    
+    if (window.lucide && lucide.createIcons) {
+        lucide.createIcons();
+    }
+}
+
+function adjustWorkoutWeight(delta) {
+    currentWorkoutSession.currentWeight = Math.max(0, currentWorkoutSession.currentWeight + delta);
+    const weightDisplay = document.getElementById("ded-weight-display");
+    if (weightDisplay) {
+        weightDisplay.innerText = currentWorkoutSession.currentWeight === 0 ? "LIVRE" : `${currentWorkoutSession.currentWeight} KG`;
+    }
+}
+
+function adjustWorkoutReps(delta) {
+    currentWorkoutSession.currentReps = Math.max(1, currentWorkoutSession.currentReps + delta);
+    const repsDisplay = document.getElementById("ded-reps-display");
+    if (repsDisplay) {
+        repsDisplay.innerText = currentWorkoutSession.currentReps;
+    }
+}
+
+function toggleExecutionGuide() {
+    const guideBox = document.getElementById("ded-execution-guide-box");
+    const btnTxt = document.getElementById("btn-toggle-guide-txt");
+    if (guideBox) {
+        if (guideBox.style.display === "none" || guideBox.style.display === "") {
+            guideBox.style.display = "block";
+            if (btnTxt) btnTxt.innerText = "OCULTAR EXECUÇÃO";
+        } else {
+            guideBox.style.display = "none";
+            if (btnTxt) btnTxt.innerText = "VER EXECUÇÃO";
+        }
+    }
+}
+
+function completeCurrentSet() {
+    const workout = WEEKLY_WORKOUT_SCHEDULE[currentWorkoutSession.dayIndex];
+    if (!workout) return;
+    const ex = workout.exercises[currentWorkoutSession.exerciseIndex];
+    if (!ex) return;
+    
+    // Marca série atual como concluída
+    currentWorkoutSession.setsCompleted[currentWorkoutSession.currentSet - 1] = true;
+    
+    // Salva carga e repetições no histórico persistente do exercício
+    if (!userState.exerciseStats) userState.exerciseStats = {};
+    userState.exerciseStats[ex.name] = {
+        lastWeight: currentWorkoutSession.currentWeight,
+        lastReps: currentWorkoutSession.currentReps,
+        updatedAt: new Date().toISOString()
+    };
+    saveStateToStorage();
+    
+    // Avança para a próxima série ou próximo exercício
+    if (currentWorkoutSession.currentSet < ex.sets) {
+        currentWorkoutSession.currentSet++;
+        updateDedicatedExerciseUI();
+    } else {
+        // Concluiu todas as séries deste exercício
+        if (currentWorkoutSession.exerciseIndex < workout.exercises.length - 1) {
+            currentWorkoutSession.exerciseIndex++;
+            currentWorkoutSession.currentSet = 1;
+            
+            const nextEx = workout.exercises[currentWorkoutSession.exerciseIndex];
+            const nextStats = userState.exerciseStats[nextEx.name];
+            currentWorkoutSession.currentWeight = (nextStats && nextStats.lastWeight !== undefined) ? nextStats.lastWeight : nextEx.defaultWeight;
+            currentWorkoutSession.currentReps = (nextStats && nextStats.lastReps !== undefined) ? nextStats.lastReps : nextEx.targetReps;
+            currentWorkoutSession.setsCompleted = new Array(nextEx.sets).fill(false);
+            
+            updateDedicatedExerciseUI();
+        } else {
+            // Concluiu todos os exercícios do treino!
+            finishWorkoutSession();
+        }
+    }
+}
+
+function navigateExercise(delta) {
+    const workout = WEEKLY_WORKOUT_SCHEDULE[currentWorkoutSession.dayIndex];
+    if (!workout) return;
+    const newIdx = currentWorkoutSession.exerciseIndex + delta;
+    if (newIdx < 0 || newIdx >= workout.exercises.length) return;
+    
+    currentWorkoutSession.exerciseIndex = newIdx;
+    currentWorkoutSession.currentSet = 1;
+    
+    const ex = workout.exercises[newIdx];
+    const stats = userState.exerciseStats && userState.exerciseStats[ex.name];
+    currentWorkoutSession.currentWeight = (stats && stats.lastWeight !== undefined) ? stats.lastWeight : ex.defaultWeight;
+    currentWorkoutSession.currentReps = (stats && stats.lastReps !== undefined) ? stats.lastReps : ex.targetReps;
+    currentWorkoutSession.setsCompleted = new Array(ex.sets).fill(false);
+    
+    updateDedicatedExerciseUI();
+}
+
+function finishWorkoutSession() {
+    closeDedicatedExercise();
+    
+    const workout = WEEKLY_WORKOUT_SCHEDULE[currentWorkoutSession.dayIndex];
+    
+    // Marca dia como concluído no progresso
+    if (!userState.workoutSessionProgress) userState.workoutSessionProgress = {};
+    userState.workoutSessionProgress[currentWorkoutSession.dayIndex] = {
+        completed: true,
+        date: new Date().toISOString().slice(0, 10)
+    };
+    
+    // Conclui meta de treino na home caso não esteja concluída
+    if (!userState.habitsCompleted[0]) {
+        toggleHabit(0);
+    }
+    
+    // Incrementa XP e contador de treinos
+    addXP(50);
+    userState.completedWorkoutsCount = (userState.completedWorkoutsCount || 0) + 1;
+    saveStateToStorage();
+    
+    // Exibe modal celebrativo
+    const kcalValEl = document.getElementById("workout-completed-kcal-val");
+    if (kcalValEl && workout) kcalValEl.innerText = `~${workout.kcal} kcal`;
+    
+    const msgEl = document.getElementById("workout-completed-msg");
+    if (msgEl && workout) {
+        msgEl.innerText = `Você finalizou com maestria o ${workout.title}! Cargas e séries registradas com sucesso.`;
+    }
+    
+    const completedModal = document.getElementById("modal-workout-completed");
+    if (completedModal) completedModal.style.display = "flex";
+    
+    renderWorkoutTab();
+}
+
+// Compatibilidade legada
+function populateWorkoutsGrid() {
+    renderWorkoutTab();
 }
 
 function filterWorkouts(cat) {
-    const pills = document.querySelectorAll("#tab-workouts .pill");
-    pills.forEach(p => p.classList.remove("active"));
-    event.target.classList.add("active");
-    
-    const items = document.querySelectorAll(".workout-card-item");
-    items.forEach(item => {
-        const dataCats = item.getAttribute("data-cat");
-        if (cat === "all" || dataCats.includes(cat)) {
-            item.style.display = "block";
-        } else {
-            item.style.display = "none";
-        }
-    });
+    // Mantido para compatibilidade se invocado
 }
 
 // MODAL DETALHE DO TREINO & PLAYER ATIVO
