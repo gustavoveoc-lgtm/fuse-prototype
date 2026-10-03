@@ -165,7 +165,14 @@ const defaultState = {
     challengeTasksCompleted: [false, false, false, false, false, false],
     challengeProgress: {},      // histórico diário: { "1": { date, tasksCompleted, pointsEarned, completedAt } }
     challengePoints: 210,
-    dailyHistory: []
+    dailyHistory: [],
+
+    // Propósito 7 Dias — Evangelho de João
+    proposito: {
+        activeDay: 1,
+        completedDays: [],
+        reflections: {}
+    }
 };
 
 // Banco de Dados de Usuárias Cadastradas (Simula banco de dados na nuvem)
@@ -377,6 +384,15 @@ function migrateDatabaseSchema() {
                 migrated = true;
             }
         }
+        // 6. Propósito 7 Dias — Evangelho de João
+        if (!state.proposito) {
+            state.proposito = {
+                activeDay: 1,
+                completedDays: [],
+                reflections: {}
+            };
+            migrated = true;
+        }
     }
     
     if (migrated) {
@@ -394,6 +410,18 @@ let selectedChallengeViewDay = null;
 if (currentUserEmail && usersDB[currentUserEmail]) {
     userState = usersDB[currentUserEmail].userState;
 }
+
+// Inicializa e valida estrutura do Propósito 7 Dias
+if (!userState.proposito) {
+    userState.proposito = {
+        activeDay: 1,
+        completedDays: [],
+        reflections: {}
+    };
+}
+if (!Array.isArray(userState.proposito.completedDays)) userState.proposito.completedDays = [];
+if (!userState.proposito.reflections || typeof userState.proposito.reflections !== 'object') userState.proposito.reflections = {};
+if (!userState.proposito.activeDay) userState.proposito.activeDay = 1;
 
 // Sincroniza estado de hábitos antigo se houver incompatibilidade
 if (!userState.habitsCompleted || userState.habitsCompleted.length !== 6) {
@@ -562,7 +590,7 @@ function restoreSession() {
     populateWorkoutsGrid();
     populateNutritionMealsUI();
     updateShoppingListLiveUI();
-    renderChallengeUI();
+    renderPropositoUI();
     renderCommunityFeed();
     renderWeeklyTracker();
 
@@ -1023,6 +1051,9 @@ function switchTab(tabId) {
     
     if (tabId === "community") {
         renderCommunityFeed();
+    }
+    if (tabId === "challenge") {
+        renderPropositoUI();
     }
 }
 
@@ -2348,192 +2379,275 @@ function updateWeightModal() {
     }
 }
 
-// 9. SISTEMA DE DESAFIOS GAMIFICADOS (TAXA R$ 19,99)
+// 9. PROPÓSITO 7 DIAS — EVANGELHO DE JOÃO (JORNADA DEVOCIONAL)
 
-function selectChallengeDay(dayNum) {
-    const currentChallengeDay = getChallengeDay(userState.challengeStartedAt);
-    if (dayNum > currentChallengeDay) {
-        alert("Este dia está bloqueado. Aguarde a data correspondente para realizar as tarefas.");
-        return;
+const PROPOSITO_SCHEDULE = [
+    {
+        day: 1,
+        chapters: "João 1, 2 e 3",
+        theme: "O Verbo se fez carne • Primeiros sinais da graça",
+        scripture: "“No princípio era o Verbo, e o Verbo estava com Deus, e o Verbo era Deus.” (João 1:1)",
+        guidance: "Reserve este instante em silêncio. Não tenha pressa em apenas virar páginas: permita que cada versículo ecoe no seu espírito."
+    },
+    {
+        day: 2,
+        chapters: "João 4, 5 e 6",
+        theme: "A Samaritana • A Cura • O Pão da Vida",
+        scripture: "“Aquele, porém, que beber da água que eu lhe der nunca mais terá sede.” (João 4:14)",
+        guidance: "Perceba como Jesus encontra pessoas no seu cotidiano e sacia a sede mais profunda da alma."
+    },
+    {
+        day: 3,
+        chapters: "João 7, 8 e 9",
+        theme: "A Água Viva • A Luz do Mundo • O Cego de Nascença",
+        scripture: "“Eu sou a luz do mundo; quem me segue não andará nas trevas; pelo contrário, terá a luz da vida.” (João 8:12)",
+        guidance: "Abra os olhos do coração para reconhecer a luz de Cristo dissipando qualquer escuridão ou dúvida."
+    },
+    {
+        day: 4,
+        chapters: "João 10, 11 e 12",
+        theme: "O Bom Pastor • A Ressurreição de Lázaro",
+        scripture: "“Eu sou o bom pastor; o bom pastor dá a vida pelas ovelhas.” (João 10:11)",
+        guidance: "Ouça a voz mansa do Bom Pastor que te chama pelo nome e cuida de cada detalhe da sua caminhada."
+    },
+    {
+        day: 5,
+        chapters: "João 13, 14 e 15",
+        theme: "O Lava-pés • O Consolador • A Videira Verdadeira",
+        scripture: "“Eu sou a videira, vós, os ramos. Quem permanece em mim, e eu, nele, esse dá muito fruto.” (João 15:5)",
+        guidance: "Permaneça conectada à Videira Verdadeira através do descanso e da oração sincera."
+    },
+    {
+        day: 6,
+        chapters: "João 16, 17 e 18",
+        theme: "A Obra do Espírito • A Oração Sacerdotal • A Entrega",
+        scripture: "“No mundo, passais por aflições; mas tende bom ânimo; eu venci o mundo.” (João 16:33)",
+        guidance: "Sinta a oração de Jesus por você e a paz consoladora do Espírito Santo que habita em nós."
+    },
+    {
+        day: 7,
+        chapters: "João 19, 20 e 21",
+        theme: "A Cruz • A Ressurreição • O Encontro na Praia",
+        scripture: "“Disse-lhes outra vez: Paz seja convosco! Assim como o Pai me enviou, eu também vos envio.” (João 20:21)",
+        guidance: "Celebre o amor que venceu a morte e o convite renovado para segui-Lo todos os dias com devoção."
     }
-    selectedChallengeViewDay = dayNum;
-    renderChallengeUI();
+];
+
+function ensurePropositoState() {
+    if (!userState.proposito) {
+        userState.proposito = {
+            activeDay: 1,
+            completedDays: [],
+            reflections: {}
+        };
+    }
+    if (!Array.isArray(userState.proposito.completedDays)) {
+        userState.proposito.completedDays = [];
+    }
+    if (!userState.proposito.reflections || typeof userState.proposito.reflections !== 'object') {
+        userState.proposito.reflections = {};
+    }
+    if (!userState.proposito.activeDay || userState.proposito.activeDay < 1 || userState.proposito.activeDay > 7) {
+        userState.proposito.activeDay = 1;
+    }
 }
 
-function renderChallengeUI() {
-    if (userState.challengeAccess || userState.challengeSubscribed) {
-        document.getElementById("challenge-paywall-box").style.display = "none";
-        document.getElementById("challenge-active-box").style.display = "block";
-        
-        const currentChallengeDay = getChallengeDay(userState.challengeStartedAt);
-        
-        // Define o dia de exibição padrão se não estiver definido
-        if (selectedChallengeViewDay === null) {
-            selectedChallengeViewDay = currentChallengeDay;
-            if (selectedChallengeViewDay < 1) selectedChallengeViewDay = 1;
-            if (selectedChallengeViewDay > 21) selectedChallengeViewDay = 21;
-        }
-        
-        // Atualiza cabeçalhos principais do desafio
-        const activeTitleEl = document.querySelector(".active-challenge-title");
-        if (activeTitleEl) {
-            if (currentChallengeDay < 1) {
-                activeTitleEl.innerText = "Desafio Core: Em breve (Não iniciado)";
-            } else if (currentChallengeDay > 21) {
-                activeTitleEl.innerText = "Desafio Core: Finalizado! 🎉";
-            } else {
-                activeTitleEl.innerText = `Desafio Core: Dia ${currentChallengeDay} de 21`;
-            }
-        }
-        
-        const daysLeftEl = document.getElementById("challenge-days-left");
-        if (daysLeftEl) {
-            const left = 21 - currentChallengeDay;
-            daysLeftEl.innerText = left >= 0 ? `${left} dias` : "Encerrado";
-        }
-        
-        const tasksTitleEl = document.getElementById("challenge-tasks-title");
-        if (tasksTitleEl) {
-            if (selectedChallengeViewDay === currentChallengeDay) {
-                tasksTitleEl.innerText = `📋 Minhas Tarefas de Hoje (Dia ${selectedChallengeViewDay})`;
-            } else if (selectedChallengeViewDay < currentChallengeDay) {
-                tasksTitleEl.innerText = `📋 Minhas Tarefas (Dia ${selectedChallengeViewDay} - Concluído/Passado)`;
-            } else {
-                tasksTitleEl.innerText = `📋 Minhas Tarefas (Dia ${selectedChallengeViewDay} - Bloqueado)`;
-            }
-        }
-        
-        // Inicializa o progresso do dia selecionado se não existir
-        const dayKey = String(selectedChallengeViewDay);
-        if (!userState.challengeProgress) userState.challengeProgress = {};
-        if (!userState.challengeProgress[dayKey]) {
-            userState.challengeProgress[dayKey] = {
-                date: getTodayStr(),
-                tasksCompleted: [false, false, false, false, false, false],
-                pointsEarned: 0,
-                completedAt: null
-            };
-        }
-        
-        const dayProgress = userState.challengeProgress[dayKey];
-        
-        // Carrega estado das tarefas concluídas do Dia selecionado
-        const taskKeys = ["workout", "diet", "weight", "water", "checkin", "community"];
-        let completedCount = 0;
-        
-        const isFutureDay = selectedChallengeViewDay > currentChallengeDay;
-        const isPastDay = selectedChallengeViewDay < currentChallengeDay;
-        
-        taskKeys.forEach((key, idx) => {
-            const isCompleted = dayProgress.tasksCompleted[idx];
-            const row = document.getElementById(`ch-task-${key}`);
-            const btn = row.querySelector(".btn-complete-task");
-            
-            if (isCompleted) {
-                row.classList.add("completed");
-                btn.innerText = "Concluído";
-                btn.classList.add("completed");
-                btn.disabled = true;
-                completedCount++;
-            } else {
-                row.classList.remove("completed");
-                btn.classList.remove("completed");
-                
-                if (isFutureDay) {
-                    btn.innerText = "Bloqueado";
-                    btn.disabled = true;
-                } else if (isPastDay) {
-                    btn.innerText = "Não Concluído";
-                    btn.disabled = true;
-                } else {
-                    btn.innerText = "Concluir";
-                    btn.disabled = false;
-                }
-            }
-        });
-        
-        // Calcula porcentagem do progresso do dia selecionado
-        const percentage = Math.round((completedCount / taskKeys.length) * 100);
-        document.getElementById("challenge-percent-txt").innerText = `${percentage}% concluído`;
-        document.getElementById("challenge-progress-fill").style.width = `${percentage}%`;
-        
-        // Atualiza a linha do tempo do calendário dinamicamente
-        const calendarGrid = document.getElementById("challenge-calendar-grid");
-        if (calendarGrid) {
-            calendarGrid.innerHTML = "";
-            for (let d = 1; d <= 21; d++) {
-                const circle = document.createElement("div");
-                const progressForDay = userState.challengeProgress[String(d)];
-                const doneTasks = progressForDay ? progressForDay.tasksCompleted.filter(Boolean).length : 0;
-                const isFullyCompleted = doneTasks === 6;
-                
-                let dayClass = "";
-                let clickAction = `selectChallengeDay(${d})`;
-                
-                if (d === currentChallengeDay) {
-                    dayClass = "active";
-                } else if (d < currentChallengeDay) {
-                    dayClass = isFullyCompleted ? "completed" : "past";
-                } else {
-                    dayClass = "locked";
-                    clickAction = `alert('Este dia está bloqueado. Aguarde a data correspondente para realizar as tarefas.')`;
-                }
-                
-                if (d === selectedChallengeViewDay) {
-                    dayClass += " selected-view";
-                }
-                
-                circle.className = `calendar-day-circle ${dayClass}`;
-                circle.setAttribute("onclick", clickAction);
-                circle.innerText = `D${d}`;
-                calendarGrid.appendChild(circle);
-            }
-        }
-        
-        // Atualiza o ranking
-        document.getElementById("ranking-pts-me").innerText = `${userState.challengePoints} pts`;
-        
-        // Reordena dinamicamente a tabela de classificação (ranking)
-        const rankingContainer = document.querySelector(".ranking-table");
-        
-        const players = [
-            { posText: "🥇 1º", name: "Camila Silva", pts: 240, class: "gold-pos" },
-            { posText: "🥈 2º", name: "Mariana Costa", pts: 220, class: "silver-pos" },
-            { posText: "🥉 3º", name: userState.name + " (Você)", pts: userState.challengePoints, class: "bronze-pos", isMe: true },
-            { posText: "4º", name: "Luana Mendes", pts: 180, class: "" }
-        ];
-        
-        players.sort((a, b) => b.pts - a.pts);
-        
-        players.forEach((p, index) => {
-            let medal = `${index + 1}º`;
-            if (index === 0) medal = "🥇 1º";
-            else if (index === 1) medal = "🥈 2º";
-            else if (index === 2) medal = "🥉 3º";
-            p.posText = medal;
-            
-            if (index === 0) p.class = "gold-pos";
-            else if (index === 1) p.class = "silver-pos";
-            else if (index === 2) p.class = "bronze-pos";
-            else p.class = "";
-        });
-        
-        rankingContainer.innerHTML = "";
-        players.forEach(p => {
-            const rowDiv = document.createElement("div");
-            rowDiv.className = `ranking-row ${p.class}`;
-            rowDiv.innerHTML = `
-                <span class="ranking-pos">${p.posText}</span>
-                <span class="ranking-user" ${p.isMe ? 'id="ranking-user-me"' : ''}>${p.name}</span>
-                <span class="ranking-pts" ${p.isMe ? 'id="ranking-pts-me"' : ''}>${p.pts} pts</span>
-            `;
-            rankingContainer.appendChild(rowDiv);
-        });
-        
+function selectPropositoDay(dayNum) {
+    ensurePropositoState();
+    if (dayNum < 1 || dayNum > 7) return;
+    userState.proposito.activeDay = dayNum;
+    renderPropositoUI();
+}
+
+function togglePropositoCheckin() {
+    ensurePropositoState();
+    const activeDay = userState.proposito.activeDay;
+    const completed = userState.proposito.completedDays;
+    const idx = completed.indexOf(activeDay);
+    
+    if (idx >= 0) {
+        completed.splice(idx, 1);
     } else {
-        document.getElementById("challenge-paywall-box").style.display = "block";
-        document.getElementById("challenge-active-box").style.display = "none";
+        completed.push(activeDay);
+        completed.sort((a, b) => a - b);
+        
+        // Se concluiu todos os 7 dias
+        if (completed.length === 7) {
+            setTimeout(() => {
+                alert("Parabéns por concluir os 7 Dias do Evangelho de João! 🤍\nQue a Palavra continue viva e frutificando no seu coração todos os dias.");
+            }, 300);
+        }
     }
+    
+    saveStateToStorage();
+    renderPropositoUI();
+}
+
+function savePropositoReflection() {
+    ensurePropositoState();
+    const activeDay = userState.proposito.activeDay;
+    const dayKey = String(activeDay);
+    
+    const mainEl = document.getElementById("proposito-main-reflection");
+    const verseEl = document.getElementById("proposito-opt-verse");
+    const teachingEl = document.getElementById("proposito-opt-teaching");
+    const surrenderEl = document.getElementById("proposito-opt-surrender");
+    const practiceEl = document.getElementById("proposito-opt-practice");
+    const feedbackEl = document.getElementById("proposito-save-feedback");
+    
+    userState.proposito.reflections[dayKey] = {
+        main: mainEl ? mainEl.value : "",
+        verse: verseEl ? verseEl.value : "",
+        teaching: teachingEl ? teachingEl.value : "",
+        surrender: surrenderEl ? surrenderEl.value : "",
+        practice: practiceEl ? practiceEl.value : "",
+        updatedAt: new Date().toISOString()
+    };
+    
+    saveStateToStorage();
+    
+    if (feedbackEl) {
+        feedbackEl.style.display = "inline";
+        setTimeout(() => {
+            feedbackEl.style.display = "none";
+        }, 3000);
+    }
+}
+
+function renderPropositoUI() {
+    ensurePropositoState();
+    
+    const counterEl = document.getElementById("proposito-counter-txt");
+    const fillEl = document.getElementById("proposito-progress-fill");
+    const daysContainer = document.getElementById("proposito-days-container");
+    const dayBadge = document.getElementById("proposito-day-badge");
+    const readingTitle = document.getElementById("proposito-reading-title");
+    const readingTheme = document.getElementById("proposito-reading-theme");
+    const checkinBtn = document.getElementById("btn-proposito-checkin");
+    const checkinBoxIcon = document.getElementById("checkin-checkbox-icon");
+    const checkinBtnLabel = document.getElementById("checkin-btn-label");
+    const mainReflection = document.getElementById("proposito-main-reflection");
+    const optVerse = document.getElementById("proposito-opt-verse");
+    const optTeaching = document.getElementById("proposito-opt-teaching");
+    const optSurrender = document.getElementById("proposito-opt-surrender");
+    const optPractice = document.getElementById("proposito-opt-practice");
+    const completionCard = document.getElementById("proposito-completion-card");
+    
+    if (!counterEl || !fillEl || !daysContainer) return;
+    
+    const completedCount = userState.proposito.completedDays.length;
+    counterEl.innerText = `Propósito: ${completedCount}/7 dias concluídos`;
+    const percent = Math.round((completedCount / 7) * 100);
+    fillEl.style.width = `${percent}%`;
+    
+    // Renderiza a linha do tempo dos 7 dias
+    daysContainer.innerHTML = "";
+    for (let d = 1; d <= 7; d++) {
+        const isCompleted = userState.proposito.completedDays.includes(d);
+        const isSelected = userState.proposito.activeDay === d;
+        
+        const dayBtn = document.createElement("button");
+        dayBtn.type = "button";
+        dayBtn.onclick = () => selectPropositoDay(d);
+        
+        let bg = "rgba(255, 255, 255, 0.04)";
+        let border = "1px solid rgba(255, 255, 255, 0.08)";
+        let textColor = "var(--text-secondary)";
+        let iconHtml = `<span style="font-size: 13px; opacity: 0.6;">○</span>`;
+        
+        if (isCompleted) {
+            bg = "rgba(232, 165, 152, 0.15)";
+            border = "1px solid rgba(232, 165, 152, 0.4)";
+            textColor = "var(--accent-rose)";
+            iconHtml = `<span style="font-size: 13px; font-weight: bold; color: var(--accent-rose);">✓</span>`;
+        }
+        
+        if (isSelected) {
+            bg = "linear-gradient(135deg, rgba(232, 165, 152, 0.3), rgba(232, 165, 152, 0.15))";
+            border = "1.5px solid var(--accent-rose)";
+            textColor = "#ffffff";
+            dayBtn.style.boxShadow = "0 0 10px rgba(232, 165, 152, 0.35)";
+        }
+        
+        dayBtn.style.cssText += `
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 8px 4px;
+            border-radius: 10px;
+            background: ${bg};
+            border: ${border};
+            color: ${textColor};
+            cursor: pointer;
+            transition: all 0.2s ease;
+        `;
+        
+        dayBtn.innerHTML = `
+            ${iconHtml}
+            <span style="font-size: 10px; font-weight: 700; letter-spacing: 0.3px;">Dia ${d}</span>
+        `;
+        
+        daysContainer.appendChild(dayBtn);
+    }
+    
+    // Leitura do dia ativo
+    const activeDay = userState.proposito.activeDay;
+    const schedule = PROPOSITO_SCHEDULE.find(s => s.day === activeDay) || PROPOSITO_SCHEDULE[0];
+    
+    if (dayBadge) dayBadge.innerText = `DIA ${schedule.day}`;
+    if (readingTitle) readingTitle.innerText = schedule.chapters;
+    if (readingTheme) readingTheme.innerText = schedule.theme;
+    
+    const isDayCompleted = userState.proposito.completedDays.includes(activeDay);
+    if (checkinBtn && checkinBoxIcon && checkinBtnLabel) {
+        if (isDayCompleted) {
+            checkinBoxIcon.innerText = "☑";
+            checkinBtnLabel.innerText = "✓ Concluí a leitura de hoje";
+            checkinBtn.style.background = "linear-gradient(135deg, rgba(232, 165, 152, 0.3), rgba(232, 165, 152, 0.15))";
+            checkinBtn.style.borderColor = "var(--accent-rose)";
+            checkinBtn.style.color = "var(--accent-rose)";
+        } else {
+            checkinBoxIcon.innerText = "☐";
+            checkinBtnLabel.innerText = "Concluí a leitura de hoje";
+            checkinBtn.style.background = "rgba(232, 165, 152, 0.08)";
+            checkinBtn.style.borderColor = "rgba(232, 165, 152, 0.3)";
+            checkinBtn.style.color = "#ffffff";
+        }
+    }
+    
+    // Carrega reflexões salvas do dia ativo
+    const dayKey = String(activeDay);
+    const saved = userState.proposito.reflections[dayKey] || {};
+    
+    if (mainReflection) mainReflection.value = saved.main || "";
+    if (optVerse) optVerse.value = saved.verse || "";
+    if (optTeaching) optTeaching.value = saved.teaching || "";
+    if (optSurrender) optSurrender.value = saved.surrender || "";
+    if (optPractice) optPractice.value = saved.practice || "";
+    
+    // Exibe ou oculta card de conclusão final
+    if (completionCard) {
+        if (completedCount === 7) {
+            completionCard.style.display = "block";
+        } else {
+            completionCard.style.display = "none";
+        }
+    }
+    
+    if (window.lucide && lucide.createIcons) {
+        lucide.createIcons();
+    }
+}
+
+// Compatibilidade com chamadas legadas
+function renderChallengeUI() {
+    renderPropositoUI();
+}
+
+function selectChallengeDay(dayNum) {
+    selectPropositoDay(dayNum);
 }
 
 function openPaymentModal() {

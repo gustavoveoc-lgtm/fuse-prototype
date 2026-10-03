@@ -311,7 +311,7 @@
                 <h1 class="greeting-title" id="user-display-name">Amanda Fernandes</h1>
             </div>
             <div class="header-action-group">
-                <div class="notification-bell" onclick="alert('Campanhas e lives de hoje: Live com Dermatologista às 19:30!')">
+                <div class="notification-bell" onclick="alert('Novidades da Comunidade: Participe da jornada do Propósito 7 Dias do Evangelho de João!')">
                     <i data-lucide="bell"></i>
                     <span class="bell-dot"></span>
                 </div>
@@ -445,9 +445,9 @@
                 <!-- Event Reminder Banner -->
                 <div class="section-card event-reminder-card" onclick="switchTab('events')" style="background: linear-gradient(135deg, rgba(232, 165, 152, 0.15), rgba(18, 18, 18, 0.5)); border: 1px solid rgba(232, 165, 152, 0.25);">
                     <div class="event-reminder-content">
-                        <span class="event-live-indicator"><span class="live-dot" style="background:var(--accent-rose); box-shadow: 0 0 10px rgba(232, 165, 152, 0.4);"></span> DIA 31 TEM LIVE</span>
+                        <span class="event-live-indicator"><span class="live-dot" style="background:var(--accent-rose); box-shadow: 0 0 10px rgba(232, 165, 152, 0.4);"></span> EM BREVE TEM LIVE</span>
                         <h3 class="event-title">Comparações nas redes sociais</h3>
-                        <p class="event-meta">Com Manuela Freitas (Psicóloga) • 19:30</p>
+                        <p class="event-meta">Com Manuela Freitas (Psicóloga)</p>
                     </div>
                     <i data-lucide="chevron-right" class="chevron-arrow"></i>
                 </div>
@@ -739,254 +739,149 @@
                 </div>
             </section>
 
-            <!-- TAB 7: DESAFIO (GAMIFICAÇÃO DE TEMPORADA) -->
+            <!-- TAB: PROPÓSITO 7 DIAS — EVANGELHO DE JOÃO -->
             <section id="tab-challenge" class="app-tab-panel">
-                <div class="tab-header-section">
-                    <h2 class="tab-heading">Desafio FUSE</h2>
-                    <p class="tab-subheading">Temporadas exclusivas para acelerar sua transformação com premiações.</p>
+                <div class="tab-header-section" style="text-align: center; margin-bottom: 20px;">
+                    <div style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 14px; border-radius: 20px; background: rgba(232, 165, 152, 0.12); border: 1px solid rgba(232, 165, 152, 0.3); margin-bottom: 10px;">
+                        <i data-lucide="book-heart" style="width: 14px; height: 14px; color: var(--accent-rose);"></i>
+                        <span style="font-size: 11px; font-weight: 700; color: var(--accent-rose); letter-spacing: 0.5px; text-transform: uppercase;">Jornada Devocional</span>
+                    </div>
+                    <h2 class="tab-heading" style="font-size: 22px; font-family: var(--font-header); font-weight: 700; line-height: 1.25; margin-bottom: 6px;">Propósito 7 Dias — Evangelho de João</h2>
+                    <p style="font-size: 12px; color: var(--text-secondary); max-width: 380px; margin: 0 auto; line-height: 1.5;">
+                        Durante 7 dias, separe um momento do dia para estar com Deus através da leitura do Evangelho de João. Leia com atenção e perceba o que Deus está falando individualmente com você.
+                    </p>
+                    <div style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 10px; font-size: 10.5px; color: var(--accent-rose); font-weight: 600;">
+                        <span>Palavra</span> • <span>Presença</span> • <span>Reflexão</span> • <span>Oração</span> • <span>Constância</span>
+                    </div>
                 </div>
 
-                <!-- ESTADO BLOQUEADO (PAYWALL) -->
-                <div id="challenge-paywall-box" class="challenge-state-container">
-                    <div class="section-card challenge-teaser-card">
-                        <div class="challenge-teaser-banner">
-                            <span class="teaser-status-badge">🔥 PRÓXIMA TEMPORADA</span>
-                            <h3>DESAFIO CORE: 21 dias de disciplina</h3>
+                <!-- CARD 1: MEU PROPÓSITO - PROGRESSO DOS 7 DIAS -->
+                <div class="section-card proposito-card" style="margin-bottom: 16px; border: 1px solid rgba(232, 165, 152, 0.2); background: linear-gradient(135deg, rgba(232, 165, 152, 0.08) 0%, rgba(20, 16, 18, 0.7) 100%); padding: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-size: 11px; font-weight: 700; color: var(--accent-rose); letter-spacing: 0.5px; text-transform: uppercase;">Meu Propósito</span>
+                        <span id="proposito-counter-txt" style="font-size: 12px; font-weight: 700; color: #fff;">Propósito: 0/7 dias concluídos</span>
+                    </div>
+                    
+                    <div class="progress-bar-container" style="height: 8px; border-radius: 4px; background: rgba(255,255,255,0.06); overflow: hidden; margin-bottom: 16px;">
+                        <div class="progress-bar-fill" id="proposito-progress-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--accent-rose), #f7cac9); border-radius: 4px; transition: width 0.4s ease;"></div>
+                    </div>
+
+                    <!-- LINHA DO TEMPO DOS 7 DIAS -->
+                    <div class="proposito-days-grid" id="proposito-days-container" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px;">
+                        <!-- Inserido dinamicamente via JavaScript -->
+                    </div>
+                </div>
+
+                <!-- CARD 2: LEITURA DO DIA ATIVO E CHECK-IN -->
+                <div class="section-card proposito-card" style="margin-bottom: 16px; border: 1px solid rgba(255, 255, 255, 0.08); padding: 18px 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                        <div>
+                            <span id="proposito-day-badge" style="font-size: 10px; font-weight: 700; color: var(--accent-rose); background: rgba(232, 165, 152, 0.12); padding: 3px 8px; border-radius: 6px; display: inline-block; margin-bottom: 6px;">DIA 1</span>
+                            <h3 id="proposito-reading-title" style="font-size: 18px; font-weight: 700; color: #fff; margin: 0; font-family: var(--font-header);">João 1, 2 e 3</h3>
+                            <p id="proposito-reading-theme" style="font-size: 11.5px; color: var(--text-secondary); margin: 4px 0 0 0;">O Verbo se fez carne • Primeiros sinais da graça</p>
                         </div>
-                        <div class="challenge-teaser-body">
-                            <p class="challenge-teaser-desc">
-                                Uma jornada imersiva e gamificada focada na construção de hábitos saudáveis. Treine, coma bem, beba água e suba no ranking das participantes.
-                            </p>
-                            <div class="challenge-meta-grid">
-                                <div class="meta-item"><strong>Objetivo:</strong> <span>Foco e Constância</span></div>
-                                <div class="meta-item"><strong>Início:</strong> <span>23 de Agosto, 2026</span></div>
-                                <div class="meta-item"><strong>Encerramento:</strong> <span>12 de Setembro, 2026</span></div>
-                                <div class="meta-item"><strong>Dias Restantes:</strong> <span>7 dias para largada</span></div>
-                            </div>
+                        <div id="proposito-status-icon-box" style="width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+                            <i data-lucide="book-open" style="width: 18px; height: 18px; color: var(--accent-rose);"></i>
                         </div>
                     </div>
 
-                    <!-- Secção de Prêmios -->
-                    <div class="section-card challenge-prizes-card" style="padding: 16px;">
-                        <h3 class="card-title" style="margin-bottom: 8px;">🎁 Premiação Exclusiva</h3>
-                        <p class="challenge-prize-desc" style="font-size: 11px; color: var(--text-secondary); margin-bottom: 14px;">
-                            Ao concluir os 21 dias de disciplina e cumprir todas as regras, você concorrerá a esta super premiação:
-                        </p>
-                        
-                        <!-- Vitrine de Prêmios -->
-                        <div class="prizes-vitrine-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px;">
-                            <!-- Prêmio 1: Bíblia -->
-                            <div class="prize-card-item" style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;">
-                                <div style="width: 100%; aspect-ratio: 4/3; background: #000; overflow: hidden; position: relative;">
-                                    <img src="assets/img/biblia.png" alt="Bíblia Sagrada" style="width:100%; height:100%; object-fit:cover;">
-                                    <span style="position: absolute; top: 8px; left: 8px; background: rgba(18,10,14,0.75); padding: 2px 6px; border-radius: 10px; font-size: 10px; color: var(--accent-rose); font-weight: 700;">Fé & Foco</span>
-                                </div>
-                                <div style="padding: 10px; text-align: left;">
-                                    <h4 style="font-size: 12px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">📖 Uma Bíblia</h4>
-                                    <p style="font-size: 9.5px; color: var(--text-secondary); line-height: 1.3;">Para fortalecer a sua espiritualidade e renovar sua devoção diária.</p>
-                                </div>
-                            </div>
-
-                            <!-- Prêmio 2: Kit Growth -->
-                            <div class="prize-card-item" style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;">
-                                <div style="width: 100%; aspect-ratio: 4/3; background: #000; overflow: hidden; position: relative;">
-                                    <img src="assets/img/growth-logo.png" alt="Kit Growth" style="width:100%; height:100%; object-fit:cover;">
-                                    <span style="position: absolute; top: 8px; left: 8px; background: rgba(18,10,14,0.75); padding: 2px 6px; border-radius: 10px; font-size: 10px; color: var(--accent-rose); font-weight: 700;">Nutrição</span>
-                                </div>
-                                <div style="padding: 10px; text-align: left;">
-                                    <h4 style="font-size: 12px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">💪 Kit Growth</h4>
-                                    <p style="font-size: 9.5px; color: var(--text-secondary); line-height: 1.3;">Suplementos de alta qualidade para impulsionar seus treinos.</p>
-                                </div>
-                            </div>
-
-                            <!-- Prêmio 3: Garrafa Fuse -->
-                            <div class="prize-card-item" style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;">
-                                <div style="width: 100%; aspect-ratio: 4/3; background: #000; overflow: hidden; position: relative;">
-                                    <img src="assets/img/garrafa.jpg" alt="Garrafa Fuse" style="width:100%; height:100%; object-fit:cover;">
-                                    <span style="position: absolute; top: 8px; left: 8px; background: rgba(18,10,14,0.75); padding: 2px 6px; border-radius: 10px; font-size: 10px; color: var(--accent-rose); font-weight: 700;">Hidratação</span>
-                                </div>
-                                <div style="padding: 10px; text-align: left;">
-                                    <h4 style="font-size: 12px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">💧 Garrafa FUSE</h4>
-                                    <p style="font-size: 9.5px; color: var(--text-secondary); line-height: 1.3;">Exclusiva garrafa térmica FUSE com display de temperatura digital.</p>
-                                </div>
-                            </div>
-
-                            <!-- Prêmio 4: Premium Access -->
-                            <div class="prize-card-item" style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;">
-                                <div style="width: 100%; aspect-ratio: 4/3; background: #000; overflow: hidden; position: relative;">
-                                    <img src="assets/img/fuse-logo.jpg" alt="Acesso Premium" style="width:100%; height:100%; object-fit:cover;">
-                                    <span style="position: absolute; top: 8px; left: 8px; background: rgba(18,10,14,0.75); padding: 2px 6px; border-radius: 10px; font-size: 10px; color: var(--accent-rose); font-weight: 700;">VIP</span>
-                                </div>
-                                <div style="padding: 10px; text-align: left;">
-                                    <h4 style="font-size: 12px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">⭐ FUSE Premium</h4>
-                                    <p style="font-size: 9.5px; color: var(--text-secondary); line-height: 1.3;">1 mês de acesso VIP ilimitado a todas as ferramentas avançadas.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Box de Destaque Motivador -->
-                        <div class="motivation-badge-box" style="background: linear-gradient(135deg, rgba(232, 165, 152, 0.15) 0%, rgba(26,15,21,0.5) 100%); border: 1px dashed var(--accent-rose); padding: 12px; border-radius: var(--radius-md); text-align: center; margin-top: 14px;">
-                            <p style="font-size: 11px; font-weight: 600; color: var(--text-primary); line-height: 1.4; font-family: var(--font-header);">
-                                ✨ “Complete o desafio, cumpra todas as regras e concorra a essa premiação exclusiva!”
-                            </p>
-                        </div>
-                        
-                        <!-- Regras Box -->
-                        <div class="prize-rules-box mt-3" style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px;">
-                            <h4 style="font-size: 11px; font-weight: 700; color: var(--accent-rose); margin-bottom: 6px;">Como concorrer e vencer:</h4>
-                            <p style="font-size: 10.5px; color: var(--text-secondary); margin-bottom: 4px;"><strong>Critério para participar:</strong> Inscrição no valor de R$ 19,99 e conclusão de 100% das tarefas diárias do desafio.</p>
-                            <p style="font-size: 10.5px; color: var(--text-secondary); margin-bottom: 4px;"><strong>Critério para vencer:</strong> Sorteio oficial auditado entre todas as participantes que finalizarem os 21 dias com 100% de aproveitamento.</p>
-                            <p style="font-size: 10.5px; color: var(--text-secondary);"><strong>Resultado:</strong> Anúncio no feed do Círculo em 13 de Setembro de 2026.</p>
-                        </div>
-                    </div>
-
-                    <!-- Regulamento Rápido -->
-                    <div class="section-card challenge-rules-card">
-                        <h3 class="card-title">📜 Regulamento</h3>
-                        <p class="challenge-rules-text">
-                            A inscrição custa uma taxa única de R$ 19,99 para cobrir custos de envio do prêmio físico. As tarefas diárias abrem pontualmente à meia-noite de cada dia e não podem ser concluídas com antecedência (tarefas de dias futuros ficam bloqueadas). Ao se inscrever, você declara aceitar os termos do desafio.
+                    <!-- Mensagem pastoral / orientadora -->
+                    <div style="background: rgba(255,255,255,0.02); border-left: 3px solid var(--accent-rose); padding: 10px 12px; border-radius: 0 8px 8px 0; margin-bottom: 16px;">
+                        <p style="font-size: 11.5px; color: var(--text-secondary); margin: 0; line-height: 1.5; font-style: italic;">
+                            “Reserve este instante em silêncio. Não tenha pressa em apenas virar páginas: permita que cada versículo ecoe no seu espírito.”
                         </p>
                     </div>
 
-                    <button class="btn-join-challenge" onclick="openPaymentModal()">
-                        <i data-lucide="shield-check"></i> Participar do Desafio (R$ 19,99)
+                    <!-- BOTÃO CHECK-IN DIÁRIO -->
+                    <button id="btn-proposito-checkin" class="btn-proposito-checkin" onclick="togglePropositoCheckin()" style="width: 100%; padding: 13px; border-radius: 10px; font-size: 13.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s ease; border: 1px solid var(--accent-rose); background: rgba(232, 165, 152, 0.1); color: #fff;">
+                        <span id="checkin-checkbox-icon" style="font-size: 16px;">☐</span>
+                        <span id="checkin-btn-label">Concluí a leitura de hoje</span>
                     </button>
                 </div>
 
-                <!-- ESTADO DESBLOQUEADO (DASHBOARD ATIVO) -->
-                <div id="challenge-active-box" class="challenge-state-container" style="display: none;">
-                    
-                    <!-- Progresso do Desafio -->
-                    <div class="section-card challenge-progress-card">
-                        <div class="progress-header-row">
-                            <span class="active-challenge-tag">🟢 DESAFIO EM ANDAMENTO</span>
-                            <span class="progress-percent-text" id="challenge-percent-txt">0% concluído</span>
-                        </div>
-                        <h3 class="active-challenge-title">Desafio Core: Dia 1 de 10</h3>
-                        <div class="progress-bar-container mt-2">
-                            <div class="progress-bar-fill gold" id="challenge-progress-fill" style="width: 0%"></div>
-                        </div>
-                        <div class="challenge-active-stats">
-                            <div><strong>Dias Restantes:</strong> <span id="challenge-days-left">10 dias</span></div>
-                            <div><strong>Participantes:</strong> <span>1.842 inscritas</span></div>
-                        </div>
+                <!-- CARD 3: ÁREA DE REFLEXÃO — O QUE DEUS ESTÁ FALANDO COMIGO? -->
+                <div class="section-card proposito-card" id="proposito-reflection-card" style="margin-bottom: 16px; border: 1px solid rgba(255, 255, 255, 0.08); padding: 18px 16px;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+                        <span style="font-size: 18px;">💭</span>
+                        <h3 style="font-size: 15px; font-weight: 700; color: #fff; margin: 0; font-family: var(--font-header);">O que Deus está falando comigo?</h3>
                     </div>
 
-                    <!-- Lista de Tarefas do Dia -->
-                    <div class="section-card challenge-tasks-card">
-                        <h3 class="card-title" id="challenge-tasks-title">📋 Minhas Tarefas de Hoje (Dia 1)</h3>
-                        <p class="card-subtitle">Complete todas as ações diárias para manter os 100% e somar pontos.</p>
-                        
-                        <div class="challenge-tasks-list" id="challenge-tasks-container">
-                            <!-- Tarefa 1 -->
-                            <div class="challenge-task-row" id="ch-task-workout">
-                                <div class="task-info">
-                                    <span class="task-icon">🏋️‍♀️</span>
-                                    <div>
-                                        <h4 class="task-title">Concluir o treino recomendado</h4>
-                                        <p class="task-desc">+20 Pontos • Foco em pernas/glúteos</p>
-                                    </div>
-                                </div>
-                                <button class="btn-complete-task" onclick="completeChallengeTask('workout', this)">Concluir</button>
-                            </div>
-                            
-                            <!-- Tarefa 2 -->
-                            <div class="challenge-task-row" id="ch-task-diet">
-                                <div class="task-info">
-                                    <span class="task-icon">🥗</span>
-                                    <div>
-                                        <h4 class="task-title">Seguir o plano alimentar</h4>
-                                        <p class="task-desc">+20 Pontos • Bater meta de macros</p>
-                                    </div>
-                                </div>
-                                <button class="btn-complete-task" onclick="completeChallengeTask('diet', this)">Concluir</button>
-                            </div>
+                    <p style="font-size: 11.5px; color: var(--text-secondary); line-height: 1.55; margin-bottom: 14px; background: rgba(232, 165, 152, 0.06); padding: 12px 14px; border-radius: 8px; border: 1px solid rgba(232, 165, 152, 0.15);">
+                        «Pare por alguns minutos e reflita sobre o que você acabou de ler. Qual versículo falou mais com você? O que Deus pode estar te ensinando, mostrando ou pedindo para você entregar a Ele?»
+                    </p>
 
-                            <!-- Tarefa 3 -->
-                            <div class="challenge-task-row" id="ch-task-weight">
-                                <div class="task-info">
-                                    <span class="task-icon">⚖️</span>
-                                    <div>
-                                        <h4 class="task-title">Registrar peso no perfil</h4>
-                                        <p class="task-desc">+20 Pontos • Controle de oscilações</p>
-                                    </div>
-                                </div>
-                                <button class="btn-complete-task" onclick="completeChallengeTask('weight', this)">Concluir</button>
-                            </div>
-
-                            <!-- Tarefa 4 -->
-                            <div class="challenge-task-row" id="ch-task-water">
-                                <div class="task-info">
-                                    <span class="task-icon">💧</span>
-                                    <div>
-                                        <h4 class="task-title">Beber água recomendada (3L)</h4>
-                                        <p class="task-desc">+20 Pontos • Hidratação celular</p>
-                                    </div>
-                                </div>
-                                <button class="btn-complete-task" onclick="completeChallengeTask('water', this)">Concluir</button>
-                            </div>
-
-                            <!-- Tarefa 5 -->
-                            <div class="challenge-task-row" id="ch-task-checkin">
-                                <div class="task-info">
-                                    <span class="task-icon">📅</span>
-                                    <div>
-                                        <h4 class="task-title">Realizar check-in diário de hábitos</h4>
-                                        <p class="task-desc">+20 Pontos • Autoavaliação de rotina</p>
-                                    </div>
-                                </div>
-                                <button class="btn-complete-task" onclick="completeChallengeTask('checkin', this)">Concluir</button>
-                            </div>
-
-                            <!-- Tarefa 6 -->
-                            <div class="challenge-task-row" id="ch-task-community">
-                                <div class="task-info">
-                                    <span class="task-icon">💬</span>
-                                    <div>
-                                        <h4 class="task-title">Compartilhar conquista no Círculo</h4>
-                                        <p class="task-desc">+20 Pontos • Apoio mútuo e social</p>
-                                    </div>
-                                </div>
-                                <button class="btn-complete-task" onclick="completeChallengeTask('community', this)">Concluir</button>
-                            </div>
-                        </div>
+                    <!-- Campo Livre de Resposta Principal -->
+                    <div style="margin-bottom: 18px;">
+                        <label for="proposito-main-reflection" style="font-size: 11.5px; font-weight: 600; color: var(--text-primary); display: block; margin-bottom: 6px;">
+                            O que Deus está falando comigo através da Palavra de hoje?
+                        </label>
+                        <textarea id="proposito-main-reflection" placeholder="Escreva aqui sua resposta com liberdade e sinceridade..." style="width: 100%; min-height: 90px; background: rgba(18, 12, 15, 0.7); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; color: #fff; font-size: 12px; padding: 10px 12px; font-family: var(--font-body); resize: vertical; outline: none; line-height: 1.5;"></textarea>
                     </div>
 
-                    <!-- Calendário de 10 Dias -->
-                    <div class="section-card challenge-calendar-card">
-                        <h3 class="card-title">📅 Linha do Tempo do Desafio</h3>
-                        <p class="card-subtitle">As tarefas futuras só podem ser abertas na data correspondente.</p>
-                        <div class="challenge-calendar-grid" id="challenge-calendar-grid">
-                            <!-- Populado dinamicamente via JS -->
+                    <!-- MINHA REFLEXÃO (CAMPOS OPCIONAIS) -->
+                    <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 16px; margin-top: 16px;">
+                        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 12px;">
+                            <span style="font-size: 14px;">✍🏻</span>
+                            <h4 style="font-size: 13px; font-weight: 700; color: var(--accent-rose); margin: 0;">Minha Reflexão (Campos Opcionais)</h4>
+                        </div>
+
+                        <!-- 1. Versículo que mais falou comigo -->
+                        <div style="margin-bottom: 12px;">
+                            <label for="proposito-opt-verse" style="font-size: 11px; font-weight: 600; color: var(--text-secondary); display: flex; align-items: center; gap: 5px; margin-bottom: 5px;">
+                                <span>📖</span> Versículo que mais falou comigo
+                            </label>
+                            <input type="text" id="proposito-opt-verse" placeholder="Ex: João 1:5 — 'A luz resplandece nas trevas...'" style="width: 100%; background: rgba(18, 12, 15, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; color: #fff; font-size: 11.5px; padding: 9px 11px; outline: none;">
+                        </div>
+
+                        <!-- 2. O que Deus está me ensinando? -->
+                        <div style="margin-bottom: 12px;">
+                            <label for="proposito-opt-teaching" style="font-size: 11px; font-weight: 600; color: var(--text-secondary); display: flex; align-items: center; gap: 5px; margin-bottom: 5px;">
+                                <span>💭</span> O que Deus está me ensinando?
+                            </label>
+                            <input type="text" id="proposito-opt-teaching" placeholder="O que aprendi de novo sobre o cuidado de Deus?" style="width: 100%; background: rgba(18, 12, 15, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; color: #fff; font-size: 11.5px; padding: 9px 11px; outline: none;">
+                        </div>
+
+                        <!-- 3. O que preciso entregar a Deus hoje? -->
+                        <div style="margin-bottom: 12px;">
+                            <label for="proposito-opt-surrender" style="font-size: 11px; font-weight: 600; color: var(--text-secondary); display: flex; align-items: center; gap: 5px; margin-bottom: 5px;">
+                                <span>🙏</span> O que preciso entregar a Deus hoje?
+                            </label>
+                            <input type="text" id="proposito-opt-surrender" placeholder="Uma preocupação, cansaço ou pedido de ajuda..." style="width: 100%; background: rgba(18, 12, 15, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; color: #fff; font-size: 11.5px; padding: 9px 11px; outline: none;">
+                        </div>
+
+                        <!-- 4. Como posso colocar essa Palavra em prática? -->
+                        <div style="margin-bottom: 16px;">
+                            <label for="proposito-opt-practice" style="font-size: 11px; font-weight: 600; color: var(--text-secondary); display: flex; align-items: center; gap: 5px; margin-bottom: 5px;">
+                                <span>✨</span> Como posso colocar essa Palavra em prática?
+                            </label>
+                            <input type="text" id="proposito-opt-practice" placeholder="Uma atitude de amor, perdão ou fé para hoje..." style="width: 100%; background: rgba(18, 12, 15, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; color: #fff; font-size: 11.5px; padding: 9px 11px; outline: none;">
+                        </div>
+
+                        <!-- Botão Salvar Reflexão -->
+                        <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px;">
+                            <span id="proposito-save-feedback" style="font-size: 11.5px; color: #4ade80; display: none; font-weight: 600;">Salvo com carinho 🤍</span>
+                            <button type="button" onclick="savePropositoReflection()" style="background: linear-gradient(135deg, var(--accent-rose), #c97f74); border: none; color: #120a0e; font-weight: 700; font-size: 12.5px; padding: 9px 18px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(232,165,152,0.25);">
+                                <i data-lucide="check" style="width: 14px; height: 14px;"></i> Salvar Reflexão
+                            </button>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Classificação Geral (Ranking) -->
-                    <div class="section-card challenge-ranking-card">
-                        <h3 class="card-title">🏆 Classificação Geral (Ranking)</h3>
-                        <p class="card-subtitle">As participantes que lideram a tabela do Desafio Core.</p>
-                        <div class="ranking-table">
-                            <div class="ranking-row gold-pos">
-                                <span class="ranking-pos">🥇 1º</span>
-                                <span class="ranking-user">Camila Silva</span>
-                                <span class="ranking-pts">240 pts</span>
-                            </div>
-                            <div class="ranking-row silver-pos">
-                                <span class="ranking-pos">🥈 2º</span>
-                                <span class="ranking-user">Mariana Costa</span>
-                                <span class="ranking-pts">220 pts</span>
-                            </div>
-                            <div class="ranking-row bronze-pos">
-                                <span class="ranking-pos">🥉 3º</span>
-                                <span class="ranking-user" id="ranking-user-me">Amanda Fernandes (Você)</span>
-                                <span class="ranking-pts" id="ranking-pts-me">210 pts</span>
-                            </div>
-                            <div class="ranking-row">
-                                <span class="ranking-pos">4º</span>
-                                <span class="ranking-user">Luana Mendes</span>
-                                <span class="ranking-pts">180 pts</span>
-                            </div>
-                        </div>
+                <!-- CARD 4: MENSAGEM FINAL (EXIBIDO QUANDO CONCLUIR OS 7 DIAS) -->
+                <div id="proposito-completion-card" class="section-card proposito-card" style="display: none; border: 1px solid rgba(232, 165, 152, 0.35); background: linear-gradient(135deg, rgba(232, 165, 152, 0.15) 0%, rgba(26, 16, 22, 0.85) 100%); text-align: center; padding: 24px 20px; margin-bottom: 24px; border-radius: 14px;">
+                    <div style="width: 52px; height: 52px; border-radius: 50%; background: rgba(232, 165, 152, 0.2); border: 1px solid var(--accent-rose); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto; font-size: 22px;">
+                        🤍
+                    </div>
+                    <h3 style="font-size: 20px; font-family: var(--font-header); font-weight: 700; color: #fff; margin-bottom: 10px;">
+                        Você concluiu o propósito! 🤍
+                    </h3>
+                    <p style="font-size: 12.5px; color: var(--text-primary); line-height: 1.65; margin-bottom: 16px; font-style: italic; max-width: 440px; margin-left: auto; margin-right: auto;">
+                        “Durante esses 7 dias, você escolheu parar, abrir a Palavra e estar na presença de Deus. Que tudo aquilo que Ele falou ao seu coração continue vivo em você e produza frutos na sua vida.<br><br>
+                        E que esse não seja o fim da sua jornada com a Palavra, mas apenas o começo. 🌿”
+                    </p>
+                    <div style="background: rgba(18, 12, 15, 0.7); border: 1px dashed var(--accent-rose); border-radius: 10px; padding: 12px 18px; display: inline-block;">
+                        <span style="font-size: 10.5px; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; display: block; margin-bottom: 3px;">Próximo propósito</span>
+                        <strong style="font-size: 14px; color: var(--accent-rose);">Primeira Epístola de João (1 João)</strong>
                     </div>
                 </div>
             </section>
@@ -1115,7 +1010,7 @@
 
                     <!-- Event 2: Comparações nas redes sociais (Upcoming) -->
                     <div class="section-card live-event-active" style="margin-bottom: 24px; background: linear-gradient(135deg, rgba(232, 165, 152, 0.15), rgba(18, 18, 18, 0.5)); border: 1px solid rgba(232, 165, 152, 0.25);">
-                        <span class="live-tag" style="background:var(--accent-rose);">Dia 31 às 19:30</span>
+                        <span class="live-tag" style="background:var(--accent-rose);">Em Breve</span>
                         <h3 class="event-title">Comparações nas redes sociais</h3>
                         <p class="event-desc">Uma conversa profunda sobre como blindar sua mente contra as comparações virtuais e fortalecer sua autoestima no ambiente digital.</p>
                         <div class="event-expert-row">
@@ -1125,7 +1020,7 @@
                                 <span class="expert-title">Psicóloga Clínica</span>
                             </div>
                         </div>
-                        <button class="btn-live-join" style="background:var(--accent-rose);" onclick="alert('A sala de transmissão ao vivo da Call com Manuela Freitas abrirá em breve (Dia 31 às 19:30). Te esperamos lá!')">Agendada (Dia 31 às 19:30)</button>
+                        <button class="btn-live-join" style="background:var(--accent-rose);" onclick="alert('A sala de transmissão ao vivo da Call com Manuela Freitas abrirá em breve. Te avisaremos com antecedência!')">Avisar no Início</button>
                     </div>
 
                     <h3 class="section-subtitle">Webinars Anteriores (Replay)</h3>
@@ -1159,8 +1054,8 @@
                 <span>Círculo</span>
             </button>
             <button class="nav-tab-btn" id="btn-tab-challenge" onclick="switchTab('challenge')">
-                <i data-lucide="trophy"></i>
-                <span>Desafio</span>
+                <i data-lucide="book-open"></i>
+                <span>Propósito</span>
             </button>
             <button class="nav-tab-btn" id="btn-tab-profile" onclick="switchTab('profile')">
                 <i data-lucide="user"></i>
