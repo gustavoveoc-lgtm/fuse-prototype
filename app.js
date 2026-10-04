@@ -5092,6 +5092,41 @@ document.addEventListener("DOMContentLoaded", () => {
 // RASTREADOR DO CICLO MENSTRUAL FEMININO FUSE
 // ==========================================
 
+function formatCycleDateShort(dateObj) {
+    if (!dateObj || isNaN(dateObj.getTime())) return "";
+    const d = String(dateObj.getDate()).padStart(2, '0');
+    const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+    return `${d}/${m}`;
+}
+
+function formatCycleDateLong(dateObj) {
+    if (!dateObj || isNaN(dateObj.getTime())) return "";
+    const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+    const d = String(dateObj.getDate()).padStart(2, '0');
+    return `${d} de ${months[dateObj.getMonth()]}`;
+}
+
+function getLatestPeriodStartDate(periodDates, fallback = "2026-09-26") {
+    if (!periodDates || periodDates.length === 0) return fallback;
+    const sorted = [...periodDates].sort();
+    const clusters = [];
+    let currentCluster = [sorted[0]];
+    
+    for (let i = 1; i < sorted.length; i++) {
+        const prev = new Date(sorted[i - 1] + "T12:00:00");
+        const curr = new Date(sorted[i] + "T12:00:00");
+        const diffDays = Math.round((curr - prev) / 86400000);
+        if (diffDays <= 4) {
+            currentCluster.push(sorted[i]);
+        } else {
+            clusters.push(currentCluster);
+            currentCluster = [sorted[i]];
+        }
+    }
+    clusters.push(currentCluster);
+    return clusters[clusters.length - 1][0];
+}
+
 function ensureCycleState() {
     if (!userState.menstrualCycle) {
         userState.menstrualCycle = {
@@ -5101,6 +5136,12 @@ function ensureCycleState() {
             periodDates: ["2026-09-26", "2026-09-27", "2026-09-28", "2026-09-29", "2026-09-30"]
         };
     }
+    if (!userState.menstrualCycle.lastPeriodDate) {
+        userState.menstrualCycle.lastPeriodDate = "2026-09-26";
+    }
+    if (!userState.menstrualCycle.periodDates || userState.menstrualCycle.periodDates.length === 0) {
+        userState.menstrualCycle.periodDates = ["2026-09-26", "2026-09-27", "2026-09-28", "2026-09-29", "2026-09-30"];
+    }
 }
 
 function getCycleStatus(dateStr) {
@@ -5109,73 +5150,130 @@ function getCycleStatus(dateStr) {
     const refDate = dateStr ? new Date(dateStr + "T12:00:00") : new Date();
     const lastDate = new Date(cycle.lastPeriodDate + "T12:00:00");
     
-    // Diferença em dias
     const diffTime = refDate.getTime() - lastDate.getTime();
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
     
     const cycleLength = cycle.cycleLength || 28;
     const periodDuration = cycle.periodDuration || 5;
     
-    // Dia do ciclo normalizado (1 a cycleLength)
+    // Dia do ciclo (1 a cycleLength)
     let cycleDay = (diffDays % cycleLength);
     if (cycleDay < 0) cycleDay += cycleLength;
     cycleDay += 1; // 1-indexed
     
     const daysUntilNextPeriod = cycleLength - cycleDay + 1;
     
-    // Determinação da fase
-    let phaseKey = "follicular";
-    let phaseName = "Fase Folicular";
-    let phaseIcon = "🌱";
-    let phaseDesc = "O estrogênio está subindo. Excelente momento para treinos com mais carga, foco em projetos e disposição elevada.";
-    let workoutAdvice = "Aproveite a alta de energia! Período ideal para tentar cargas maiores e treinos dinâmicos com boa recuperação muscular.";
-    let dietAdvice = "Metabolismo eficiente com carboidratos limpos e proteínas magras. Boa sensibilidade à insulina.";
+    // Regra ginecológica: Fase lútea é constante (~14 dias antes da próxima menstruação)
+    const ovulationDay = Math.max(1, cycleLength - 14);
+    // Janela fértil: 5 dias antes da ovulação (sobrevida dos espermatozoides) até 1 dia após (sobrevida do óvulo)
+    const fertileStartDay = Math.max(1, ovulationDay - 5);
+    const fertileEndDay = Math.min(cycleLength, ovulationDay + 1);
     
-    // Se a data for dia de menstruação registrado explicitamente OU se estiver nos primeiros dias do ciclo
+    const isOvulationDay = (cycleDay === ovulationDay);
+    const isFertileDay = (cycleDay >= fertileStartDay && cycleDay <= fertileEndDay);
+    
+    // Datas calculadas para o ciclo desta data de referência
+    const cycleIndex = Math.floor(diffDays / cycleLength);
+    const cycleStartDate = new Date(lastDate.getTime() + cycleIndex * cycleLength * 86400000);
+    const nextPeriodDate = new Date(cycleStartDate.getTime() + cycleLength * 86400000);
+    const ovulationDate = new Date(cycleStartDate.getTime() + (ovulationDay - 1) * 86400000);
+    const fertileStartDate = new Date(cycleStartDate.getTime() + (fertileStartDay - 1) * 86400000);
+    const fertileEndDate = new Date(cycleStartDate.getTime() + (fertileEndDay - 1) * 86400000);
+    
+    const fertileDatesFormatted = `${formatCycleDateShort(fertileStartDate)} a ${formatCycleDateShort(fertileEndDate)}`;
+    const ovulationDateFormatted = formatCycleDateLong(ovulationDate);
+    const nextPeriodDateFormatted = formatCycleDateLong(nextPeriodDate);
+    
+    // Verifica se hoje ou a data em questão é período menstrual
     const checkDateStr = dateStr || getTodayStr();
     const isExplicitPeriodDay = cycle.periodDates && cycle.periodDates.includes(checkDateStr);
+    const isMenstrualPhase = isExplicitPeriodDay || cycleDay <= periodDuration;
     
-    if (isExplicitPeriodDay || cycleDay <= periodDuration) {
+    let phaseKey = "follicular";
+    let phaseName = "Fase Folicular (Pré-Fértil 🌱)";
+    let phaseIcon = "🌱";
+    let phaseDesc = "O estrogênio está subindo e o endométrio se regenera. Momento de excelente disposição física e foco mental.";
+    let workoutAdvice = "Energia crescente! Ótimo momento para progressão gradual de cargas e treinos técnicos consistentes.";
+    let dietAdvice = "Carboidratos limpos, proteínas magras e fibras para dar suporte à síntese hormonal em ascensão.";
+    let fertilityBadge = "Fertilidade Moderada";
+    let fertilityBadgeBg = "#F1F5F9";
+    let fertilityBadgeColor = "#475569";
+    
+    if (isMenstrualPhase) {
         phaseKey = "menstrual";
-        phaseName = "Fase Menstrual";
+        phaseName = "Fase Menstrual 🩸";
         phaseIcon = "🩸";
-        phaseDesc = "Os níveis hormonais estão baixos e o corpo está se renovando. Priorize descanso, conforto e hidratação.";
-        workoutAdvice = "Alongamentos suaves, caminhadas leves e respeito aos limites do corpo se houver cólica.";
-        dietAdvice = "Alimentos ricos em ferro (carnes magras, feijão, folhas escuras), chás quentes e bastante água.";
-    } else if (cycleDay >= periodDuration + 1 && cycleDay <= 13) {
-        phaseKey = "follicular";
-        phaseName = "Fase Folicular";
-        phaseIcon = "🌱";
-        phaseDesc = "O estrogênio está subindo. Excelente momento para treinos com mais carga, foco em projetos e disposição elevada.";
-        workoutAdvice = "Aproveite a alta de energia! Período ideal para tentar cargas maiores e treinos dinâmicos com boa recuperação muscular.";
-        dietAdvice = "Metabolismo eficiente com carboidratos limpos e proteínas magras. Boa sensibilidade à insulina.";
-    } else if (cycleDay >= 14 && cycleDay <= 17) {
-        phaseKey = "ovulatory";
-        phaseName = "Fase Ovulatória";
+        phaseDesc = "Os níveis hormonais estão na linha de base e o corpo se renova. Priorize escuta corporal, aconchego e hidratação.";
+        workoutAdvice = "Alongamentos suaves, caminhadas leves e respeito aos limites do corpo caso sinta cólicas.";
+        dietAdvice = "Alimentos ricos em ferro (carnes magras, feijões, folhas escuras), chás quentes e hidratação abundante.";
+        fertilityBadge = "Fertilidade Baixa";
+        fertilityBadgeBg = "#F1F5F9";
+        fertilityBadgeColor = "#64748B";
+    } else if (isOvulationDay) {
+        phaseKey = "ovulation";
+        phaseName = "Dia da Ovulação (Pico Máximo ✨)";
         phaseIcon = "✨";
-        phaseDesc = "Pico de vigor físico e fertilidade. Máxima autoconfiança, magnetismo e disposição.";
-        workoutAdvice = "Energia máxima! Treinos metabólicos, sprints e treinos pesados de glúteos e pernas respondem muito bem.";
-        dietAdvice = "Alimentos antioxidantes, fibras abundantes e hidratação redobrada para apoiar o fígado.";
+        phaseDesc = "Pico do hormônio LH e liberação do óvulo! Máxima fertilidade do ciclo, energia física no ápice e maior magnetismo.";
+        workoutAdvice = "Pico de força! Ótimo momento para buscar recordes pessoais (PRs), treinos intensos e metabólicos.";
+        dietAdvice = "Alimentos antioxidantes (frutas vermelhas), brócolis e hidratação redobrada para apoiar o fígado.";
+        fertilityBadge = "Pico de Ovulação Hoje ✨";
+        fertilityBadgeBg = "#FEF3C7";
+        fertilityBadgeColor = "#92400E";
+    } else if (isFertileDay) {
+        phaseKey = "fertile";
+        phaseName = "Período Fértil Ativo 🌸";
+        phaseIcon = "🌸";
+        phaseDesc = "Você está na janela fértil! Estrogênio em níveis elevados, muco fértil favorável e máxima resposta ao treino.";
+        workoutAdvice = "Aproveite a alta hormonal! Excelente para treinos vigorosos de pernas e glúteos com rápida recuperação muscular.";
+        dietAdvice = "Proteínas magras de alto valor biológico e gorduras saudáveis (abacate, azeite) para suporte hormonal.";
+        fertilityBadge = "Janela Fértil Ativa 🔥";
+        fertilityBadgeBg = "#FFE4E6";
+        fertilityBadgeColor = "#E11D48";
+    } else if (cycleDay < fertileStartDay) {
+        phaseKey = "follicular_pre";
+        phaseName = "Fase Folicular (Pré-Fértil 🌱)";
+        phaseIcon = "🌱";
+        phaseDesc = "Estrogênio subindo após a menstruação. O corpo se prepara para o amadurecimento dos folículos.";
+        workoutAdvice = "Treinos dinâmicos, foco em execução impecável e subida gradual de intensidade.";
+        dietAdvice = "Alimentos anti-inflamatórios, sementes e boa ingestão de água.";
+        fertilityBadge = "Fertilidade Baixa";
+        fertilityBadgeBg = "#F1F5F9";
+        fertilityBadgeColor = "#64748B";
     } else {
         phaseKey = "luteal";
-        phaseName = "Fase Lútea (TPM)";
+        phaseName = "Fase Lútea (TPM) 🌙";
         phaseIcon = "🌙";
-        phaseDesc = "A progesterona sobe. A taxa metabólica aumenta naturalmente (+100 a +200 kcal/dia) e o corpo pede acolhimento.";
-        workoutAdvice = "Mantenha a rotina com cargas moderadas no início, mas desacelere nos últimos dias com treinos restaurativos e pilates.";
-        dietAdvice = "Aporte de gorduras boas (abacate, castanhas), magnésio (cacau 70%, sementes) e docinhos saudáveis sem culpa!";
+        phaseDesc = "A progesterona assume o comando. A taxa metabólica sobe naturalmente (+100 a +200 kcal/dia) e o corpo pede consistência acolhedora.";
+        workoutAdvice = "Cargas moderadas a moderadas-leves. Nos dias pré-menstruais, prefira treinos restaurativos, mobilidade e pilates.";
+        dietAdvice = "Magnésio (cacau 70%, sementes de abóbora), gorduras boas e carboidratos de absorção lenta para saciedade.";
+        fertilityBadge = "Janela Fértil Encerrada";
+        fertilityBadgeBg = "#F1F5F9";
+        fertilityBadgeColor = "#64748B";
     }
     
     return {
         cycleDay,
         cycleLength,
+        periodDuration,
+        ovulationDay,
+        fertileStartDay,
+        fertileEndDay,
+        isOvulationDay,
+        isFertileDay,
+        isPeriodToday: isMenstrualPhase,
         daysUntilNextPeriod,
+        fertileDatesFormatted,
+        ovulationDateFormatted,
+        nextPeriodDateFormatted,
+        fertilityBadge,
+        fertilityBadgeBg,
+        fertilityBadgeColor,
         phaseKey,
         phaseName,
         phaseIcon,
         phaseDesc,
         workoutAdvice,
-        dietAdvice,
-        isPeriodToday: isExplicitPeriodDay || cycleDay <= periodDuration
+        dietAdvice
     };
 }
 
@@ -5201,6 +5299,12 @@ function updateCycleHomeCard() {
         if (status.isPeriodToday) {
             fabBadgeEl.innerText = "🩸";
             fabBadgeEl.style.background = "#E11D48";
+        } else if (status.isOvulationDay) {
+            fabBadgeEl.innerText = "✨";
+            fabBadgeEl.style.background = "#F59E0B";
+        } else if (status.isFertileDay) {
+            fabBadgeEl.innerText = `D${status.cycleDay}`;
+            fabBadgeEl.style.background = "#E11D48";
         } else {
             fabBadgeEl.innerText = `D${status.cycleDay}`;
             fabBadgeEl.style.background = "#0F172A";
@@ -5210,8 +5314,12 @@ function updateCycleHomeCard() {
     if (fabTooltipTextEl) {
         if (status.isPeriodToday) {
             fabTooltipTextEl.innerText = "Menstruação 🩸";
+        } else if (status.isOvulationDay) {
+            fabTooltipTextEl.innerText = `Ovulação Hoje ✨ (Dia ${status.cycleDay})`;
+        } else if (status.isFertileDay) {
+            fabTooltipTextEl.innerText = `Período Fértil • Dia ${status.cycleDay} 🌸`;
         } else {
-            fabTooltipTextEl.innerText = `${status.phaseName} • Dia ${status.cycleDay}`;
+            fabTooltipTextEl.innerText = `${status.phaseName.replace(/\s*\(.*\)/, '')} • Dia ${status.cycleDay}`;
         }
     }
 }
@@ -5229,7 +5337,7 @@ function renderCycleUI() {
     const status = getCycleStatus();
     const cycle = userState.menstrualCycle;
     
-    // Atualiza Textos do Modal
+    // Atualiza Textos do Modal Principal
     const phaseIconEl = document.getElementById("cycle-modal-phase-icon");
     const phaseNameEl = document.getElementById("cycle-modal-phase-name");
     const dayTxtEl = document.getElementById("cycle-modal-day-txt");
@@ -5239,26 +5347,50 @@ function renderCycleUI() {
     const adviceWorkoutEl = document.getElementById("cycle-advice-workout");
     const adviceDietEl = document.getElementById("cycle-advice-diet");
     const selectLengthEl = document.getElementById("cycle-select-length");
+    const inputLastPeriodEl = document.getElementById("cycle-input-last-period");
     const btnPeriodToday = document.getElementById("btn-period-today");
+    
+    // Elementos do Card de Janela Fértil
+    const fertileBadgeEl = document.getElementById("cycle-fertile-status-badge");
+    const fertileDatesEl = document.getElementById("cycle-fertile-dates");
+    const fertileDaysSpanEl = document.getElementById("cycle-fertile-days-span");
+    const ovulationDateEl = document.getElementById("cycle-ovulation-date");
+    const ovulationDaySpanEl = document.getElementById("cycle-ovulation-day-span");
+    const explanationEl = document.getElementById("cycle-fertile-explanation");
     
     if (phaseIconEl) phaseIconEl.innerText = status.phaseIcon;
     if (phaseNameEl) phaseNameEl.innerText = status.phaseName;
     if (dayTxtEl) dayTxtEl.innerText = `Dia ${status.cycleDay} de ${status.cycleLength}`;
     if (descEl) descEl.innerText = status.phaseDesc;
     if (nextPeriodEl) {
-        nextPeriodEl.innerText = status.daysUntilNextPeriod === 1 ? "Amanhã" : `Em ~${status.daysUntilNextPeriod} dias`;
+        nextPeriodEl.innerText = status.daysUntilNextPeriod === 1 ? "Amanhã" : `Em ~${status.daysUntilNextPeriod} dias (${status.nextPeriodDateFormatted.replace(/\sde\s\d{4}/, '')})`;
     }
     if (cycleLenTxtEl) cycleLenTxtEl.innerText = `${status.cycleLength} dias`;
     if (adviceWorkoutEl) adviceWorkoutEl.innerText = status.workoutAdvice;
     if (adviceDietEl) adviceDietEl.innerText = status.dietAdvice;
     if (selectLengthEl) selectLengthEl.value = String(status.cycleLength);
+    if (inputLastPeriodEl) inputLastPeriodEl.value = cycle.lastPeriodDate;
+    
+    // Atualiza Card de Janela Fértil & Ovulação
+    if (fertileBadgeEl) {
+        fertileBadgeEl.innerText = status.fertilityBadge;
+        fertileBadgeEl.style.background = status.fertilityBadgeBg;
+        fertileBadgeEl.style.color = status.fertilityBadgeColor;
+    }
+    if (fertileDatesEl) fertileDatesEl.innerText = status.fertileDatesFormatted;
+    if (fertileDaysSpanEl) fertileDaysSpanEl.innerText = `Dias ${status.fertileStartDay} a ${status.fertileEndDay} do ciclo (7 dias)`;
+    if (ovulationDateEl) ovulationDateEl.innerText = status.ovulationDateFormatted;
+    if (ovulationDaySpanEl) ovulationDaySpanEl.innerText = `Dia ${status.ovulationDay} (Pico Máximo ✨)`;
+    if (explanationEl) {
+        explanationEl.innerText = `Com base no seu ciclo de ${status.cycleLength} dias: a ovulação ocorre 14 dias antes do término (Dia ${status.ovulationDay}). O período fértil inicia no Dia ${status.fertileStartDay} (5 dias de sobrevida dos espermatozoides) e dura até 24h após a liberação do óvulo (Dia ${status.fertileEndDay}).`;
+    }
     
     const today = getTodayStr();
     const isMarkedPeriodToday = cycle.periodDates && cycle.periodDates.includes(today);
     
     if (btnPeriodToday) {
         if (isMarkedPeriodToday) {
-            btnPeriodToday.innerHTML = `<span>✓ Menstruação Marcada Hoje 🩸</span>`;
+            btnPeriodToday.innerHTML = `<span>✓ Menstruação Registrada Hoje 🩸</span>`;
             btnPeriodToday.style.background = "#FFF1F2";
             btnPeriodToday.style.color = "var(--accent-rose)";
             btnPeriodToday.style.border = "1px solid #FDA4AF";
@@ -5277,6 +5409,22 @@ function renderCycleUI() {
     }
 }
 
+function updateLastPeriodDateFromInput(val) {
+    if (!val) return;
+    ensureCycleState();
+    const cycle = userState.menstrualCycle;
+    cycle.lastPeriodDate = val;
+    
+    if (!cycle.periodDates) cycle.periodDates = [];
+    if (!cycle.periodDates.includes(val)) {
+        cycle.periodDates.push(val);
+    }
+    
+    saveStateToStorage();
+    renderCycleUI();
+    updateProgressUI();
+}
+
 function togglePeriodToday() {
     ensureCycleState();
     const today = getTodayStr();
@@ -5286,6 +5434,7 @@ function togglePeriodToday() {
     const idx = cycle.periodDates.indexOf(today);
     if (idx >= 0) {
         cycle.periodDates.splice(idx, 1);
+        cycle.lastPeriodDate = getLatestPeriodStartDate(cycle.periodDates, "2026-09-26");
     } else {
         cycle.periodDates.push(today);
         cycle.lastPeriodDate = today; // Inicia um novo ciclo hoje!
@@ -5310,11 +5459,9 @@ function togglePeriodDate(dateStr) {
         cycle.periodDates.splice(idx, 1);
     } else {
         cycle.periodDates.push(dateStr);
-        const sorted = [...cycle.periodDates].sort();
-        if (sorted.length > 0) {
-            cycle.lastPeriodDate = sorted[0];
-        }
     }
+    
+    cycle.lastPeriodDate = getLatestPeriodStartDate(cycle.periodDates, "2026-09-26");
     
     saveStateToStorage();
     renderCycleUI();
@@ -5337,10 +5484,9 @@ function renderCycleMiniCalendar() {
     const periodDates = cycle.periodDates || [];
     const today = getTodayStr();
     
-    // Mês atual
     const now = new Date();
     const year = now.getFullYear();
-    const month = now.getMonth(); // 0-indexed
+    const month = now.getMonth();
     
     const monthTitleEl = document.getElementById("cycle-cal-month-title");
     if (monthTitleEl) {
@@ -5351,7 +5497,7 @@ function renderCycleMiniCalendar() {
     const firstDayIndex = new Date(year, month, 1).getDay(); // 0 = Domingo
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     
-    // Espaços vazios antes do 1º dia
+    // Células vazias antes do dia 1
     for (let i = 0; i < firstDayIndex; i++) {
         const emptyCell = document.createElement("div");
         emptyCell.className = "cycle-cal-day-item is-empty";
@@ -5363,24 +5509,30 @@ function renderCycleMiniCalendar() {
         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
         const dayCell = document.createElement("div");
         dayCell.className = "cycle-cal-day-item";
-        dayCell.innerText = d;
         
         const isPeriod = periodDates.includes(dateStr);
         const isToday = (dateStr === today);
         
-        // Verifica se é janela fértil/ovulação estimada
+        // Verifica status biológico deste dia específico
         const dayStatus = getCycleStatus(dateStr);
-        const isOvulation = (dayStatus.cycleDay === 14);
-        const isFertile = (dayStatus.cycleDay >= 12 && dayStatus.cycleDay <= 16 && !isPeriod);
+        const isOvulation = dayStatus.isOvulationDay && !isPeriod;
+        const isFertile = dayStatus.isFertileDay && !isPeriod && !isOvulation;
         
         if (isPeriod) {
             dayCell.classList.add("is-period");
+            dayCell.innerText = d;
+            dayCell.title = `Dia ${d}: Menstruação 🩸 (Dia ${dayStatus.cycleDay} do ciclo)`;
         } else if (isOvulation) {
             dayCell.classList.add("is-ovulation");
-            dayCell.title = "Ovulação Prevista";
+            dayCell.innerHTML = `<span>${d}</span><span class="cal-mini-icon">✨</span>`;
+            dayCell.title = `Dia ${d}: Pico da Ovulação ✨ (Dia ${dayStatus.cycleDay} do ciclo)`;
         } else if (isFertile) {
             dayCell.classList.add("is-fertile");
-            dayCell.title = "Janela Fértil";
+            dayCell.innerHTML = `<span>${d}</span><span class="cal-mini-dot"></span>`;
+            dayCell.title = `Dia ${d}: Período Fértil 🌸 (Dia ${dayStatus.cycleDay} do ciclo)`;
+        } else {
+            dayCell.innerText = d;
+            dayCell.title = `Dia ${d}: ${dayStatus.phaseName} (Dia ${dayStatus.cycleDay} do ciclo)`;
         }
         
         if (isToday) {

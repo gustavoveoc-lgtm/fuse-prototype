@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20261004g">
+    <link rel="stylesheet" href="style.css?v=20261004h">
 </head>
 <body>
 
@@ -1511,6 +1511,44 @@
                     <span>🩸 Menstruação Desceu Hoje</span>
                 </button>
 
+                <!-- CARD EXCLUSIVO: PERÍODO FÉRTIL & OVULAÇÃO CONFORME A MENSTRUAÇÃO -->
+                <div class="fertile-window-highlight-card" style="background: linear-gradient(135deg, #FFF5F7 0%, #FFFFFF 100%); border: 1.5px solid #FDA4AF; border-radius: 16px; padding: 16px; box-shadow: 0 3px 12px rgba(251, 113, 133, 0.08);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 20px;">🌸</span>
+                            <div>
+                                <h4 style="font-size: 13.5px; font-weight: 700; color: #0F172A; margin: 0;">Janela Fértil & Ovulação</h4>
+                                <span style="font-size: 10px; color: var(--text-secondary);">Calculado a partir do 1º dia da menstruação</span>
+                            </div>
+                        </div>
+                        <span id="cycle-fertile-status-badge" style="font-size: 10px; font-weight: 800; padding: 3px 9px; border-radius: 12px; background: #FFE4E6; color: #E11D48; border: 1px solid #FDA4AF;">
+                            Janela Ativa 🔥
+                        </span>
+                    </div>
+
+                    <!-- Métricas Principais em Grade -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+                        <div style="background: #FFFFFF; border: 1px solid #F1F5F9; border-radius: 12px; padding: 10px 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.02);">
+                            <span style="font-size: 10px; color: var(--text-secondary); display: block; margin-bottom: 2px;">Período Fértil:</span>
+                            <strong id="cycle-fertile-dates" style="font-size: 13.5px; color: #0F172A; display: block; font-weight: 800;">04/10 a 10/10</strong>
+                            <span id="cycle-fertile-days-span" style="font-size: 10px; color: var(--accent-rose); font-weight: 700;">Dias 9 a 15 do ciclo</span>
+                        </div>
+                        <div style="background: #FFFFFF; border: 1px solid #F1F5F9; border-radius: 12px; padding: 10px 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.02);">
+                            <span style="font-size: 10px; color: var(--text-secondary); display: block; margin-bottom: 2px;">Dia da Ovulação:</span>
+                            <strong id="cycle-ovulation-date" style="font-size: 13.5px; color: #0F172A; display: block; font-weight: 800;">09 de Outubro</strong>
+                            <span id="cycle-ovulation-day-span" style="font-size: 10px; color: #B45309; font-weight: 700;">Dia 14 (Pico Máximo ✨)</span>
+                        </div>
+                    </div>
+
+                    <!-- Explicação Científica / Regra Biológica -->
+                    <div style="background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(253, 164, 175, 0.4); border-radius: 10px; padding: 9px 11px; font-size: 10.5px; color: #475569; line-height: 1.45; display: flex; align-items: flex-start; gap: 7px;">
+                        <span style="font-size: 13px; flex-shrink: 0;">ℹ️</span>
+                        <span id="cycle-fertile-explanation">
+                            A ovulação ocorre cerca de 14 dias antes do próximo ciclo. A janela fértil inicia 5 dias antes (sobrevida dos espermatozoides) e dura até 24h após a liberação do óvulo.
+                        </span>
+                    </div>
+                </div>
+
                 <!-- Mini Calendário Mensal do Ciclo -->
                 <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 16px; padding: 16px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
@@ -1528,14 +1566,18 @@
                         <!-- Inserido dinamicamente via JS -->
                     </div>
 
-                    <div style="display: flex; justify-content: center; gap: 14px; margin-top: 14px; font-size: 10px; color: var(--text-secondary);">
+                    <div style="display: flex; justify-content: center; gap: 12px; margin-top: 14px; font-size: 10px; color: var(--text-secondary); flex-wrap: wrap;">
                         <div style="display: flex; align-items: center; gap: 4px;">
                             <span style="width: 8px; height: 8px; border-radius: 50%; background: #FB7185;"></span>
                             <span>Menstruação 🩸</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 4px;">
-                            <span style="width: 8px; height: 8px; border-radius: 50%; background: #A7F3D0;"></span>
-                            <span>Fértil / Ovulação</span>
+                            <span style="width: 8px; height: 8px; border-radius: 50%; background: #FFE4E6; border: 1px solid #FDA4AF;"></span>
+                            <span>Período Fértil 🌸</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <span style="width: 8px; height: 8px; border-radius: 50%; background: #FEF3C7; border: 1px solid #F59E0B;"></span>
+                            <span>Ovulação ✨</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 4px;">
                             <span style="width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid #0F172A;"></span>
@@ -1567,21 +1609,40 @@
                     </div>
                 </div>
 
-                <!-- Configuração de Duração do Ciclo -->
-                <div style="background: #FAFAFA; border: 1px solid #E2E8F0; border-radius: 12px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <span style="font-size: 12px; font-weight: 600; color: #0F172A; display: block;">Duração média do seu ciclo:</span>
-                        <span style="font-size: 10px; color: var(--text-secondary);">Geralmente varia de 25 a 35 dias</span>
+                <!-- Configurações Avançadas do Ciclo (Data Início + Duração Média) -->
+                <div style="background: #FAFAFA; border: 1px solid #E2E8F0; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 12px;">
+                    <!-- Ajuste de Data da Menstruação -->
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <span style="font-size: 12px; font-weight: 700; color: #0F172A; display: block;">1º dia da última menstruação:</span>
+                            <span style="font-size: 10px; color: var(--text-secondary);">Início do seu ciclo biológico</span>
+                        </div>
+                        <input type="date" id="cycle-input-last-period" onchange="updateLastPeriodDateFromInput(this.value)" style="padding: 5px 8px; border-radius: 8px; border: 1px solid #CBD5E1; background: #FFFFFF; color: #0F172A; font-size: 11.5px; font-weight: 600; outline: none; font-family: inherit;">
                     </div>
-                    <select id="cycle-select-length" onchange="updateCycleLengthFromSelect(this.value)" style="padding: 6px 10px; border-radius: 8px; border: 1px solid #E2E8F0; background: #FFFFFF; color: #0F172A; font-size: 12px; font-weight: 600; outline: none;">
-                        <option value="26">26 dias</option>
-                        <option value="27">27 dias</option>
-                        <option value="28" selected>28 dias (Padrão)</option>
-                        <option value="29">29 dias</option>
-                        <option value="30">30 dias</option>
-                        <option value="31">31 dias</option>
-                        <option value="32">32 dias</option>
-                    </select>
+
+                    <div style="height: 1px; background: #E2E8F0;"></div>
+
+                    <!-- Ajuste de Duração do Ciclo -->
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <span style="font-size: 12px; font-weight: 700; color: #0F172A; display: block;">Duração média do seu ciclo:</span>
+                            <span style="font-size: 10px; color: var(--text-secondary);">Geralmente varia de 24 a 35 dias</span>
+                        </div>
+                        <select id="cycle-select-length" onchange="updateCycleLengthFromSelect(this.value)" style="padding: 6px 10px; border-radius: 8px; border: 1px solid #CBD5E1; background: #FFFFFF; color: #0F172A; font-size: 12px; font-weight: 600; outline: none;">
+                            <option value="24">24 dias</option>
+                            <option value="25">25 dias</option>
+                            <option value="26">26 dias</option>
+                            <option value="27">27 dias</option>
+                            <option value="28" selected>28 dias (Padrão)</option>
+                            <option value="29">29 dias</option>
+                            <option value="30">30 dias</option>
+                            <option value="31">31 dias</option>
+                            <option value="32">32 dias</option>
+                            <option value="33">33 dias</option>
+                            <option value="34">34 dias</option>
+                            <option value="35">35 dias</option>
+                        </select>
+                    </div>
                 </div>
 
                 <button class="btn-modal-cancel" onclick="closeModal('modal-cycle-tracker')" style="width: 100%; margin-top: 4px;">Fechar</button>
@@ -1823,6 +1884,6 @@
 
     <!-- Lucide Icons CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="app.js?v=20261004g"></script>
+    <script src="app.js?v=20261004h"></script>
 </body>
 </html>
