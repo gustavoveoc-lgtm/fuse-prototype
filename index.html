@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20261004c">
+    <link rel="stylesheet" href="style.css?v=20261004d">
 </head>
 <body>
 
@@ -616,125 +616,109 @@
                 </div>
 
                 <div id="nut-diet-container">
-                    <!-- Configuração de Plano Alimentar -->
+                    <!-- Configuração de Plano Alimentar com Carrossel de Chips -->
                     <div class="section-card nutrition-config-card" style="padding: 16px;">
-                        <h3 class="card-title" style="margin-bottom: 12px;">Objetivo Nutricional</h3>
-                        <div class="input-group" style="margin-bottom: 20px;">
-                            <select id="nut-select-goal" onchange="changeNutritionConfig()" style="width:100%; padding:12px; border-radius:10px; background: #FFFFFF; border:1px solid #E2E8F0; color:#111827; font-size: 13px; font-weight: 600; outline: none;">
-                                <option value="emagrecer">🔥 Emagrecimento</option>
-                                <option value="massa">💪 Ganho de massa muscular</option>
-                                <option value="definicao">✨ Definição muscular</option>
-                                <option value="manter">⚖️ Manutenção de peso</option>
-                                <option value="hipertrofia-gluteos">🍑 Hipertrofia</option>
+                        <h3 class="card-title" style="margin-bottom: 8px; font-size: 15px; color: #0F172A;">Objetivo & Preferências</h3>
+                        <div class="input-group" style="margin-bottom: 14px;">
+                            <label style="font-size: 10.5px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px; margin-bottom: 4px; display: block;">Seu Foco Nutricional:</label>
+                            <select id="nut-select-goal" onchange="changeNutritionConfig()" style="width:100%; padding:10px 14px; border-radius:10px; background: #FFFFFF; border:1px solid #E2E8F0; color:#0F172A; font-size: 13px; font-weight: 600; outline: none;">
+                                <option value="emagrecer">🔥 Emagrecimento Consciente</option>
+                                <option value="massa">💪 Ganho de Massa Muscular</option>
+                                <option value="definicao">✨ Definição & Tônus</option>
+                                <option value="manter">⚖️ Manutenção & Equilíbrio</option>
+                                <option value="hipertrofia-gluteos">🍑 Hipertrofia & Glúteos</option>
                             </select>
                         </div>
 
-                        <h3 class="card-title" style="margin-bottom: 4px;">Filtros do Cardápio</h3>
-                        <p class="card-subtitle" style="margin-bottom: 12px; font-size: 11px;">Combine um ou mais filtros para personalizar o seu cardápio.</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span style="font-size: 11px; font-weight: 600; color: #0F172A;">Filtros do Cardápio:</span>
+                            <span style="font-size: 9.5px; color: var(--text-secondary);">Deslize para ver mais ➔</span>
+                        </div>
                         
-                        <div class="filters-cards-grid" style="display: flex; flex-direction: column; gap: 10px;">
-                            <!-- Filtro 1: Rápidas -->
-                            <div class="filter-card-item" onclick="toggleNutritionFilter('rapidas', this)" id="filter-card-rapidas">
-                                <div class="filter-card-icon">⚡</div>
-                                <div class="filter-card-info">
-                                    <span class="filter-card-name">Receitas rápidas</span>
-                                    <span class="filter-card-desc">Preparo em menos de 10 minutos para rotinas corridas.</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Filtro 2: Econômicas -->
-                            <div class="filter-card-item" onclick="toggleNutritionFilter('economica', this)" id="filter-card-economica">
-                                <div class="filter-card-icon">🪙</div>
-                                <div class="filter-card-info">
-                                    <span class="filter-card-name">Receitas econômicas</span>
-                                    <span class="filter-card-desc">Ingredientes acessíveis que cabem no bolso.</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Filtro 3: Tradicional -->
-                            <div class="filter-card-item" onclick="toggleNutritionFilter('tradicional', this)" id="filter-card-tradicional">
-                                <div class="filter-card-icon">🥩</div>
-                                <div class="filter-card-info">
-                                    <span class="filter-card-name">Dieta tradicional</span>
-                                    <span class="filter-card-desc">Inclui carnes, arroz, feijão e alimentos do dia a dia.</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Filtro 4: Vegetariana -->
-                            <div class="filter-card-item" onclick="toggleNutritionFilter('vegetariana', this)" id="filter-card-vegetariana">
-                                <div class="filter-card-icon">🥗</div>
-                                <div class="filter-card-info">
-                                    <span class="filter-card-name">Dieta vegetariana</span>
-                                    <span class="filter-card-desc">Plano sem carnes, focado em ovos, laticínios e vegetais.</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Filtro 5: Vegana -->
-                            <div class="filter-card-item" onclick="toggleNutritionFilter('vegana', this)" id="filter-card-vegana">
-                                <div class="filter-card-icon">🌱</div>
-                                <div class="filter-card-info">
-                                    <span class="filter-card-name">Dieta vegana</span>
-                                    <span class="filter-card-desc">Alimentos 100% de origem vegetal, livre de derivados animais.</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Filtro 6: Sem lactose -->
-                            <div class="filter-card-item" onclick="toggleNutritionFilter('sem-lactose', this)" id="filter-card-sem-lactose">
-                                <div class="filter-card-icon">🥛</div>
-                                <div class="filter-card-info">
-                                    <span class="filter-card-name">Sem lactose</span>
-                                    <span class="filter-card-desc">Substitutos seguros para intolerantes a derivados de leite.</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Filtro 7: Sem glúten -->
-                            <div class="filter-card-item" onclick="toggleNutritionFilter('sem-gluten', this)" id="filter-card-sem-gluten">
-                                <div class="filter-card-icon">🌾</div>
-                                <div class="filter-card-info">
-                                    <span class="filter-card-name">Sem glúten</span>
-                                    <span class="filter-card-desc">Receitas com tapioca, batata e aveia livre de glúten.</span>
-                                </div>
-                            </div>
+                        <!-- Carrossel Horizontal de Pílulas (Chips) -->
+                        <div class="nutrition-chips-scroll" id="nutrition-filters-chips">
+                            <button class="nut-chip-item" onclick="toggleNutritionFilter('rapidas', this)" id="filter-chip-rapidas">
+                                <span>⚡</span> Rápidas (&lt;10m)
+                            </button>
+                            <button class="nut-chip-item" onclick="toggleNutritionFilter('economica', this)" id="filter-chip-economica">
+                                <span>🪙</span> Econômicas
+                            </button>
+                            <button class="nut-chip-item" onclick="toggleNutritionFilter('tradicional', this)" id="filter-chip-tradicional">
+                                <span>🥩</span> Tradicional
+                            </button>
+                            <button class="nut-chip-item" onclick="toggleNutritionFilter('vegetariana', this)" id="filter-chip-vegetariana">
+                                <span>🥗</span> Vegetariana
+                            </button>
+                            <button class="nut-chip-item" onclick="toggleNutritionFilter('vegana', this)" id="filter-chip-vegana">
+                                <span>🌱</span> Vegana
+                            </button>
+                            <button class="nut-chip-item" onclick="toggleNutritionFilter('sem-lactose', this)" id="filter-chip-sem-lactose">
+                                <span>🥛</span> Sem Lactose
+                            </button>
+                            <button class="nut-chip-item" onclick="toggleNutritionFilter('sem-gluten', this)" id="filter-chip-sem-gluten">
+                                <span>🌾</span> Sem Glúten
+                            </button>
                         </div>
                     </div>
 
-                    <!-- Target Macros Widget -->
+                    <!-- Target Macros Widget (Editorial Clean) -->
                     <div class="section-card nutrition-summary-card">
                         <div class="calories-goal-row">
                             <div class="kcal-display">
                                 <span class="kcal-num" id="nut-target-kcal">1840</span>
                                 <span class="kcal-label">kcal / dia</span>
                             </div>
-                            <div class="macros-bars-grid">
-                                <div class="macro-progress-item">
-                                    <div class="macro-label-row"><span>Proteínas</span><span id="macro-prot-txt">138g</span></div>
-                                    <div class="macro-bar"><div class="macro-fill prot" style="width: 100%"></div></div>
+                            <div class="macros-capsules-grid">
+                                <div class="macro-capsule-item prot">
+                                    <span class="macro-capsule-tag">Proteínas</span>
+                                    <span class="macro-capsule-val" id="macro-prot-txt">138g</span>
+                                    <div class="macro-capsule-bar"><div class="macro-fill prot" style="width: 100%"></div></div>
                                 </div>
-                                <div class="macro-progress-item">
-                                    <div class="macro-label-row"><span>Carboidratos</span><span id="macro-carb-txt">184g</span></div>
-                                    <div class="macro-bar"><div class="macro-fill carb" style="width: 100%"></div></div>
+                                <div class="macro-capsule-item carb">
+                                    <span class="macro-capsule-tag">Carbos</span>
+                                    <span class="macro-capsule-val" id="macro-carb-txt">184g</span>
+                                    <div class="macro-capsule-bar"><div class="macro-fill carb" style="width: 100%"></div></div>
                                 </div>
-                                <div class="macro-progress-item">
-                                    <div class="macro-label-row"><span>Gorduras</span><span id="macro-fat-txt">61g</span></div>
-                                    <div class="macro-bar"><div class="macro-fill fat" style="width: 100%"></div></div>
+                                <div class="macro-capsule-item fat">
+                                    <span class="macro-capsule-tag">Gorduras</span>
+                                    <span class="macro-capsule-val" id="macro-fat-txt">61g</span>
+                                    <div class="macro-capsule-bar"><div class="macro-fill fat" style="width: 100%"></div></div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Card de Constância Nutricional (Mindful Eating) -->
+                    <div class="nutrition-mindful-tracker-card" id="nutrition-mindful-tracker">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <i data-lucide="sparkles" style="width: 15px; height: 15px; color: var(--accent-rose);"></i>
+                                <span style="font-size: 12px; font-weight: 700; color: #0F172A;">Constância Nutricional de Hoje</span>
+                            </div>
+                            <span id="nut-eaten-counter" style="font-size: 11px; font-weight: 700; color: var(--accent-rose); background: #FFF1F2; padding: 2px 8px; border-radius: 12px; border: 1px solid #FDA4AF;">0 de 6 nutridas</span>
+                        </div>
+                        <div class="progress-bar-container" style="height: 6px; background: #F1F5F9; border-radius: 6px; overflow: hidden;">
+                            <div id="nut-eaten-progress-bar" style="height: 100%; width: 0%; background: linear-gradient(90deg, #FB7185, #F43F5E); border-radius: 6px; transition: width 0.3s ease;"></div>
+                        </div>
+                        <p id="nut-eaten-motivational-msg" style="font-size: 10.5px; color: var(--text-secondary); margin: 6px 0 0 0;">Marque cada refeição ao se alimentar para registrar sua constância com leveza.</p>
+                    </div>
+
                     <!-- Pesquisa de Receitas -->
-                    <div class="search-bar-box">
+                    <div class="search-bar-box" style="margin-top: 14px; margin-bottom: 12px;">
                         <input type="text" id="recipe-search-input" placeholder="🔍 Pesquisar receitas no plano..." onkeyup="searchNutritionRecipes()">
                     </div>
 
-                    <div class="cardapio-actions-row">
+                    <div class="cardapio-actions-row" style="margin-bottom: 16px;">
                         <button class="btn-cardapio-save" onclick="saveCardapioAction()">
                             <i data-lucide="bookmark"></i> Salvar Cardápio
                         </button>
                     </div>
 
                     <!-- Meals Stack (Café, Lanche M, Almoço, Lanche T, Jantar, Ceia) -->
-                    <h3 class="section-subtitle">Cardápio do Dia</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <h3 class="section-subtitle" style="margin: 0;">Cardápio do Dia</h3>
+                        <span style="font-size: 11px; color: var(--text-secondary);">6 refeições equilibradas</span>
+                    </div>
                     <div class="meals-list" id="meals-list-container">
                         <!-- Populated dynamically -->
                     </div>
@@ -1691,6 +1675,6 @@
 
     <!-- Lucide Icons CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="app.js?v=20261004c"></script>
+    <script src="app.js?v=20261004d"></script>
 </body>
 </html>

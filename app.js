@@ -146,6 +146,7 @@ const defaultState = {
 
     // Refeições Ativas do Plano
     currentMeals: [],
+    dailyEatenMeals: {},
     hasLoggedIn: false,
     anamneseConcluida: false,
     // Identificação e Registro de Compras
@@ -628,6 +629,8 @@ function restoreSession() {
     populateWorkoutsGrid();
     populateNutritionMealsUI();
     updateShoppingListLiveUI();
+    updateNutritionFilterChipsUI();
+    updateNutritionMindfulTracker();
     renderPropositoUI();
     renderWeeklyTracker();
 
@@ -1087,6 +1090,10 @@ function switchTab(tabId) {
     
     document.querySelector(".app-main-content").scrollTop = 0;
     
+    if (tabId === "nutrition") {
+        updateNutritionFilterChipsUI();
+        updateNutritionMindfulTracker();
+    }
     if (tabId === "challenge") {
         renderPropositoUI();
     }
@@ -3243,6 +3250,7 @@ function changeNutritionConfig() {
 
     // Gera plano baseado no Objetivo + Filtros combinados
     generateDynamicCardapio(selectedGoal, userState.activeDietFilters || []);
+    updateNutritionFilterChipsUI();
 }
 
 function generateDynamicCardapio(goal, filters) {
@@ -3344,45 +3352,143 @@ function generateDynamicCardapio(goal, filters) {
 
 function populateNutritionMealsUI() {
     const container = document.getElementById("meals-list-container");
+    if (!container) return;
     container.innerHTML = "";
     
+    const today = getTodayStr();
+    if (!userState.dailyEatenMeals) userState.dailyEatenMeals = {};
+    if (!userState.dailyEatenMeals[today]) userState.dailyEatenMeals[today] = [];
+    const eatenList = userState.dailyEatenMeals[today];
+
     userState.currentMeals.forEach((m, idx) => {
-        let img = "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&q=80&w=250";
-        if (m.type.includes("Almoço") || m.type.includes("Jantar")) img = "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=250";
+        let img = "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&q=80&w=350";
+        if (m.type.includes("Almoço") || m.type.includes("Jantar")) {
+            img = "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=350";
+        } else if (m.type.includes("Café")) {
+            img = "https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&q=80&w=350";
+        } else if (m.type.includes("Lanche")) {
+            img = "https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?auto=format&fit=crop&q=80&w=350";
+        } else if (m.type.includes("Ceia")) {
+            img = "https://images.unsplash.com/photo-1517673132405-a56a62b18caf?auto=format&fit=crop&q=80&w=350";
+        }
+
+        const mealId = m.id || `dyn-${idx}`;
+        const isEaten = eatenList.includes(mealId);
 
         const card = document.createElement("div");
-        card.className = "meal-card-item";
+        card.className = `meal-card-item${isEaten ? " is-eaten" : ""}`;
         card.onclick = (e) => {
-            if (e.target.tagName !== "BUTTON" && !e.target.classList.contains("heart-icon-click")) {
+            if (e.target.tagName !== "BUTTON" && !e.target.closest("button")) {
                 openRecipeDetail(idx);
             }
         };
 
-        const heartFill = m.isFavorite ? "rgba(232, 165, 152, 1)" : "none";
+        const heartFill = m.isFavorite ? "var(--accent-rose)" : "none";
         const heartColor = m.isFavorite ? "var(--accent-rose)" : "var(--text-secondary)";
+
+        const eatenBtnHtml = isEaten
+            ? `<button class="btn-meal-eaten is-eaten" onclick="toggleMealEaten(${idx}, event)"><i data-lucide="check" style="width:13px; height:13px;"></i> Nutrida ✨</button>`
+            : `<button class="btn-meal-eaten" onclick="toggleMealEaten(${idx}, event)"><i data-lucide="sparkles" style="width:13px; height:13px;"></i> Nutri meu corpo</button>`;
 
         card.innerHTML = `
             <div class="meal-img-box">
                 <img src="${img}" alt="${m.title}">
             </div>
             <div class="meal-details-box">
-                <div class="card-header-row" style="margin-bottom: 2px;">
-                    <span class="meal-category-tag">${m.type}</span>
-                    <button class="btn-like heart-icon-click" onclick="toggleFavoriteRecipe(${idx})" style="padding:0; color:${heartColor};">
-                        <i data-lucide="heart" fill="${heartFill}"></i>
-                    </button>
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
+                        <span class="meal-category-tag">${m.type}</span>
+                        <button class="btn-like heart-icon-click" onclick="toggleFavoriteRecipe(${idx})" style="padding:0; color:${heartColor}; background:none; border:none; cursor:pointer;">
+                            <i data-lucide="heart" fill="${heartFill}"></i>
+                        </button>
+                    </div>
+                    <h3 class="meal-card-title">${m.title}</h3>
+                    <p class="meal-card-macros-txt">⏱️ ${m.time} min • <strong>${m.kcal} kcal</strong><br><span style="color:var(--text-secondary); font-size:10px;">P: ${m.prot}g | C: ${m.carb}g | G: ${m.fat}g</span></p>
                 </div>
-                <h3 class="meal-card-title">${m.title}</h3>
-                <p class="meal-card-macros-txt">${m.kcal} kcal • ⏱️ ${m.time} min • P: ${m.prot}g | C: ${m.carb}g | G: ${m.fat}g</p>
                 <div class="meal-actions-row">
-                    <button class="btn-swap-meal" onclick="swapSingleMeal(${idx})">🔄 Sugerir Outra</button>
-                    <button class="btn-swap-meal" style="border-color: #E2E8F0;" onclick="openRecipeDetail(${idx})">📖 Ver Preparo</button>
+                    ${eatenBtnHtml}
+                    <div class="meal-secondary-actions">
+                        <button class="btn-meal-action-secondary" onclick="openRecipeDetail(${idx})"><i data-lucide="book-open" style="width:12px; height:12px;"></i> Preparo</button>
+                        <button class="btn-meal-action-secondary" onclick="swapSingleMeal(${idx})"><i data-lucide="refresh-cw" style="width:12px; height:12px;"></i> Trocar</button>
+                    </div>
                 </div>
             </div>
         `;
         container.appendChild(card);
     });
     lucide.createIcons();
+    updateNutritionMindfulTracker();
+}
+
+function toggleMealEaten(index, event) {
+    if (event) event.stopPropagation();
+    
+    const today = getTodayStr();
+    if (!userState.dailyEatenMeals) userState.dailyEatenMeals = {};
+    if (!userState.dailyEatenMeals[today]) userState.dailyEatenMeals[today] = [];
+    
+    const eatenList = userState.dailyEatenMeals[today];
+    const meal = userState.currentMeals[index];
+    const mealId = meal ? (meal.id || `dyn-${index}`) : `dyn-${index}`;
+    
+    const foundIdx = eatenList.indexOf(mealId);
+    if (foundIdx === -1) {
+        eatenList.push(mealId);
+        addXP(15);
+        if (navigator.vibrate) {
+            try { navigator.vibrate([25, 40, 25]); } catch(e) {}
+        }
+    } else {
+        eatenList.splice(foundIdx, 1);
+        addXP(-15);
+    }
+    
+    saveStateToStorage();
+    populateNutritionMealsUI();
+    updateProgressUI();
+}
+
+function updateNutritionMindfulTracker() {
+    const today = getTodayStr();
+    const eatenList = (userState.dailyEatenMeals && userState.dailyEatenMeals[today]) || [];
+    const totalMeals = (userState.currentMeals && userState.currentMeals.length) || 6;
+    const count = eatenList.length;
+    
+    const counterEl = document.getElementById("nut-eaten-counter");
+    const barEl = document.getElementById("nut-eaten-progress-bar");
+    const msgEl = document.getElementById("nut-eaten-motivational-msg");
+    
+    if (counterEl) {
+        counterEl.innerText = `${count} de ${totalMeals} nutridas`;
+    }
+    if (barEl) {
+        const pct = Math.min(100, Math.round((count / totalMeals) * 100));
+        barEl.style.width = `${pct}%`;
+    }
+    if (msgEl) {
+        if (count === 0) {
+            msgEl.innerText = "Marque cada refeição ao se alimentar para registrar sua constância com leveza.";
+        } else if (count < totalMeals) {
+            msgEl.innerText = `Maravilha! Você já nutriu seu corpo em ${count} refeições hoje. Continue com carinho e equilíbrio! ✨`;
+        } else {
+            msgEl.innerHTML = "🎉 <strong>Parabéns!</strong> Todas as suas refeições do dia foram nutridas com equilíbrio e amor próprio!";
+        }
+    }
+}
+
+function updateNutritionFilterChipsUI() {
+    const filters = userState.activeDietFilters || [];
+    const chipKeys = ["rapidas", "economica", "tradicional", "vegetariana", "vegana", "sem-lactose", "sem-gluten"];
+    chipKeys.forEach(key => {
+        const chip = document.getElementById(`filter-chip-${key}`);
+        if (chip) {
+            if (filters.includes(key)) {
+                chip.classList.add("selected");
+            } else {
+                chip.classList.remove("selected");
+            }
+        }
+    });
 }
 
 function openRecipeDetail(mealIndex) {
