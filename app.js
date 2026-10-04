@@ -1843,19 +1843,19 @@ function renderWorkoutTab() {
             dayBtn.type = "button";
             dayBtn.onclick = () => selectWorkoutDay(d);
             
-            let bg = "rgba(255, 255, 255, 0.03)";
-            let border = "1px solid rgba(255, 255, 255, 0.08)";
+            let bg = "#F8FAFC";
+            let border = "1px solid #E2E8F0";
             let textColor = "var(--text-secondary)";
             let shadow = "none";
             
             if (isSelected) {
-                bg = "linear-gradient(135deg, rgba(232, 165, 152, 0.28) 0%, rgba(232, 165, 152, 0.12) 100%)";
+                bg = "var(--accent-rose)";
                 border = "1.5px solid var(--accent-rose)";
                 textColor = "#ffffff";
-                shadow = "0 0 12px rgba(232, 165, 152, 0.25)";
+                shadow = "0 4px 12px rgba(251, 113, 133, 0.35)";
             } else if (isCompleted) {
-                bg = "rgba(232, 165, 152, 0.08)";
-                border = "1px solid rgba(232, 165, 152, 0.35)";
+                bg = "#FFF1F2";
+                border = "1px solid #FDA4AF";
                 textColor = "var(--accent-rose)";
             }
             
@@ -1915,8 +1915,9 @@ function renderWorkoutTab() {
             
             if (btnHeroStart) {
                 btnHeroStart.innerHTML = `<i data-lucide="heart" style="width: 16px; height: 16px; fill: currentColor;"></i> <span>${isCompleted ? '✓ DESCANSO REGISTRADO' : 'APROVEITAR O DESCANSO 🤍'}</span>`;
-                btnHeroStart.style.background = isCompleted ? 'rgba(255,255,255,0.08)' : 'linear-gradient(135deg, rgba(232, 165, 152, 0.35), rgba(232, 165, 152, 0.15))';
-                btnHeroStart.style.color = '#fff';
+                btnHeroStart.style.background = isCompleted ? '#F1F5F9' : '#FFF1F2';
+                btnHeroStart.style.border = isCompleted ? '1px solid #E2E8F0' : '1px solid #FDA4AF';
+                btnHeroStart.style.color = isCompleted ? 'var(--text-secondary)' : 'var(--accent-rose)';
                 btnHeroStart.style.boxShadow = 'none';
                 btnHeroStart.onclick = () => completeRestDay(selectedDay);
             }
@@ -1927,9 +1928,10 @@ function renderWorkoutTab() {
             
             if (btnHeroStart) {
                 btnHeroStart.innerHTML = `<i data-lucide="${isCompleted ? 'check-check' : 'check'}" style="width: 16px; height: 16px;"></i> <span>${isCompleted ? '✓ 1H DE CARDIO CONCLUÍDO' : 'CONCLUIR 1H DE CARDIO'}</span>`;
-                btnHeroStart.style.background = isCompleted ? 'rgba(74, 222, 128, 0.2)' : 'linear-gradient(135deg, var(--accent-rose), #d6877b)';
-                btnHeroStart.style.color = isCompleted ? '#4ade80' : '#120a0e';
-                btnHeroStart.style.boxShadow = isCompleted ? 'none' : '0 6px 20px rgba(232, 165, 152, 0.35)';
+                btnHeroStart.style.background = isCompleted ? '#ECFDF5' : 'linear-gradient(135deg, var(--accent-rose), #F43F5E)';
+                btnHeroStart.style.color = isCompleted ? '#10B981' : '#FFFFFF';
+                btnHeroStart.style.border = isCompleted ? '1px solid #A7F3D0' : 'none';
+                btnHeroStart.style.boxShadow = isCompleted ? 'none' : '0 6px 20px rgba(251, 113, 133, 0.35)';
                 btnHeroStart.onclick = () => completeCardioSession(selectedDay);
             }
         } else {
@@ -1939,9 +1941,10 @@ function renderWorkoutTab() {
             
             if (btnHeroStart) {
                 btnHeroStart.innerHTML = `<i data-lucide="play" style="width: 16px; height: 16px; fill: currentColor;"></i> <span>${isCompleted ? 'REFAZER TREINO' : 'COMEÇAR TREINO'}</span>`;
-                btnHeroStart.style.background = 'linear-gradient(135deg, var(--accent-rose), #d6877b)';
-                btnHeroStart.style.color = '#120a0e';
-                btnHeroStart.style.boxShadow = '0 6px 20px rgba(232, 165, 152, 0.35)';
+                btnHeroStart.style.background = 'linear-gradient(135deg, var(--accent-rose), #F43F5E)';
+                btnHeroStart.style.color = '#FFFFFF';
+                btnHeroStart.style.border = 'none';
+                btnHeroStart.style.boxShadow = '0 6px 20px rgba(251, 113, 133, 0.35)';
                 btnHeroStart.onclick = () => startWorkoutSession(selectedDay);
             }
         }
@@ -1950,19 +1953,19 @@ function renderWorkoutTab() {
         if (statusTagEl) {
             if (isCompleted) {
                 statusTagEl.innerText = "✓ Concluído";
-                statusTagEl.style.background = "rgba(74, 222, 128, 0.15)";
-                statusTagEl.style.color = "#4ade80";
-                statusTagEl.style.border = "1px solid rgba(74, 222, 128, 0.3)";
+                statusTagEl.style.background = "#ECFDF5";
+                statusTagEl.style.color = "#10B981";
+                statusTagEl.style.border = "1px solid #A7F3D0";
             } else if (selectedDay === realToday) {
                 statusTagEl.innerText = activeWorkout.isRestDay ? "Hoje é Descanso 🤍" : "Treino de Hoje 🔥";
-                statusTagEl.style.background = "rgba(232, 165, 152, 0.15)";
+                statusTagEl.style.background = "#FFF1F2";
                 statusTagEl.style.color = "var(--accent-rose)";
-                statusTagEl.style.border = "1px solid rgba(232, 165, 152, 0.3)";
+                statusTagEl.style.border = "1px solid #FDA4AF";
             } else {
                 statusTagEl.innerText = activeWorkout.isRestDay ? "Descanso" : "Treino Programado";
-                statusTagEl.style.background = "rgba(255,255,255,0.08)";
-                statusTagEl.style.color = "#fff";
-                statusTagEl.style.border = "none";
+                statusTagEl.style.background = "#F8FAFC";
+                statusTagEl.style.color = "var(--text-secondary)";
+                statusTagEl.style.border = "1px solid #E2E8F0";
             }
         }
     }
@@ -1983,10 +1986,10 @@ function renderWorkoutTab() {
             if (badgeCountEl) badgeCountEl.innerText = "0";
             
             exercisesListContainer.innerHTML = `
-                <div style="background: rgba(255, 255, 255, 0.02); border: 1px dashed rgba(255, 255, 255, 0.12); border-radius: 14px; padding: 28px 18px; text-align: center;">
+                <div style="background: #FAFAFA; border: 1px dashed #CBD5E1; border-radius: 14px; padding: 28px 18px; text-align: center;">
                     <span style="font-size: 32px; display: block; margin-bottom: 8px;">🤍</span>
-                    <h4 style="font-size: 16px; font-weight: 800; color: #fff; margin: 0 0 6px 0; font-family: var(--font-header); letter-spacing: 0.8px;">DESCANSO</h4>
-                    <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin: 0;">Descanso</p>
+                    <h4 style="font-size: 16px; font-weight: 800; color: #0F172A; margin: 0 0 6px 0; font-family: var(--font-header); letter-spacing: 0.8px;">DESCANSO</h4>
+                    <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin: 0;">Dia de descanso e recuperação dos músculos</p>
                 </div>
             `;
         } else if (activeWorkout.isCustomCardio) {
@@ -1995,20 +1998,20 @@ function renderWorkoutTab() {
             if (badgeCountEl) badgeCountEl.innerText = "1h";
             
             exercisesListContainer.innerHTML = `
-                <div style="background: rgba(255, 255, 255, 0.025); border: 1px solid rgba(232, 165, 152, 0.2); border-radius: 14px; padding: 18px 16px;">
+                <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 14px; padding: 18px 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.03);">
                     <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
-                        <div style="width: 44px; height: 44px; border-radius: 10px; background: rgba(232, 165, 152, 0.15); border: 1px solid var(--accent-rose); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
+                        <div style="width: 44px; height: 44px; border-radius: 10px; background: #FFF1F2; border: 1px solid #FDA4AF; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
                             🏃‍♀️
                         </div>
                         <div>
                             <span style="font-size: 10.5px; font-weight: 800; color: var(--accent-rose); text-transform: uppercase; letter-spacing: 0.8px; display: block;">SÁBADO — ABS E CARDIO</span>
-                            <h4 style="font-size: 15px; font-weight: 700; color: #fff; margin: 2px 0 0 0;">1h do cardio da sua preferência</h4>
+                            <h4 style="font-size: 15px; font-weight: 700; color: #0F172A; margin: 2px 0 0 0;">1h do cardio da sua preferência</h4>
                         </div>
                     </div>
                     <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin: 0 0 14px 0;">
                         1h do cardio da sua preferência
                     </p>
-                    <button type="button" onclick="completeCardioSession(${selectedDay})" style="width: 100%; padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 800; border: none; background: ${isCompleted ? 'rgba(74, 222, 128, 0.2)' : 'linear-gradient(135deg, var(--accent-rose), #d6877b)'}; color: ${isCompleted ? '#4ade80' : '#120a0e'}; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <button type="button" onclick="completeCardioSession(${selectedDay})" style="width: 100%; padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 800; border: none; background: ${isCompleted ? '#ECFDF5' : 'linear-gradient(135deg, var(--accent-rose), #F43F5E)'}; color: ${isCompleted ? '#10B981' : '#FFFFFF'}; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: ${isCompleted ? 'none' : '0 4px 15px rgba(251,113,133,0.3)'};">
                         <i data-lucide="${isCompleted ? 'check-check' : 'check'}" style="width: 15px; height: 15px;"></i>
                         <span>${isCompleted ? '✓ 1h de Cardio Concluído' : 'Marcar 1h de Cardio como Concluído'}</span>
                     </button>
@@ -2036,30 +2039,31 @@ function renderWorkoutTab() {
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
-                    background: rgba(255, 255, 255, 0.025);
-                    border: 1px solid rgba(255, 255, 255, 0.07);
+                    background: #FFFFFF;
+                    border: 1px solid #E2E8F0;
                     border-radius: 14px;
                     padding: 12px 14px;
                     cursor: pointer;
                     transition: all 0.2s ease;
+                    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
                 `;
                 
                 cardDiv.innerHTML = `
                     <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
                         <span style="font-size: 13px; font-weight: 800; color: var(--accent-rose); font-family: var(--font-header); min-width: 22px;">${ex.number}</span>
-                        <div style="width: 48px; height: 48px; border-radius: 10px; overflow: hidden; background: #1a1217; border: 1px solid rgba(255,255,255,0.08); flex-shrink: 0;">
+                        <div style="width: 48px; height: 48px; border-radius: 10px; overflow: hidden; background: #F8FAFC; border: 1px solid #E2E8F0; flex-shrink: 0;">
                             <img src="${ex.image}" alt="${ex.name}" style="width: 100%; height: 100%; object-fit: cover;">
                         </div>
                         <div style="min-width: 0;">
-                            <h4 style="font-size: 13.5px; font-weight: 700; color: #fff; margin: 0 0 3px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${ex.name}</h4>
+                            <h4 style="font-size: 13.5px; font-weight: 700; color: #0F172A; margin: 0 0 3px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${ex.name}</h4>
                             <div style="font-size: 11px; color: var(--text-secondary); display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
                                 <span>${ex.sets} séries × ${ex.repsRange}</span>
-                                ${ex.rest ? `<span style="color: rgba(232, 165, 152, 0.9); font-weight: 600;">• Descanso: ${ex.rest}</span>` : ''}
+                                ${ex.rest ? `<span style="color: var(--accent-rose); font-weight: 600;">• Descanso: ${ex.rest}</span>` : ''}
                                 ${loadInfo}
                             </div>
                         </div>
                     </div>
-                    <div style="display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.04); color: var(--text-secondary); flex-shrink: 0; margin-left: 8px;">
+                    <div style="display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: #F1F5F9; color: var(--text-secondary); flex-shrink: 0; margin-left: 8px;">
                         <i data-lucide="chevron-right" style="width: 16px; height: 16px;"></i>
                     </div>
                 `;
@@ -2220,8 +2224,8 @@ function updateDedicatedExerciseUI() {
                 font-size: 10px;
                 font-weight: 700;
                 transition: all 0.2s ease;
-                background: ${isCompleted ? 'var(--accent-rose)' : (isCurrent ? 'rgba(232, 165, 152, 0.2)' : 'rgba(255,255,255,0.06)')};
-                color: ${isCompleted ? '#120a0e' : (isCurrent ? 'var(--accent-rose)' : 'var(--text-secondary)')};
+                background: ${isCompleted ? 'var(--accent-rose)' : (isCurrent ? '#FFF1F2' : '#F1F5F9')};
+                color: ${isCompleted ? '#FFFFFF' : (isCurrent ? 'var(--accent-rose)' : 'var(--text-secondary)')};
                 border: ${isCurrent ? '1.5px solid var(--accent-rose)' : '1px solid transparent'};
             `;
             dot.innerText = isCompleted ? '✓' : s;
@@ -2832,11 +2836,11 @@ function openWorkoutDetail(id) {
             const checkIcon = row.querySelector(".exercise-check-icon");
             if (row.classList.contains("completed")) {
                 checkIcon.innerHTML = `<i data-lucide="check-circle-2" style="color: var(--accent-rose); width: 16px; height: 16px;"></i>`;
-                row.style.background = "rgba(232, 165, 152, 0.06)";
-                row.style.borderColor = "rgba(232, 165, 152, 0.2)";
+                row.style.background = "#FFF1F2";
+                row.style.borderColor = "#FDA4AF";
             } else {
-                checkIcon.innerHTML = `<i data-lucide="circle" style="color: rgba(255,255,255,0.15); width: 16px; height: 16px;"></i>`;
-                row.style.background = "rgba(255,255,255,0.02)";
+                checkIcon.innerHTML = `<i data-lucide="circle" style="color: #CBD5E1; width: 16px; height: 16px;"></i>`;
+                row.style.background = "#F8FAFC";
                 row.style.borderColor = "transparent";
             }
             lucide.createIcons();
@@ -2845,7 +2849,7 @@ function openWorkoutDetail(id) {
         row.innerHTML = `
             <div style="display: flex; align-items: center; gap: 8px;">
                 <div class="exercise-check-icon" style="display: flex; align-items: center;">
-                    <i data-lucide="circle" style="color: rgba(255,255,255,0.15); width: 16px; height: 16px;"></i>
+                    <i data-lucide="circle" style="color: #CBD5E1; width: 16px; height: 16px;"></i>
                 </div>
                 <span style="font-weight: 600; color: var(--text-primary); font-size: 12.5px;">${ex.name}</span>
             </div>
@@ -3122,16 +3126,16 @@ function updateSubstitutionsGrid() {
             <span style="font-size:16px; font-weight:700; color:var(--text-primary); display:block;">${data.kcal}</span>
             <span style="font-size:9px; color:var(--text-secondary); text-transform:uppercase;">Calorias</span>
         </div>
-        <div style="flex: 1; text-align: center; border-left: 1px solid rgba(255,255,255,0.05);">
-            <span style="font-size:16px; font-weight:700; color:#ffb3a7; display:block;">${data.carb}g</span>
+        <div style="flex: 1; text-align: center; border-left: 1px solid #E2E8F0;">
+            <span style="font-size:16px; font-weight:700; color:#F43F5E; display:block;">${data.carb}g</span>
             <span style="font-size:9px; color:var(--text-secondary); text-transform:uppercase;">Carbos</span>
         </div>
-        <div style="flex: 1; text-align: center; border-left: 1px solid rgba(255,255,255,0.05);">
-            <span style="font-size:16px; font-weight:700; color:#a2e0c9; display:block;">${data.prot}g</span>
+        <div style="flex: 1; text-align: center; border-left: 1px solid #E2E8F0;">
+            <span style="font-size:16px; font-weight:700; color:#10B981; display:block;">${data.prot}g</span>
             <span style="font-size:9px; color:var(--text-secondary); text-transform:uppercase;">Proteínas</span>
         </div>
-        <div style="flex: 1; text-align: center; border-left: 1px solid rgba(255,255,255,0.05);">
-            <span style="font-size:16px; font-weight:700; color:#ffdca3; display:block;">${data.fat}g</span>
+        <div style="flex: 1; text-align: center; border-left: 1px solid #E2E8F0;">
+            <span style="font-size:16px; font-weight:700; color:#F59E0B; display:block;">${data.fat}g</span>
             <span style="font-size:9px; color:var(--text-secondary); text-transform:uppercase;">Gorduras</span>
         </div>
     `;
@@ -3141,22 +3145,23 @@ function updateSubstitutionsGrid() {
     grid.innerHTML = "";
     data.options.forEach(opt => {
         const card = document.createElement("div");
-        card.style.background = "rgba(255,255,255,0.01)";
-        card.style.border = "1px solid rgba(255,255,255,0.03)";
+        card.style.background = "#FFFFFF";
+        card.style.border = "1px solid #E2E8F0";
         card.style.borderRadius = "var(--radius-sm)";
         card.style.padding = "12px";
         card.style.display = "flex";
         card.style.alignItems = "center";
         card.style.gap = "12px";
+        card.style.boxShadow = "0 1px 4px rgba(0, 0, 0, 0.02)";
 
         card.innerHTML = `
-            <div style="font-size: 24px; width: 44px; height: 44px; border-radius: 50%; background: rgba(232, 165, 152, 0.05); display:flex; align-items:center; justify-content:center; color: var(--accent-rose);">
+            <div style="font-size: 24px; width: 44px; height: 44px; border-radius: 50%; background: #FFF1F2; border: 1px solid #FDA4AF; display:flex; align-items:center; justify-content:center; color: var(--accent-rose);">
                 ${opt.icon}
             </div>
             <div style="flex: 1;">
                 <h4 style="font-size: 13px; font-weight:600; color:var(--text-primary); margin-bottom:2px;">${opt.name}</h4>
                 <p style="font-size: 11px; color:var(--text-secondary);">Porção sugerida: <strong style="color:var(--accent-rose);">${opt.portion}</strong></p>
-                <p style="font-size: 10px; color:rgba(255,255,255,0.4); margin-top:2px;">${opt.kcal} kcal • Carb: ${opt.carb}g | Prot: ${opt.prot}g | Gord: ${opt.fat}g</p>
+                <p style="font-size: 10px; color:var(--text-secondary); margin-top:2px;">${opt.kcal} kcal • Carb: ${opt.carb}g | Prot: ${opt.prot}g | Gord: ${opt.fat}g</p>
             </div>
         `;
         grid.appendChild(card);
@@ -3375,7 +3380,7 @@ function populateNutritionMealsUI() {
                 <p class="meal-card-macros-txt">${m.kcal} kcal • ⏱️ ${m.time} min • P: ${m.prot}g | C: ${m.carb}g | G: ${m.fat}g</p>
                 <div class="meal-actions-row">
                     <button class="btn-swap-meal" onclick="swapSingleMeal(${idx})">🔄 Sugerir Outra</button>
-                    <button class="btn-swap-meal" style="border-color: rgba(255,255,255,0.05);" onclick="openRecipeDetail(${idx})">📖 Ver Preparo</button>
+                    <button class="btn-swap-meal" style="border-color: #E2E8F0;" onclick="openRecipeDetail(${idx})">📖 Ver Preparo</button>
                 </div>
             </div>
         `;
@@ -3931,23 +3936,23 @@ function renderPropositoUI() {
         dayBtn.type = "button";
         dayBtn.onclick = () => selectPropositoDay(d);
         
-        let bg = "rgba(255, 255, 255, 0.04)";
-        let border = "1px solid rgba(255, 255, 255, 0.08)";
+        let bg = "#F8FAFC";
+        let border = "1px solid #E2E8F0";
         let textColor = "var(--text-secondary)";
         let iconHtml = `<span style="font-size: 13px; opacity: 0.6;">○</span>`;
         
         if (isCompleted) {
-            bg = "rgba(232, 165, 152, 0.15)";
-            border = "1px solid rgba(232, 165, 152, 0.4)";
+            bg = "#FFF1F2";
+            border = "1px solid #FDA4AF";
             textColor = "var(--accent-rose)";
             iconHtml = `<span style="font-size: 13px; font-weight: bold; color: var(--accent-rose);">✓</span>`;
         }
         
         if (isSelected) {
-            bg = "linear-gradient(135deg, rgba(232, 165, 152, 0.3), rgba(232, 165, 152, 0.15))";
+            bg = "var(--accent-rose)";
             border = "1.5px solid var(--accent-rose)";
             textColor = "#ffffff";
-            dayBtn.style.boxShadow = "0 0 10px rgba(232, 165, 152, 0.35)";
+            dayBtn.style.boxShadow = "0 4px 12px rgba(251, 113, 133, 0.35)";
         }
         
         dayBtn.style.cssText += `
@@ -3986,15 +3991,15 @@ function renderPropositoUI() {
         if (isDayCompleted) {
             checkinBoxIcon.innerText = "☑";
             checkinBtnLabel.innerText = "✓ Concluí a leitura de hoje";
-            checkinBtn.style.background = "linear-gradient(135deg, rgba(232, 165, 152, 0.3), rgba(232, 165, 152, 0.15))";
-            checkinBtn.style.borderColor = "var(--accent-rose)";
-            checkinBtn.style.color = "var(--accent-rose)";
+            checkinBtn.style.background = "#ECFDF5";
+            checkinBtn.style.borderColor = "#A7F3D0";
+            checkinBtn.style.color = "#10B981";
         } else {
             checkinBoxIcon.innerText = "☐";
             checkinBtnLabel.innerText = "Concluí a leitura de hoje";
-            checkinBtn.style.background = "rgba(232, 165, 152, 0.08)";
-            checkinBtn.style.borderColor = "rgba(232, 165, 152, 0.3)";
-            checkinBtn.style.color = "#ffffff";
+            checkinBtn.style.background = "#FFF1F2";
+            checkinBtn.style.borderColor = "var(--accent-rose)";
+            checkinBtn.style.color = "var(--accent-rose)";
         }
     }
     
@@ -4901,10 +4906,10 @@ function openHistoryRecordDetail(dateStr) {
         taskItem.className = `history-detail-task-item ${isCompleted ? 'completed' : 'uncompleted'}`;
         
         taskItem.innerHTML = `
-            <div class="task-check-icon" style="background: ${isCompleted ? 'var(--color-success)' : 'rgba(255, 255, 255, 0.05)'}; color: ${isCompleted ? '#120A0E' : 'rgba(255, 255, 255, 0.2)'};">
+            <div class="task-check-icon" style="background: ${isCompleted ? 'var(--color-success)' : '#F1F5F9'}; color: ${isCompleted ? '#FFFFFF' : '#94A3B8'};">
                 ${isCompleted ? '✓' : '✗'}
             </div>
-            <span style="color: ${isCompleted ? '#fff' : 'rgba(255,255,255,0.35)'}; font-weight: ${isCompleted ? '600' : '400'}; text-decoration: ${isCompleted ? 'none' : 'line-through'};">${title}</span>
+            <span style="color: ${isCompleted ? 'var(--text-primary)' : 'var(--text-secondary)'}; font-weight: ${isCompleted ? '600' : '400'}; text-decoration: ${isCompleted ? 'none' : 'line-through'};">${title}</span>
         `;
         
         tasksContainer.appendChild(taskItem);
@@ -4914,7 +4919,7 @@ function openHistoryRecordDetail(dateStr) {
     if (record.observations) {
         obsBox.innerText = record.observations;
         obsBox.style.fontStyle = "normal";
-        obsBox.style.color = "#e0e0e0";
+        obsBox.style.color = "var(--text-primary)";
     } else {
         obsBox.innerText = "Nenhuma observação registrada para este dia.";
         obsBox.style.fontStyle = "italic";

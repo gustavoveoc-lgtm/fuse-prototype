@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#120A0E">
+    <meta name="theme-color" content="#FFFFFF">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>FUSE - Plataforma de Autocuidado Feminino</title>
     <!-- Google Fonts: Outfit (Headings) e Inter (Body) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -89,22 +89,22 @@
                 </h4>
                 <div class="input-group" style="margin-bottom: 8px;">
                     <label style="font-size: 9px; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; margin-bottom: 4px; display: block;">Nome do Comprador</label>
-                    <input type="text" id="cakto-sim-name" placeholder="Ex: Amanda Caroline" style="padding: 10px; font-size: 12px; width: 100%; border-radius: 8px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); color: #fff; outline: none;">
+                    <input type="text" id="cakto-sim-name" placeholder="Ex: Amanda Caroline" style="padding: 10px; font-size: 12px; width: 100%; border-radius: 8px; background: #FFFFFF; border: 1px solid #E2E8F0; color: #111827; outline: none;">
                 </div>
                 <div class="input-group" style="margin-bottom: 8px;">
                     <label style="font-size: 9px; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; margin-bottom: 4px; display: block;">E-mail do Comprador</label>
-                    <input type="email" id="cakto-sim-email" placeholder="Ex: amanda@exemplo.com" style="padding: 10px; font-size: 12px; width: 100%; border-radius: 8px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); color: #fff; outline: none;">
+                    <input type="email" id="cakto-sim-email" placeholder="Ex: amanda@exemplo.com" style="padding: 10px; font-size: 12px; width: 100%; border-radius: 8px; background: #FFFFFF; border: 1px solid #E2E8F0; color: #111827; outline: none;">
                 </div>
                 <div class="input-group" style="margin-bottom: 12px;">
                     <label style="font-size: 9px; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; margin-bottom: 4px; display: block;">Produto Comprado</label>
-                    <select id="cakto-sim-product" style="padding: 10px; font-size: 12px; width: 100%; border-radius: 8px; background: #1a0f15; border: 1px solid rgba(255,255,255,0.08); color: #fff; outline: none;">
+                    <select id="cakto-sim-product" style="padding: 10px; font-size: 12px; width: 100%; border-radius: 8px; background: #FFFFFF; border: 1px solid #E2E8F0; color: #111827; outline: none;">
                         <option value="FUSE">FUSE Premium (Acesso Comunidade)</option>
                         <option value="Desafio Core">Desafio Core (Acesso ao Desafio)</option>
                     </select>
                 </div>
                 <div style="display: flex; gap: 8px;">
-                    <button class="btn-complete-task" onclick="simulateCaktoWebhook()" style="flex: 1; font-size: 10.5px; padding: 10px; border-radius: 8px; background: rgba(232, 165, 152, 0.1); border: 1px solid var(--accent-rose); color: var(--accent-rose); cursor: pointer; font-weight: 600;">Simular Webhook</button>
-                    <button class="btn-complete-task" onclick="simulateCaktoRedirect()" style="flex: 1; font-size: 10.5px; padding: 10px; border-radius: 8px; background: var(--gradient-primary); border: none; color: #120A0E; cursor: pointer; font-weight: 700;">Simular Retorno</button>
+                    <button class="btn-complete-task" onclick="simulateCaktoWebhook()" style="flex: 1; font-size: 10.5px; padding: 10px; border-radius: 8px; background: rgba(251, 113, 133, 0.1); border: 1px solid var(--accent-rose); color: var(--accent-rose); cursor: pointer; font-weight: 600;">Simular Webhook</button>
+                    <button class="btn-complete-task" onclick="simulateCaktoRedirect()" style="flex: 1; font-size: 10.5px; padding: 10px; border-radius: 8px; background: var(--gradient-primary); border: none; color: #FFFFFF; cursor: pointer; font-weight: 700;">Simular Retorno</button>
                 </div>
             </div>
         </div>
@@ -414,21 +414,21 @@
                     </div>
                     
                     <!-- Daily Check-in Form and Observations -->
-                    <div class="daily-checkin-form" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 16px;">
+                    <div class="daily-checkin-form" style="margin-top: 20px; border-top: 1px solid #E2E8F0; padding-top: 16px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                             <label for="daily-observations" style="font-size: 11px; color: var(--text-secondary); margin: 0; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Observações do Dia:</label>
                             <div id="auto-save-status"><span style="color: var(--text-secondary); font-size: 10px;">Sincronizado</span></div>
                         </div>
-                        <textarea id="daily-observations" placeholder="Escreva aqui suas observações, sentimentos ou conquistas de hoje..." style="width: 100%; min-height: 70px; padding: 10px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; color: #fff; font-size: 12px; line-height: 1.5; resize: vertical; outline: none; margin-bottom: 12px; transition: border-color 0.2s;" onfocus="this.style.borderColor='var(--accent-rose)'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'"></textarea>
+                        <textarea id="daily-observations" placeholder="Escreva aqui suas observações, sentimentos ou conquistas de hoje..." style="width: 100%; min-height: 70px; padding: 10px; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; color: #0F172A; font-size: 12px; line-height: 1.5; resize: vertical; outline: none; margin-bottom: 12px; transition: border-color 0.2s;" onfocus="this.style.borderColor='var(--accent-rose)'" onblur="this.style.borderColor='#E2E8F0'"></textarea>
                         
-                        <button id="btn-save-daily-record" onclick="saveDailyRecordAction()" class="btn-modal-start" style="width: 100%; margin-top: 0; padding: 10px; font-size: 12px; font-weight: 700; background: var(--accent-rose); border-color: var(--accent-rose); display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <button id="btn-save-daily-record" onclick="saveDailyRecordAction()" class="btn-modal-start" style="width: 100%; margin-top: 0; padding: 10px; font-size: 12px; font-weight: 700; background: var(--accent-rose); border-color: var(--accent-rose); color: #FFFFFF; display: flex; align-items: center; justify-content: center; gap: 8px;">
                             <i data-lucide="save" style="width: 14px; height: 14px;"></i> Sincronizar Registro
                         </button>
                     </div>
                 </div>
 
                 <!-- Water Tracker Card (Hidratação Consciente FUSE) -->
-                <div class="section-card water-tracker-card" style="padding: 18px; position: relative; overflow: hidden; background: linear-gradient(135deg, rgba(232, 165, 152, 0.08) 0%, rgba(116, 192, 252, 0.08) 100%); border: 1px solid rgba(116, 192, 252, 0.18); border-radius: var(--radius-lg); box-shadow: var(--shadow-soft);">
+                <div class="section-card water-tracker-card" style="padding: 18px; position: relative; overflow: hidden; background: linear-gradient(135deg, #FFF1F2 0%, #F0F9FF 100%); border: 1px solid #BAE6FD; border-radius: var(--radius-lg); box-shadow: var(--shadow-soft);">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
                         <div>
                             <div style="display: flex; align-items: center; gap: 6px;">
@@ -437,27 +437,27 @@
                             </div>
                             <p class="card-subtitle" id="water-target-desc" style="font-size: 11px; margin-top: 2px;">Meta calculada: 2.200 ml / dia</p>
                         </div>
-                        <span id="water-percent-badge" style="font-size: 11px; font-weight: 700; color: #74C0FC; background: rgba(116, 192, 252, 0.15); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(116, 192, 252, 0.25);">0%</span>
+                        <span id="water-percent-badge" style="font-size: 11px; font-weight: 700; color: #0284C7; background: #E0F2FE; padding: 4px 10px; border-radius: 20px; border: 1px solid #BAE6FD;">0%</span>
                     </div>
 
                     <!-- Container Garrafa + Progresso -->
                     <div style="display: flex; align-items: center; gap: 16px; margin: 10px 0 14px 0;">
                         <!-- Garrafa Visual com Nível Dinâmico -->
-                        <div class="water-bottle-visual" style="width: 56px; height: 104px; background: rgba(255, 255, 255, 0.04); border: 2px solid rgba(116, 192, 252, 0.35); border-radius: 14px 14px 18px 18px; position: relative; overflow: hidden; flex-shrink: 0; box-shadow: inset 0 0 12px rgba(116, 192, 252, 0.12);">
+                        <div class="water-bottle-visual" style="width: 56px; height: 104px; background: #FFFFFF; border: 2px solid #7DD3FC; border-radius: 14px 14px 18px 18px; position: relative; overflow: hidden; flex-shrink: 0; box-shadow: inset 0 0 12px rgba(116, 192, 252, 0.12);">
                             <!-- Gargalo da garrafa -->
-                            <div style="position: absolute; top: -5px; left: 50%; transform: translateX(-50%); width: 20px; height: 5px; background: rgba(116, 192, 252, 0.4); border-radius: 3px;"></div>
+                            <div style="position: absolute; top: -5px; left: 50%; transform: translateX(-50%); width: 20px; height: 5px; background: #7DD3FC; border-radius: 3px;"></div>
                             <!-- Água com altura dinâmica -->
                             <div id="water-bottle-fill" style="position: absolute; bottom: 0; left: 0; right: 0; height: 0%; background: linear-gradient(180deg, #74C0FC 0%, #4DABF7 60%, #339AF0 100%); transition: height 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); border-radius: 0 0 14px 14px; opacity: 0.9;">
                                 <div class="water-wave-anim"></div>
                             </div>
                             <!-- Medidor de nível texto sobre a garrafa -->
-                            <span id="water-bottle-label" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.8); z-index: 2;">0%</span>
+                            <span id="water-bottle-label" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.4); z-index: 2;">0%</span>
                         </div>
 
                         <!-- Estatísticas e Mensagem -->
                         <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
                             <div style="display: flex; align-items: baseline; gap: 4px;">
-                                <span id="water-current-amount" style="font-size: 26px; font-weight: 800; font-family: var(--font-header); color: #fff; line-height: 1;">0</span>
+                                <span id="water-current-amount" style="font-size: 26px; font-weight: 800; font-family: var(--font-header); color: #0F172A; line-height: 1;">0</span>
                                 <span style="font-size: 13px; color: var(--text-secondary); font-weight: 500;">/ <span id="water-target-amount">2.200</span> ml</span>
                             </div>
                             <p id="water-status-message" style="font-size: 11px; color: var(--text-secondary); line-height: 1.35;">Comece com 1 copo d'água ao acordar para ativar o corpo e a mente.</p>
@@ -466,13 +466,13 @@
 
                     <!-- Botões de Ação Rápida -->
                     <div style="display: flex; gap: 8px;">
-                        <button type="button" class="btn-water-action" onclick="addWaterIntake(250)" style="flex: 1; padding: 10px 8px; border-radius: 12px; background: rgba(116, 192, 252, 0.12); border: 1px solid rgba(116, 192, 252, 0.28); color: #E7F5FF; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.15s ease;">
+                        <button type="button" class="btn-water-action" onclick="addWaterIntake(250)" style="flex: 1; padding: 10px 8px; border-radius: 12px; background: #E0F2FE; border: 1px solid #BAE6FD; color: #0284C7; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.15s ease;">
                             <span>🥛 +250 ml</span>
                         </button>
-                        <button type="button" class="btn-water-action" onclick="addWaterIntake(500)" style="flex: 1; padding: 10px 8px; border-radius: 12px; background: rgba(116, 192, 252, 0.18); border: 1px solid rgba(116, 192, 252, 0.35); color: #fff; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.15s ease;">
+                        <button type="button" class="btn-water-action" onclick="addWaterIntake(500)" style="flex: 1; padding: 10px 8px; border-radius: 12px; background: #0284C7; border: 1px solid #0284C7; color: #FFFFFF; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.15s ease;">
                             <span>🍶 +500 ml</span>
                         </button>
-                        <button type="button" class="btn-water-action" onclick="addWaterIntake(-250)" title="Desfazer 250ml" style="width: 38px; border-radius: 12px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); color: var(--text-secondary); font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s ease;">
+                        <button type="button" class="btn-water-action" onclick="addWaterIntake(-250)" title="Desfazer 250ml" style="width: 38px; border-radius: 12px; background: #F1F5F9; border: 1px solid #E2E8F0; color: var(--text-secondary); font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s ease;">
                             ↺
                         </button>
                     </div>
@@ -508,13 +508,13 @@
 
                 <!-- WhatsApp Group Button -->
                 <a href="https://chat.whatsapp.com/FC6FBD2RVby98IskooQYuC?mode=gi_t" target="_blank" style="text-decoration: none;">
-                    <div class="section-card whatsapp-card" style="margin-top: 12px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, rgba(37, 211, 102, 0.1), rgba(18, 140, 126, 0.05)); border: 1px solid rgba(37, 211, 102, 0.2); border-radius: 12px; padding: 14px 16px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 15px rgba(37,211,102,0.1)';" onmouseout="this.style.transform='none'; this.style.boxShadow='none';">
+                    <div class="section-card whatsapp-card" style="margin-top: 12px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, rgba(37, 211, 102, 0.08), rgba(255, 255, 255, 0.95)); border: 1px solid rgba(37, 211, 102, 0.25); border-radius: 12px; padding: 14px 16px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 15px rgba(37,211,102,0.1)';" onmouseout="this.style.transform='none'; this.style.boxShadow='none';">
                         <div style="display: flex; align-items: center; gap: 12px;">
-                            <div style="width: 36px; height: 36px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px rgba(37,211,102,0.3);">
+                            <div style="width: 36px; height: 36px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(37,211,102,0.25);">
                                 <i data-lucide="message-circle" style="width: 18px; height: 18px; color: #fff;"></i>
                             </div>
                             <div>
-                                <h3 style="font-size: 13px; font-weight: 700; color: #fff; margin: 0;">Grupo do WhatsApp</h3>
+                                <h3 style="font-size: 13px; font-weight: 700; color: #0F172A; margin: 0;">Grupo do WhatsApp</h3>
                                 <p style="font-size: 11px; color: var(--text-secondary); margin: 2px 0 0 0;">Entre na nossa comunidade exclusiva</p>
                             </div>
                         </div>
@@ -525,15 +525,15 @@
                 <!-- Welcome Message from Duda Meister -->
                 <div class="section-card community-preview">
                     <h3 class="card-title">Mensagem de Boas-Vindas</h3>
-                    <div class="community-post-preview-card" style="border: 1px solid rgba(232, 165, 152, 0.2); background: linear-gradient(135deg, rgba(232,165,152,0.05), rgba(18,18,18,0.3)); padding: 16px; border-radius: 12px;">
+                    <div class="community-post-preview-card" style="border: 1px solid #FDA4AF; background: #FFF1F2; padding: 16px; border-radius: 12px;">
                         <div class="post-preview-header" style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
                             <img src="" id="duda-welcome-avatar" alt="Duda Meister" class="post-user-avatar" style="width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent-rose); object-fit: cover;">
                             <div>
-                                <span class="post-user-name" id="duda-welcome-name" style="font-weight: 700; font-size: 14px; color: #fff; display: block;">Duda Meister</span>
+                                <span class="post-user-name" id="duda-welcome-name" style="font-weight: 700; font-size: 14px; color: #0F172A; display: block;">Duda Meister</span>
                                 <span class="post-time" style="color: var(--accent-rose); font-weight: 600; font-size: 11px;">Fundadora do FUSE</span>
                             </div>
                         </div>
-                        <p class="post-text" style="font-style: italic; line-height: 1.5; color: #e0e0e0; font-size: 12.5px; margin: 0;">
+                        <p class="post-text" style="font-style: italic; line-height: 1.5; color: #334155; font-size: 12.5px; margin: 0;">
                             “Seja muito bem-vinda à FUSE! 🤍 É uma alegria ter você aqui. Desejo que este seja um tempo de crescimento, transformação e de um encontro ainda mais profundo com Deus. Saiba que você faz parte desta família e que não está caminhando sozinha. Conte conosco nessa jornada. Que Deus seja contigo em cada passo. Seja bem-vinda!”
                         </p>
                     </div>
@@ -547,9 +547,9 @@
                     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                         <div>
                             <span style="font-size: 11px; font-weight: 700; color: var(--accent-rose); letter-spacing: 0.8px; text-transform: uppercase; display: block; margin-bottom: 2px;">Treino FUSE</span>
-                            <h2 id="workout-user-greeting" style="font-size: 22px; font-weight: 700; color: #fff; margin: 0; font-family: var(--font-header);">Bom dia, Amanda ✨</h2>
+                            <h2 id="workout-user-greeting" style="font-size: 22px; font-weight: 700; color: #0F172A; margin: 0; font-family: var(--font-header);">Bom dia, Amanda ✨</h2>
                         </div>
-                        <span id="workout-goal-badge" style="font-size: 10.5px; background: rgba(232, 165, 152, 0.12); color: var(--accent-rose); border: 1px solid rgba(232, 165, 152, 0.3); padding: 4px 10px; border-radius: 20px; font-weight: 600;">Glúteos & Definição</span>
+                        <span id="workout-goal-badge" style="font-size: 10.5px; background: #FFF1F2; color: var(--accent-rose); border: 1px solid #FDA4AF; padding: 4px 10px; border-radius: 20px; font-weight: 600;">Glúteos & Definição</span>
                     </div>
                     <span id="workout-tab-sub" style="display: none;"></span>
                 </div>
@@ -562,24 +562,24 @@
                 </div>
 
                 <!-- 2. CARD PRINCIPAL DO TREINO DO DIA SELECIONADO -->
-                <div class="section-card workout-main-hero-card" id="workout-hero-card" style="margin-bottom: 22px; border: 1px solid rgba(232, 165, 152, 0.25); background: linear-gradient(135deg, rgba(232, 165, 152, 0.15) 0%, rgba(22, 14, 18, 0.95) 100%); padding: 20px 18px; border-radius: 16px; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+                <div class="section-card workout-main-hero-card" id="workout-hero-card" style="margin-bottom: 22px; border: 1px solid #FDA4AF; background: linear-gradient(135deg, #FFF1F2 0%, #FFFFFF 100%); padding: 20px 18px; border-radius: 16px; position: relative; overflow: hidden; box-shadow: 0 10px 25px rgba(251, 113, 133, 0.08);">
                     <!-- Detalhe decorativo suave -->
-                    <div style="position: absolute; right: -20px; top: -20px; width: 120px; height: 120px; background: radial-gradient(circle, rgba(232, 165, 152, 0.15) 0%, transparent 70%); border-radius: 50%; pointer-events: none;"></div>
+                    <div style="position: absolute; right: -20px; top: -20px; width: 120px; height: 120px; background: radial-gradient(circle, rgba(251, 113, 133, 0.12) 0%, transparent 70%); border-radius: 50%; pointer-events: none;"></div>
 
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                         <span id="hero-workout-dayname" style="font-size: 11px; font-weight: 800; color: var(--accent-rose); letter-spacing: 1px; text-transform: uppercase;">QUARTA-FEIRA</span>
-                        <span id="hero-workout-status-tag" style="font-size: 10px; background: rgba(255,255,255,0.08); padding: 2px 8px; border-radius: 6px; color: #fff; font-weight: 600;">Treino Programado</span>
+                        <span id="hero-workout-status-tag" style="font-size: 10px; background: #FFF1F2; padding: 2px 8px; border-radius: 6px; color: var(--accent-rose); font-weight: 600; border: 1px solid #FDA4AF;">Treino Programado</span>
                     </div>
 
-                    <h3 id="hero-workout-title" style="font-size: 22px; font-weight: 700; color: #fff; margin: 0 0 8px 0; font-family: var(--font-header); line-height: 1.25;">TREINO DE GLÚTEOS</h3>
+                    <h3 id="hero-workout-title" style="font-size: 22px; font-weight: 700; color: #0F172A; margin: 0 0 8px 0; font-family: var(--font-header); line-height: 1.25;">TREINO DE GLÚTEOS</h3>
                     
                     <div style="display: flex; align-items: center; gap: 14px; font-size: 12px; color: var(--text-secondary); margin-bottom: 18px; flex-wrap: wrap;">
-                        <span id="hero-workout-count" style="display: flex; align-items: center; gap: 4px; color: #fff; font-weight: 600;"><i data-lucide="dumbbell" style="width: 14px; height: 14px; color: var(--accent-rose);"></i> 5 exercícios</span>
+                        <span id="hero-workout-count" style="display: flex; align-items: center; gap: 4px; color: #0F172A; font-weight: 600;"><i data-lucide="dumbbell" style="width: 14px; height: 14px; color: var(--accent-rose);"></i> 5 exercícios</span>
                         <span id="hero-workout-dur" style="display: flex; align-items: center; gap: 4px;"><i data-lucide="clock" style="width: 14px; height: 14px;"></i> 35 min</span>
                         <span id="hero-workout-kcal" style="display: flex; align-items: center; gap: 4px;"><i data-lucide="flame" style="width: 14px; height: 14px; color: #f97316;"></i> ~240 kcal</span>
                     </div>
 
-                    <button type="button" id="btn-hero-start-workout" onclick="startWorkoutSession()" style="width: 100%; padding: 14px; border-radius: 12px; font-size: 14px; font-weight: 800; letter-spacing: 0.5px; border: none; background: linear-gradient(135deg, var(--accent-rose), #d6877b); color: #120a0e; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 6px 20px rgba(232, 165, 152, 0.35); transition: transform 0.15s ease;">
+                    <button type="button" id="btn-hero-start-workout" onclick="startWorkoutSession()" style="width: 100%; padding: 14px; border-radius: 12px; font-size: 14px; font-weight: 800; letter-spacing: 0.5px; border: none; background: linear-gradient(135deg, var(--accent-rose), #F43F5E); color: #FFFFFF; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 6px 20px rgba(251, 113, 133, 0.35); transition: transform 0.15s ease;">
                         <i data-lucide="play" style="width: 16px; height: 16px; fill: currentColor;"></i>
                         <span>COMEÇAR TREINO</span>
                     </button>
@@ -589,8 +589,8 @@
                 <div class="workout-exercises-section">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
                         <div style="display: flex; align-items: center; gap: 8px;">
-                            <h3 id="workout-section-title" style="font-size: 14px; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.8px; margin: 0;">EXERCÍCIOS DO DIA</h3>
-                            <span id="exercises-badge-count" style="font-size: 11px; background: rgba(255,255,255,0.08); color: var(--accent-rose); font-weight: 700; padding: 2px 7px; border-radius: 10px;">5</span>
+                            <h3 id="workout-section-title" style="font-size: 14px; font-weight: 800; color: #0F172A; text-transform: uppercase; letter-spacing: 0.8px; margin: 0;">EXERCÍCIOS DO DIA</h3>
+                            <span id="exercises-badge-count" style="font-size: 11px; background: #FFF1F2; color: var(--accent-rose); font-weight: 700; padding: 2px 7px; border-radius: 10px; border: 1px solid #FDA4AF;">5</span>
                         </div>
                         <span id="workout-section-hint" style="font-size: 11px; color: var(--text-secondary);">Toque para abrir</span>
                     </div>
@@ -610,9 +610,9 @@
                 </div>
 
                 <!-- Configuração de Abas de Alimentação -->
-                <div class="nutrition-tabs-header" style="display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">
-                    <button class="nut-tab-btn active" id="btn-nut-tab-diet" onclick="switchNutritionSubTab('diet')" style="background:rgba(232, 165, 152, 0.1); border:1px solid rgba(232, 165, 152, 0.2); color:#fff; font-size:12px; font-weight:600; padding:6px 12px; cursor:pointer; border-radius:15px; transition:all 0.2s ease;">📋 Plano Alimentar</button>
-                    <button class="nut-tab-btn" id="btn-nut-tab-subs" onclick="switchNutritionSubTab('subs')" style="background:none; border:none; color:var(--text-secondary); font-size:12px; font-weight:600; padding:6px 12px; cursor:pointer; border-radius:15px; transition:all 0.2s ease;">🔄 Substituições Inteligentes</button>
+                <div class="nutrition-tabs-header" style="display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 1px solid #E2E8F0; padding-bottom: 8px;">
+                    <button class="nut-tab-btn active" id="btn-nut-tab-diet" onclick="switchNutritionSubTab('diet')" style="background:#FFF1F2; border:1px solid var(--accent-rose); color:var(--accent-rose); font-size:12px; font-weight:700; padding:6px 12px; cursor:pointer; border-radius:15px; transition:all 0.2s ease;">📋 Plano Alimentar</button>
+                    <button class="nut-tab-btn" id="btn-nut-tab-subs" onclick="switchNutritionSubTab('subs')" style="background:none; border:1px solid transparent; color:var(--text-secondary); font-size:12px; font-weight:600; padding:6px 12px; cursor:pointer; border-radius:15px; transition:all 0.2s ease;">🔄 Substituições Inteligentes</button>
                 </div>
 
                 <div id="nut-diet-container">
@@ -620,7 +620,7 @@
                     <div class="section-card nutrition-config-card" style="padding: 16px;">
                         <h3 class="card-title" style="margin-bottom: 12px;">Objetivo Nutricional</h3>
                         <div class="input-group" style="margin-bottom: 20px;">
-                            <select id="nut-select-goal" onchange="changeNutritionConfig()" style="width:100%; padding:12px; border-radius:10px; background: #1a0f15; border:1px solid rgba(255,255,255,0.08); color:#fff; font-size: 13px; font-weight: 600; outline: none;">
+                            <select id="nut-select-goal" onchange="changeNutritionConfig()" style="width:100%; padding:12px; border-radius:10px; background: #FFFFFF; border:1px solid #E2E8F0; color:#111827; font-size: 13px; font-weight: 600; outline: none;">
                                 <option value="emagrecer">🔥 Emagrecimento</option>
                                 <option value="massa">💪 Ganho de massa muscular</option>
                                 <option value="definicao">✨ Definição muscular</option>
@@ -748,7 +748,7 @@
                         
                         <div class="input-group" style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 16px;">
                             <label style="font-size:10px; color: var(--text-secondary); text-transform: uppercase; font-weight:600;">Substituir Alimento:</label>
-                            <select id="select-sub-food" onchange="updateSubstitutionsGrid()" style="width:100%; padding:10px; border-radius:8px; background: #1a0f15; border:1px solid rgba(255,255,255,0.08); color:#fff; font-size: 13px; outline: none;">
+                            <select id="select-sub-food" onchange="updateSubstitutionsGrid()" style="width:100%; padding:10px; border-radius:8px; background: #FFFFFF; border:1px solid #E2E8F0; color:#111827; font-size: 13px; outline: none;">
                                 <option value="arroz">🍚 Arroz Branco Cozido (100g)</option>
                                 <option value="frango">🍗 Frango Grelhado (100g)</option>
                                 <option value="ovo">🍳 Ovo Inteiro Cozido (2 unidades)</option>
@@ -757,7 +757,7 @@
                             </select>
                         </div>
 
-                        <div class="recipe-macros-row" id="sub-source-stats" style="margin-bottom: 16px; background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; border: 1px dashed rgba(255,255,255,0.05); display: flex;">
+                        <div class="recipe-macros-row" id="sub-source-stats" style="margin-bottom: 16px; background: #F8F9FA; padding: 12px; border-radius: 8px; border: 1px dashed #E2E8F0; display: flex;">
                             <!-- Populated dynamically -->
                         </div>
                     </div>
@@ -849,14 +849,14 @@
                 </div>
 
                 <!-- CARD 1: MEU PROPÓSITO - PROGRESSO DOS 7 DIAS -->
-                <div class="section-card proposito-card" style="margin-bottom: 16px; border: 1px solid rgba(232, 165, 152, 0.2); background: linear-gradient(135deg, rgba(232, 165, 152, 0.08) 0%, rgba(20, 16, 18, 0.7) 100%); padding: 16px;">
+                <div class="section-card proposito-card" style="margin-bottom: 16px; border: 1px solid #FDA4AF; background: linear-gradient(135deg, #FFF1F2 0%, #FFFFFF 100%); padding: 16px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                         <span style="font-size: 11px; font-weight: 700; color: var(--accent-rose); letter-spacing: 0.5px; text-transform: uppercase;">Meu Propósito</span>
-                        <span id="proposito-counter-txt" style="font-size: 12px; font-weight: 700; color: #fff;">Propósito: 0/7 dias concluídos</span>
+                        <span id="proposito-counter-txt" style="font-size: 12px; font-weight: 700; color: #0F172A;">Propósito: 0/7 dias concluídos</span>
                     </div>
                     
-                    <div class="progress-bar-container" style="height: 8px; border-radius: 4px; background: rgba(255,255,255,0.06); overflow: hidden; margin-bottom: 16px;">
-                        <div class="progress-bar-fill" id="proposito-progress-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--accent-rose), #f7cac9); border-radius: 4px; transition: width 0.4s ease;"></div>
+                    <div class="progress-bar-container" style="height: 8px; border-radius: 4px; background: #F1F5F9; overflow: hidden; margin-bottom: 16px;">
+                        <div class="progress-bar-fill" id="proposito-progress-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--accent-rose), #FDA4AF); border-radius: 4px; transition: width 0.4s ease;"></div>
                     </div>
 
                     <!-- LINHA DO TEMPO DOS 7 DIAS -->
@@ -866,45 +866,45 @@
                 </div>
 
                 <!-- CARD 2: LEITURA DO DIA ATIVO E CHECK-IN -->
-                <div class="section-card proposito-card" style="margin-bottom: 16px; border: 1px solid rgba(255, 255, 255, 0.08); padding: 18px 16px;">
+                <div class="section-card proposito-card" style="margin-bottom: 16px; border: 1px solid #E2E8F0; padding: 18px 16px;">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
                         <div>
-                            <span id="proposito-day-badge" style="font-size: 10px; font-weight: 700; color: var(--accent-rose); background: rgba(232, 165, 152, 0.12); padding: 3px 8px; border-radius: 6px; display: inline-block; margin-bottom: 6px;">DIA 1</span>
-                            <h3 id="proposito-reading-title" style="font-size: 18px; font-weight: 700; color: #fff; margin: 0; font-family: var(--font-header);">João 1, 2 e 3</h3>
+                            <span id="proposito-day-badge" style="font-size: 10px; font-weight: 700; color: var(--accent-rose); background: #FFF1F2; padding: 3px 8px; border-radius: 6px; display: inline-block; margin-bottom: 6px;">DIA 1</span>
+                            <h3 id="proposito-reading-title" style="font-size: 18px; font-weight: 700; color: #0F172A; margin: 0; font-family: var(--font-header);">João 1, 2 e 3</h3>
                             <p id="proposito-reading-theme" style="font-size: 11.5px; color: var(--text-secondary); margin: 4px 0 0 0;">O Verbo se fez carne • Primeiros sinais da graça</p>
                         </div>
-                        <div id="proposito-status-icon-box" style="width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+                        <div id="proposito-status-icon-box" style="width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #FFF1F2; border: 1px solid #FDA4AF;">
                             <i data-lucide="book-open" style="width: 18px; height: 18px; color: var(--accent-rose);"></i>
                         </div>
                     </div>
 
                     <!-- Mensagem pastoral / orientadora -->
-                    <div style="background: rgba(255,255,255,0.02); border-left: 3px solid var(--accent-rose); padding: 10px 12px; border-radius: 0 8px 8px 0; margin-bottom: 16px;">
+                    <div style="background: #F8FAFC; border-left: 3px solid var(--accent-rose); padding: 10px 12px; border-radius: 0 8px 8px 0; margin-bottom: 16px;">
                         <p style="font-size: 11.5px; color: var(--text-secondary); margin: 0; line-height: 1.5; font-style: italic;">
                             “Reserve este instante em silêncio. Não tenha pressa em apenas virar páginas: permita que cada versículo ecoe no seu espírito.”
                         </p>
                     </div>
 
                     <!-- BOTÃO CHECK-IN DIÁRIO -->
-                    <button id="btn-proposito-checkin" class="btn-proposito-checkin" onclick="togglePropositoCheckin()" style="width: 100%; padding: 13px; border-radius: 10px; font-size: 13.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s ease; border: 1px solid var(--accent-rose); background: rgba(232, 165, 152, 0.1); color: #fff;">
+                    <button id="btn-proposito-checkin" class="btn-proposito-checkin" onclick="togglePropositoCheckin()" style="width: 100%; padding: 13px; border-radius: 10px; font-size: 13.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s ease; border: 1px solid var(--accent-rose); background: #FFF1F2; color: #0F172A;">
                         <span id="checkin-checkbox-icon" style="font-size: 16px;">☐</span>
                         <span id="checkin-btn-label">Concluí a leitura de hoje</span>
                     </button>
                 </div>
 
                 <!-- CARD 3: ÁREA DE REFLEXÃO — GUIA PARA ANOTAÇÕES NO CADERNO -->
-                <div class="section-card proposito-card" id="proposito-reflection-card" style="margin-bottom: 16px; border: 1px solid rgba(255, 255, 255, 0.08); padding: 18px 16px;">
+                <div class="section-card proposito-card" id="proposito-reflection-card" style="margin-bottom: 16px; border: 1px solid #E2E8F0; padding: 18px 16px;">
                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
                         <span style="font-size: 18px;">💭</span>
-                        <h3 style="font-size: 15px; font-weight: 700; color: #fff; margin: 0; font-family: var(--font-header);">O que Deus está falando comigo?</h3>
+                        <h3 style="font-size: 15px; font-weight: 700; color: #0F172A; margin: 0; font-family: var(--font-header);">O que Deus está falando comigo?</h3>
                     </div>
 
-                    <p style="font-size: 11.5px; color: var(--text-secondary); line-height: 1.55; margin-bottom: 16px; background: rgba(232, 165, 152, 0.06); padding: 12px 14px; border-radius: 8px; border: 1px solid rgba(232, 165, 152, 0.15);">
+                    <p style="font-size: 11.5px; color: var(--text-secondary); line-height: 1.55; margin-bottom: 16px; background: #FFF1F2; padding: 12px 14px; border-radius: 8px; border: 1px solid #FECDD3;">
                         Pare por alguns minutos e reflita sobre a leitura que acabou de fazer. O que Deus está falando individualmente com você através da Sua Palavra?
                     </p>
 
                     <!-- SEÇÃO: SUAS ANOTAÇÕES -->
-                    <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 16px;">
+                    <div style="border-top: 1px solid #E2E8F0; padding-top: 16px;">
                         <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
                             <span style="font-size: 15px;">✍🏻</span>
                             <h4 style="font-size: 13.5px; font-weight: 700; color: var(--accent-rose); margin: 0;">Suas anotações</h4>
@@ -916,39 +916,39 @@
 
                         <!-- LISTA DE PERGUNTAS PARA REFLEXÃO -->
                         <div class="proposito-questions-list" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px;">
-                            <div style="display: flex; align-items: flex-start; gap: 10px; background: rgba(255, 255, 255, 0.025); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 11px 13px;">
+                            <div style="display: flex; align-items: flex-start; gap: 10px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 11px 13px;">
                                 <span style="font-size: 15px; line-height: 1.2;">📖</span>
                                 <span style="font-size: 12px; color: var(--text-primary); line-height: 1.45; font-weight: 500;">Qual versículo mais chamou minha atenção hoje?</span>
                             </div>
 
-                            <div style="display: flex; align-items: flex-start; gap: 10px; background: rgba(255, 255, 255, 0.025); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 11px 13px;">
+                            <div style="display: flex; align-items: flex-start; gap: 10px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 11px 13px;">
                                 <span style="font-size: 15px; line-height: 1.2;">💭</span>
                                 <span style="font-size: 12px; color: var(--text-primary); line-height: 1.45; font-weight: 500;">O que Deus está me ensinando através dessa Palavra?</span>
                             </div>
 
-                            <div style="display: flex; align-items: flex-start; gap: 10px; background: rgba(255, 255, 255, 0.025); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 11px 13px;">
+                            <div style="display: flex; align-items: flex-start; gap: 10px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 11px 13px;">
                                 <span style="font-size: 15px; line-height: 1.2;">🙏</span>
                                 <span style="font-size: 12px; color: var(--text-primary); line-height: 1.45; font-weight: 500;">Existe algo que preciso entregar a Deus hoje?</span>
                             </div>
 
-                            <div style="display: flex; align-items: flex-start; gap: 10px; background: rgba(255, 255, 255, 0.025); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 11px 13px;">
+                            <div style="display: flex; align-items: flex-start; gap: 10px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 11px 13px;">
                                 <span style="font-size: 15px; line-height: 1.2;">✨</span>
                                 <span style="font-size: 12px; color: var(--text-primary); line-height: 1.45; font-weight: 500;">Existe alguma atitude que Deus está me convidando a tomar?</span>
                             </div>
 
-                            <div style="display: flex; align-items: flex-start; gap: 10px; background: rgba(255, 255, 255, 0.025); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 11px 13px;">
+                            <div style="display: flex; align-items: flex-start; gap: 10px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 11px 13px;">
                                 <span style="font-size: 15px; line-height: 1.2;">🤍</span>
                                 <span style="font-size: 12px; color: var(--text-primary); line-height: 1.45; font-weight: 500;">Como posso colocar essa Palavra em prática hoje?</span>
                             </div>
 
-                            <div style="display: flex; align-items: flex-start; gap: 10px; background: rgba(255, 255, 255, 0.025); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 11px 13px;">
+                            <div style="display: flex; align-items: flex-start; gap: 10px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 11px 13px;">
                                 <span style="font-size: 15px; line-height: 1.2;">🙌</span>
                                 <span style="font-size: 12px; color: var(--text-primary); line-height: 1.45; font-weight: 500;">Pelo que quero orar depois dessa leitura?</span>
                             </div>
                         </div>
 
                         <!-- CHAMADA FINAL -->
-                        <div style="background: rgba(232, 165, 152, 0.08); border-left: 3px solid var(--accent-rose); border-radius: 0 8px 8px 0; padding: 12px 14px; text-align: center;">
+                        <div style="background: #FFF1F2; border-left: 3px solid var(--accent-rose); border-radius: 0 8px 8px 0; padding: 12px 14px; text-align: center;">
                             <p style="font-size: 12px; color: var(--text-primary); margin: 0; font-weight: 600; font-style: italic; line-height: 1.5;">
                                 “Pegue seu caderno e escreva. Esse momento é entre você e Deus. 🤍”
                             </p>
@@ -957,18 +957,18 @@
                 </div>
 
                 <!-- CARD 4: MENSAGEM FINAL (EXIBIDO QUANDO CONCLUIR OS 7 DIAS) -->
-                <div id="proposito-completion-card" class="section-card proposito-card" style="display: none; border: 1px solid rgba(232, 165, 152, 0.35); background: linear-gradient(135deg, rgba(232, 165, 152, 0.15) 0%, rgba(26, 16, 22, 0.85) 100%); text-align: center; padding: 24px 20px; margin-bottom: 24px; border-radius: 14px;">
-                    <div style="width: 52px; height: 52px; border-radius: 50%; background: rgba(232, 165, 152, 0.2); border: 1px solid var(--accent-rose); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto; font-size: 22px;">
+                <div id="proposito-completion-card" class="section-card proposito-card" style="display: none; border: 1px solid #FDA4AF; background: linear-gradient(135deg, #FFF1F2 0%, #FFFFFF 100%); text-align: center; padding: 24px 20px; margin-bottom: 24px; border-radius: 14px;">
+                    <div style="width: 52px; height: 52px; border-radius: 50%; background: #FFF1F2; border: 1px solid var(--accent-rose); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto; font-size: 22px;">
                         🤍
                     </div>
-                    <h3 style="font-size: 20px; font-family: var(--font-header); font-weight: 700; color: #fff; margin-bottom: 10px;">
+                    <h3 style="font-size: 20px; font-family: var(--font-header); font-weight: 700; color: #0F172A; margin-bottom: 10px;">
                         Você concluiu o propósito! 🤍
                     </h3>
                     <p style="font-size: 12.5px; color: var(--text-primary); line-height: 1.65; margin-bottom: 16px; font-style: italic; max-width: 440px; margin-left: auto; margin-right: auto;">
                         “Durante esses 7 dias, você escolheu parar, abrir a Palavra e estar na presença de Deus. Que tudo aquilo que Ele falou ao seu coração continue vivo em você e produza frutos na sua vida.<br><br>
                         E que esse não seja o fim da sua jornada com a Palavra, mas apenas o começo. 🌿”
                     </p>
-                    <div style="background: rgba(18, 12, 15, 0.7); border: 1px dashed var(--accent-rose); border-radius: 10px; padding: 12px 18px; display: inline-block;">
+                    <div style="background: #F8FAFC; border: 1px dashed var(--accent-rose); border-radius: 10px; padding: 12px 18px; display: inline-block;">
                         <span style="font-size: 10.5px; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; display: block; margin-bottom: 3px;">Próximo propósito</span>
                         <strong style="font-size: 14px; color: var(--accent-rose);">Primeira Epístola de João (1 João)</strong>
                     </div>
@@ -1043,7 +1043,7 @@
                     </div>
                     <div id="daily-history-empty" class="empty-state" style="padding: 20px 0; text-align: center;">
                         <div class="empty-icon" style="font-size: 24px; margin-bottom: 8px;">📅</div>
-                        <h4 style="font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px;">Nenhum registro no histórico</h4>
+                        <h4 style="font-size: 13px; font-weight: 600; color: #0F172A; margin-bottom: 4px;">Nenhum registro no histórico</h4>
                         <p style="font-size: 11px; color: var(--text-secondary); margin: 0;">Comece a salvar o seu dia no painel principal.</p>
                     </div>
                 </div>
@@ -1180,36 +1180,36 @@
 
     <!-- MODAL DEDICADO DO EXERCÍCIO / PLAYER DE TREINO FUSE -->
     <div class="modal-backdrop" id="modal-workout-dedicated" style="z-index: 120;">
-        <div class="modal-content bottom-sheet" style="position: relative; max-height: 94vh; height: 94vh; padding: 0; display: flex; flex-direction: column; overflow: hidden; background: #120c10; border-top: 1px solid rgba(232, 165, 152, 0.3);">
+        <div class="modal-content bottom-sheet" style="position: relative; max-height: 94vh; height: 94vh; padding: 0; display: flex; flex-direction: column; overflow: hidden; background: #FFFFFF; border-top: 1px solid #E2E8F0;">
             
             <!-- OVERLAY DO CRONÔMETRO DE DESCANSO (90s / 1m30s) -->
-            <div id="ded-rest-overlay" style="display: none; position: absolute; inset: 0; background: rgba(14, 9, 12, 0.96); backdrop-filter: blur(16px); z-index: 60; flex-direction: column; align-items: center; justify-content: center; padding: 24px; text-align: center;">
-                <div style="width: 52px; height: 52px; border-radius: 50%; background: rgba(232, 165, 152, 0.15); border: 1.5px solid var(--accent-rose); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; color: var(--accent-rose);">
+            <div id="ded-rest-overlay" style="display: none; position: absolute; inset: 0; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(16px); z-index: 60; flex-direction: column; align-items: center; justify-content: center; padding: 24px; text-align: center;">
+                <div style="width: 52px; height: 52px; border-radius: 50%; background: rgba(251, 113, 133, 0.12); border: 1.5px solid var(--accent-rose); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; color: var(--accent-rose);">
                     <i data-lucide="timer" style="width: 26px; height: 26px;"></i>
                 </div>
                 <span style="font-size: 11px; font-weight: 800; color: var(--accent-rose); letter-spacing: 1px; text-transform: uppercase;">Descanso Entre Séries</span>
-                <h3 style="font-size: 15px; color: #fff; margin: 4px 0 16px 0; font-weight: 600;">Respire e hidrate-se 💧</h3>
+                <h3 style="font-size: 15px; color: #111827; margin: 4px 0 16px 0; font-weight: 600;">Respire e hidrate-se 💧</h3>
                 
                 <!-- Contagem regressiva grande -->
-                <div id="ded-rest-timer-display" style="font-size: 54px; font-weight: 800; font-family: var(--font-header); color: #fff; letter-spacing: 1px; line-height: 1; margin-bottom: 8px; text-shadow: 0 0 20px rgba(232, 165, 152, 0.4); transition: color 0.2s ease;">
+                <div id="ded-rest-timer-display" style="font-size: 54px; font-weight: 800; font-family: var(--font-header); color: #111827; letter-spacing: 1px; line-height: 1; margin-bottom: 8px; transition: color 0.2s ease;">
                     01:30
                 </div>
 
                 <!-- Barra de Progresso do Descanso -->
-                <div style="width: 100%; max-width: 220px; height: 5px; background: rgba(255,255,255,0.08); border-radius: 10px; margin-bottom: 12px; overflow: hidden;">
-                    <div id="ded-rest-progress-bar" style="height: 100%; width: 100%; background: linear-gradient(90deg, var(--accent-rose), #9CE3B3); transition: width 0.3s ease; border-radius: 10px;"></div>
+                <div style="width: 100%; max-width: 220px; height: 5px; background: #F1F5F9; border-radius: 10px; margin-bottom: 12px; overflow: hidden;">
+                    <div id="ded-rest-progress-bar" style="height: 100%; width: 100%; background: linear-gradient(90deg, var(--accent-rose), #10B981); transition: width 0.3s ease; border-radius: 10px;"></div>
                 </div>
 
                 <p id="ded-rest-timer-status" style="font-size: 11.5px; color: var(--text-secondary); margin: 0 0 16px 0;">Regra FUSE: 1m30s de descanso para máxima resposta muscular</p>
                 
                 <!-- Botões de ajuste rápido de tempo -->
                 <div style="display: flex; gap: 10px; margin-bottom: 18px;">
-                    <button type="button" onclick="adjustRestTimer(-15)" style="padding: 8px 14px; border-radius: 20px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #fff; font-size: 11.5px; font-weight: 700; cursor: pointer;">-15s</button>
-                    <button type="button" onclick="adjustRestTimer(15)" style="padding: 8px 14px; border-radius: 20px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #fff; font-size: 11.5px; font-weight: 700; cursor: pointer;">+15s</button>
+                    <button type="button" onclick="adjustRestTimer(-15)" style="padding: 8px 14px; border-radius: 20px; background: #F8F9FA; border: 1px solid #E2E8F0; color: #111827; font-size: 11.5px; font-weight: 700; cursor: pointer;">-15s</button>
+                    <button type="button" onclick="adjustRestTimer(15)" style="padding: 8px 14px; border-radius: 20px; background: #F8F9FA; border: 1px solid #E2E8F0; color: #111827; font-size: 11.5px; font-weight: 700; cursor: pointer;">+15s</button>
                 </div>
                 
                 <!-- Botão Pular Descanso -->
-                <button type="button" onclick="stopRestTimer()" style="width: 100%; max-width: 240px; padding: 13px; border-radius: 12px; background: linear-gradient(135deg, var(--accent-rose), #d6877b); color: #120a0e; font-size: 13px; font-weight: 800; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 16px rgba(232, 165, 152, 0.25);">
+                <button type="button" onclick="stopRestTimer()" style="width: 100%; max-width: 240px; padding: 13px; border-radius: 12px; background: var(--accent-rose); color: #FFFFFF; font-size: 13px; font-weight: 800; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 16px rgba(251, 113, 133, 0.3);">
                     <span>PULAR DESCANSO</span>
                     <i data-lucide="chevron-right" style="width: 15px; height: 15px;"></i>
                 </button>
@@ -1224,12 +1224,12 @@
             </div>
 
             <!-- Barra de Cabeçalho do Exercício -->
-            <div style="padding: 14px 18px 12px 18px; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+            <div style="padding: 14px 18px 12px 18px; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
                 <div>
                     <span id="ded-exercise-progress-txt" style="font-size: 10.5px; font-weight: 800; color: var(--accent-rose); letter-spacing: 0.8px; text-transform: uppercase; display: block;">EXERCÍCIO 1 DE 5</span>
-                    <h2 id="ded-exercise-name" style="font-size: 18px; font-weight: 700; color: #fff; margin: 2px 0 0 0; font-family: var(--font-header); line-height: 1.2;">AGACHAMENTO LIVRE COM BARRA</h2>
+                    <h2 id="ded-exercise-name" style="font-size: 18px; font-weight: 700; color: #111827; margin: 2px 0 0 0; font-family: var(--font-header); line-height: 1.2;">AGACHAMENTO LIVRE COM BARRA</h2>
                 </div>
-                <button type="button" onclick="closeDedicatedExercise()" style="width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #fff; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
+                <button type="button" onclick="closeDedicatedExercise()" style="width: 34px; height: 34px; border-radius: 50%; background: #F8F9FA; border: 1px solid #E2E8F0; color: #111827; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
             </div>
 
             <!-- Barra de Progresso Geral do Treino -->
@@ -1260,11 +1260,11 @@
                 </div>
 
                 <!-- 4. REGISTRO DA SÉRIE -->
-                <div class="section-card" style="background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 16px; margin-bottom: 16px;">
+                <div class="section-card" style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 14px; padding: 16px; margin-bottom: 16px; box-shadow: var(--shadow-soft);">
                     
                     <!-- Indicador de Séries -->
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <span id="ded-current-set-label" style="font-size: 13px; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.5px;">SÉRIE 1 DE 4</span>
+                        <span id="ded-current-set-label" style="font-size: 13px; font-weight: 800; color: #111827; text-transform: uppercase; letter-spacing: 0.5px;">SÉRIE 1 DE 4</span>
                         <!-- Bolinhas/indicadores das séries -->
                         <div id="ded-set-indicators" style="display: flex; gap: 6px;">
                             <!-- Inserido via JS -->
@@ -1272,47 +1272,47 @@
                     </div>
 
                     <!-- Badge Regra Geral: Descanso e Progressão de Carga -->
-                    <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(232, 165, 152, 0.08); border: 1px solid rgba(232, 165, 152, 0.2); padding: 8px 12px; border-radius: 10px; margin-bottom: 12px; font-size: 11px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(251, 113, 133, 0.08); border: 1px solid rgba(251, 113, 133, 0.2); padding: 8px 12px; border-radius: 10px; margin-bottom: 12px; font-size: 11px;">
                         <span style="color: var(--accent-rose); font-weight: 700; display: flex; align-items: center; gap: 5px;">
                             <i data-lucide="timer" style="width: 13px; height: 13px;"></i> Descanso: 90s (1m30s)
                         </span>
-                        <span style="color: #fff; font-weight: 600; display: flex; align-items: center; gap: 5px;">
+                        <span style="color: #111827; font-weight: 600; display: flex; align-items: center; gap: 5px;">
                             <i data-lucide="trending-up" style="width: 13px; height: 13px; color: var(--accent-rose);"></i> Progredir carga
                         </span>
                     </div>
 
                     <!-- Linha de Referência Anterior (Semana passada / Último treino) -->
-                    <div id="ded-previous-session-box" style="display: flex; align-items: center; gap: 6px; background: rgba(232, 165, 152, 0.08); border-left: 3px solid var(--accent-rose); padding: 8px 12px; border-radius: 0 8px 8px 0; margin-bottom: 16px;">
+                    <div id="ded-previous-session-box" style="display: flex; align-items: center; gap: 6px; background: rgba(251, 113, 133, 0.08); border-left: 3px solid var(--accent-rose); padding: 8px 12px; border-radius: 0 8px 8px 0; margin-bottom: 16px;">
                         <i data-lucide="history" style="width: 14px; height: 14px; color: var(--accent-rose);"></i>
-                        <span id="ded-previous-session-txt" style="font-size: 11.5px; color: var(--text-primary); font-weight: 600;">Semana passada: 45 kg × 10</span>
+                        <span id="ded-previous-session-txt" style="font-size: 11.5px; color: #111827; font-weight: 600;">Semana passada: 45 kg × 10</span>
                     </div>
 
                     <!-- Controles Grandes de CARGA e REPETIÇÕES -->
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
                         
                         <!-- CONTROLE DE CARGA -->
-                        <div style="background: rgba(18, 12, 16, 0.8); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; text-align: center;">
+                        <div style="background: #F8F9FA; border: 1px solid #E2E8F0; border-radius: 12px; padding: 12px; text-align: center;">
                             <span style="font-size: 10px; font-weight: 800; color: var(--accent-rose); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 8px;">CARGA</span>
                             <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px;">
-                                <button type="button" onclick="adjustWorkoutWeight(-2.5)" style="width: 38px; height: 38px; border-radius: 10px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #fff; font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center;">−</button>
-                                <span id="ded-weight-display" style="font-size: 16px; font-weight: 800; color: #fff; font-family: var(--font-header);">50 KG</span>
-                                <button type="button" onclick="adjustWorkoutWeight(2.5)" style="width: 38px; height: 38px; border-radius: 10px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #fff; font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center;">+</button>
+                                <button type="button" onclick="adjustWorkoutWeight(-2.5)" style="width: 38px; height: 38px; border-radius: 10px; background: #FFFFFF; border: 1px solid #CBD5E1; color: #111827; font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">−</button>
+                                <span id="ded-weight-display" style="font-size: 16px; font-weight: 800; color: #111827; font-family: var(--font-header);">50 KG</span>
+                                <button type="button" onclick="adjustWorkoutWeight(2.5)" style="width: 38px; height: 38px; border-radius: 10px; background: #FFFFFF; border: 1px solid #CBD5E1; color: #111827; font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">+</button>
                             </div>
                         </div>
 
                         <!-- CONTROLE DE REPETIÇÕES -->
-                        <div style="background: rgba(18, 12, 16, 0.8); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; text-align: center;">
+                        <div style="background: #F8F9FA; border: 1px solid #E2E8F0; border-radius: 12px; padding: 12px; text-align: center;">
                             <span style="font-size: 10px; font-weight: 800; color: var(--accent-rose); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 8px;">REPETIÇÕES</span>
                             <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px;">
-                                <button type="button" onclick="adjustWorkoutReps(-1)" style="width: 38px; height: 38px; border-radius: 10px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #fff; font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center;">−</button>
-                                <span id="ded-reps-display" style="font-size: 16px; font-weight: 800; color: #fff; font-family: var(--font-header);">10</span>
-                                <button type="button" onclick="adjustWorkoutReps(1)" style="width: 38px; height: 38px; border-radius: 10px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #fff; font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center;">+</button>
+                                <button type="button" onclick="adjustWorkoutReps(-1)" style="width: 38px; height: 38px; border-radius: 10px; background: #FFFFFF; border: 1px solid #CBD5E1; color: #111827; font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">−</button>
+                                <span id="ded-reps-display" style="font-size: 16px; font-weight: 800; color: #111827; font-family: var(--font-header);">10</span>
+                                <button type="button" onclick="adjustWorkoutReps(1)" style="width: 38px; height: 38px; border-radius: 10px; background: #FFFFFF; border: 1px solid #CBD5E1; color: #111827; font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">+</button>
                             </div>
                         </div>
                     </div>
 
                     <!-- 5. BOTÃO CONCLUIR SÉRIE -->
-                    <button type="button" id="btn-conclude-set" onclick="completeCurrentSet()" style="width: 100%; padding: 14px; border-radius: 12px; font-size: 13.5px; font-weight: 800; border: none; background: linear-gradient(135deg, var(--accent-rose), #d6877b); color: #120a0e; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 16px rgba(232, 165, 152, 0.3);">
+                    <button type="button" id="btn-conclude-set" onclick="completeCurrentSet()" style="width: 100%; padding: 14px; border-radius: 12px; font-size: 13.5px; font-weight: 800; border: none; background: var(--accent-rose); color: #FFFFFF; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 14px rgba(251, 113, 133, 0.35);">
                         <i data-lucide="check" style="width: 16px; height: 16px;"></i>
                         <span id="btn-conclude-set-txt">CONCLUIR SÉRIE</span>
                     </button>
@@ -1341,19 +1341,19 @@
 
     <!-- MODAL CELEBRATIVO DE TREINO CONCLUÍDO -->
     <div class="modal-backdrop" id="modal-workout-completed" style="z-index: 130;">
-        <div class="modal-content text-center" style="background: linear-gradient(135deg, rgba(232, 165, 152, 0.15) 0%, rgba(20, 14, 18, 0.95) 100%); border: 1px solid rgba(232, 165, 152, 0.35); padding: 26px 20px; border-radius: 18px;">
-            <div style="width: 58px; height: 58px; border-radius: 50%; background: rgba(232, 165, 152, 0.2); border: 1px solid var(--accent-rose); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto; font-size: 26px;">
+        <div class="modal-content text-center" style="background: linear-gradient(135deg, #FFF1F2 0%, #FFFFFF 100%); border: 1px solid #FDA4AF; padding: 26px 20px; border-radius: 18px; box-shadow: 0 10px 30px rgba(251, 113, 133, 0.15);">
+            <div style="width: 58px; height: 58px; border-radius: 50%; background: #FFF1F2; border: 1px solid var(--accent-rose); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto; font-size: 26px;">
                 💪🏻
             </div>
-            <h2 class="modal-title" style="font-size: 22px; font-family: var(--font-header); font-weight: 700; color: #fff; margin-bottom: 6px;">Treino Concluído! ✨</h2>
+            <h2 class="modal-title" style="font-size: 22px; font-family: var(--font-header); font-weight: 700; color: #0F172A; margin-bottom: 6px;">Treino Concluído! ✨</h2>
             <p class="modal-text" id="workout-completed-msg" style="font-size: 12.5px; color: var(--text-secondary); margin-bottom: 18px;">Você entregou o seu melhor hoje e garantiu mais um passo na sua constância.</p>
             
             <div class="modal-stats-box" style="margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                <div style="background: rgba(255,255,255,0.04); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06);">
+                <div style="background: #FFFFFF; padding: 10px; border-radius: 10px; border: 1px solid #E2E8F0; box-shadow: 0 1px 4px rgba(0,0,0,0.02);">
                     <span style="font-size: 18px; font-weight: 800; color: var(--accent-rose); display: block;">+50 XP</span>
                     <span style="font-size: 10.5px; color: var(--text-secondary);">Evolução FUSE</span>
                 </div>
-                <div style="background: rgba(255,255,255,0.04); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06);">
+                <div style="background: #FFFFFF; padding: 10px; border-radius: 10px; border: 1px solid #E2E8F0; box-shadow: 0 1px 4px rgba(0,0,0,0.02);">
                     <span id="workout-completed-kcal-val" style="font-size: 18px; font-weight: 800; color: #f97316; display: block;">~240 kcal</span>
                     <span style="font-size: 10.5px; color: var(--text-secondary);">Gasto Estimado</span>
                 </div>
@@ -1658,16 +1658,16 @@
             <div class="card-checkout-box" id="card-payment-box" style="display:none; text-align:left; margin-top:10px;">
                 <div class="input-group" style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px;">
                     <label style="font-size:10px; color: var(--text-secondary); text-transform: uppercase;">Número do Cartão</label>
-                    <input type="text" style="width:100%; padding:8px; border-radius:6px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); color:#fff; font-size: 12px; outline: none;" placeholder="0000 0000 0000 0000" id="pay-card-num">
+                    <input type="text" style="width:100%; padding:8px; border-radius:6px; background:#FAFAFA; border:1px solid #E2E8F0; color:#0F172A; font-size: 12px; outline: none;" placeholder="0000 0000 0000 0000" id="pay-card-num">
                 </div>
                 <div style="display:flex; gap:10px; margin-top:8px;">
                     <div class="input-group" style="flex:1; display: flex; flex-direction: column; gap: 4px;">
                         <label style="font-size:10px; color: var(--text-secondary); text-transform: uppercase;">Validade</label>
-                        <input type="text" style="width:100%; padding:8px; border-radius:6px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); color:#fff; font-size: 12px; outline: none;" placeholder="MM/AA" id="pay-card-exp">
+                        <input type="text" style="width:100%; padding:8px; border-radius:6px; background:#FAFAFA; border:1px solid #E2E8F0; color:#0F172A; font-size: 12px; outline: none;" placeholder="MM/AA" id="pay-card-exp">
                     </div>
                     <div class="input-group" style="flex:1; display: flex; flex-direction: column; gap: 4px;">
                         <label style="font-size:10px; color: var(--text-secondary); text-transform: uppercase;">CVV</label>
-                        <input type="password" style="width:100%; padding:8px; border-radius:6px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); color:#fff; font-size: 12px; outline: none;" placeholder="123" id="pay-card-cvv">
+                        <input type="password" style="width:100%; padding:8px; border-radius:6px; background:#FAFAFA; border:1px solid #E2E8F0; color:#0F172A; font-size: 12px; outline: none;" placeholder="123" id="pay-card-cvv">
                     </div>
                 </div>
             </div>
@@ -1687,10 +1687,10 @@
             <div class="scrollable-sheet-content" style="padding-bottom: 20px; text-align: left;">
                 <!-- Edit Profile Photo -->
                 <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 16px;">
-                    <div style="position: relative; width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--accent-rose); background: #1a0f15; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 0 15px rgba(232, 165, 152, 0.15);">
+                    <div style="position: relative; width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--accent-rose); background: #FFF1F2; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 4px 15px rgba(251, 113, 133, 0.2);">
                         <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=150" id="edit-prof-avatar-preview" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
-                    <label for="edit-prof-avatar-input" style="padding: 6px 14px; background: rgba(232, 165, 152, 0.1); border: 1px solid rgba(232, 165, 152, 0.3); border-radius: 15px; font-size: 11px; font-weight: 600; color: var(--accent-rose); cursor: pointer; display: flex; align-items: center; gap: 4px; transition: background 0.2s;" onmouseover="this.style.background='rgba(232,165,152,0.18)';" onmouseout="this.style.background='rgba(232,165,152,0.1)';">
+                    <label for="edit-prof-avatar-input" style="padding: 6px 14px; background: #FFF1F2; border: 1px solid #FDA4AF; border-radius: 15px; font-size: 11px; font-weight: 600; color: var(--accent-rose); cursor: pointer; display: flex; align-items: center; gap: 4px; transition: background 0.2s;" onmouseover="this.style.background='#FFE4E6';" onmouseout="this.style.background='#FFF1F2';">
                         <i data-lucide="camera" style="width: 12px; height: 12px;"></i> Alterar Foto
                     </label>
                     <input type="file" id="edit-prof-avatar-input" accept="image/*" style="display: none;" onchange="handleEditProfileAvatarUpload(this)">
@@ -1698,34 +1698,34 @@
 
                 <div class="input-group" style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px;">
                     <label style="font-size:10px; color: var(--text-secondary); text-transform: uppercase; font-weight:600;">Nome Completo</label>
-                    <input type="text" style="width:100%; padding:10px; border-radius:8px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); color:#fff; font-size: 13px; outline:none;" id="edit-prof-name">
+                    <input type="text" style="width:100%; padding:10px; border-radius:8px; background:#FAFAFA; border:1px solid #E2E8F0; color:#0F172A; font-size: 13px; outline:none;" id="edit-prof-name">
                 </div>
 
                 <div style="display: flex; gap: 10px; margin-bottom: 12px;">
                     <div class="input-group" style="flex:1; display: flex; flex-direction: column; gap: 4px;">
                         <label style="font-size:10px; color: var(--text-secondary); text-transform: uppercase; font-weight:600;">Idade (anos)</label>
-                        <input type="number" style="width:100%; padding:10px; border-radius:8px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); color:#fff; font-size: 13px; outline:none;" id="edit-prof-age">
+                        <input type="number" style="width:100%; padding:10px; border-radius:8px; background:#FAFAFA; border:1px solid #E2E8F0; color:#0F172A; font-size: 13px; outline:none;" id="edit-prof-age">
                     </div>
                     <div class="input-group" style="flex:1; display: flex; flex-direction: column; gap: 4px;">
                         <label style="font-size:10px; color: var(--text-secondary); text-transform: uppercase; font-weight:600;">Altura (cm)</label>
-                        <input type="number" style="width:100%; padding:10px; border-radius:8px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); color:#fff; font-size: 13px; outline:none;" id="edit-prof-height">
+                        <input type="number" style="width:100%; padding:10px; border-radius:8px; background:#FAFAFA; border:1px solid #E2E8F0; color:#0F172A; font-size: 13px; outline:none;" id="edit-prof-height">
                     </div>
                 </div>
 
                 <div style="display: flex; gap: 10px; margin-bottom: 12px;">
                     <div class="input-group" style="flex:1; display: flex; flex-direction: column; gap: 4px;">
                         <label style="font-size:10px; color: var(--text-secondary); text-transform: uppercase; font-weight:600;">Peso Atual (kg)</label>
-                        <input type="number" step="0.1" style="width:100%; padding:10px; border-radius:8px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); color:#fff; font-size: 13px; outline:none;" id="edit-prof-weight">
+                        <input type="number" step="0.1" style="width:100%; padding:10px; border-radius:8px; background:#FAFAFA; border:1px solid #E2E8F0; color:#0F172A; font-size: 13px; outline:none;" id="edit-prof-weight">
                     </div>
                     <div class="input-group" style="flex:1; display: flex; flex-direction: column; gap: 4px;">
                         <label style="font-size:10px; color: var(--text-secondary); text-transform: uppercase; font-weight:600;">Peso Inicial (kg)</label>
-                        <input type="number" step="0.1" style="width:100%; padding:10px; border-radius:8px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); color:#fff; font-size: 13px; outline:none;" id="edit-prof-init-weight">
+                        <input type="number" step="0.1" style="width:100%; padding:10px; border-radius:8px; background:#FAFAFA; border:1px solid #E2E8F0; color:#0F172A; font-size: 13px; outline:none;" id="edit-prof-init-weight">
                     </div>
                 </div>
 
                 <div class="input-group" style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px;">
                     <label style="font-size:10px; color: var(--text-secondary); text-transform: uppercase; font-weight:600;">Objetivo de Saúde</label>
-                    <select id="edit-prof-goal" style="width:100%; padding:10px; border-radius:8px; background: #1a0f15; border:1px solid rgba(255,255,255,0.08); color:#fff; font-size: 13px; outline:none;">
+                    <select id="edit-prof-goal" style="width:100%; padding:10px; border-radius:8px; background: #FFFFFF; border:1px solid #E2E8F0; color:#0F172A; font-size: 13px; outline:none;">
                         <option value="emagrecer">🔥 Emagrecimento</option>
                         <option value="massa">💪 Ganho de massa muscular</option>
                         <option value="definicao">✨ Definição muscular</option>
@@ -1736,7 +1736,7 @@
 
                 <div class="input-group" style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px;">
                     <label style="font-size:10px; color: var(--text-secondary); text-transform: uppercase; font-weight:600;">Local Preferido de Treino</label>
-                    <select id="edit-prof-place" style="width:100%; padding:10px; border-radius:8px; background: #1a0f15; border:1px solid rgba(255,255,255,0.08); color:#fff; font-size: 13px; outline:none;">
+                    <select id="edit-prof-place" style="width:100%; padding:10px; border-radius:8px; background: #FFFFFF; border:1px solid #E2E8F0; color:#0F172A; font-size: 13px; outline:none;">
                         <option value="casa">Treinar em Casa (Peso Corporal)</option>
                         <option value="academia">Treinar na Academia (Máquinas e Halteres)</option>
                     </select>
@@ -1744,7 +1744,7 @@
                 
                 <div class="input-group" style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px;">
                     <label style="font-size:10px; color: var(--text-secondary); text-transform: uppercase; font-weight:600;">Nível de Treino</label>
-                    <select id="edit-prof-level" style="width:100%; padding:10px; border-radius:8px; background: #1a0f15; border:1px solid rgba(255,255,255,0.08); color:#fff; font-size: 13px; outline:none;">
+                    <select id="edit-prof-level" style="width:100%; padding:10px; border-radius:8px; background: #FFFFFF; border:1px solid #E2E8F0; color:#0F172A; font-size: 13px; outline:none;">
                         <option value="iniciante">Iniciante (Pouca prática)</option>
                         <option value="intermediario">Intermediária (Pratica regularmente)</option>
                         <option value="avancado">Avançada (Experiente e treina pesado)</option>
@@ -1765,13 +1765,13 @@
             <p class="modal-text" id="history-detail-date" style="font-size: 11px; margin-bottom: 16px; color: var(--accent-rose); font-weight: 600;">Data e horário do registro</p>
             
             <div class="scrollable-sheet-content" style="padding-bottom: 20px; text-align: left; overflow-y: auto;">
-                <h3 class="sheet-subheading" style="font-size: 13px; font-weight: 700; margin-bottom: 10px; color: #fff;">📋 Status dos Hábitos</h3>
+                <h3 class="sheet-subheading" style="font-size: 13px; font-weight: 700; margin-bottom: 10px; color: #0F172A;">📋 Status dos Hábitos</h3>
                 <div id="history-detail-tasks" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;">
                     <!-- Lista de hábitos com checkmarks -->
                 </div>
                 
-                <h3 class="sheet-subheading" style="font-size: 13px; font-weight: 700; margin-bottom: 10px; color: #fff;">📝 Observações</h3>
-                <div id="history-detail-obs-box" style="padding: 12px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; font-size: 12.5px; color: #e0e0e0; line-height: 1.5; min-height: 50px; white-space: pre-wrap;">
+                <h3 class="sheet-subheading" style="font-size: 13px; font-weight: 700; margin-bottom: 10px; color: #0F172A;">📝 Observações</h3>
+                <div id="history-detail-obs-box" style="padding: 12px; background: #FAFAFA; border: 1px solid #E2E8F0; border-radius: 8px; font-size: 12.5px; color: #0F172A; line-height: 1.5; min-height: 50px; white-space: pre-wrap;">
                     <!-- Observações -->
                 </div>
             </div>
