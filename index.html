@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20261004b">
+    <link rel="stylesheet" href="style.css?v=20261004c">
 </head>
 <body>
 
@@ -264,7 +264,7 @@
 
                 <!-- Step 8: Foto de Perfil -->
                 <div class="step-panel" id="step-panel-8">
-                    <p class="step-desc">Adicione uma foto para personalizar o seu perfil e as postagens na comunidade.</p>
+                    <p class="step-desc">Adicione uma foto para personalizar o seu perfil.</p>
                     <div style="display: flex; flex-direction: column; align-items: center; gap: 16px; margin-top: 10px;">
                         <!-- Avatar Preview Frame -->
                         <div style="position: relative; width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--accent-rose); overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(232,165,152,0.3);">
@@ -314,7 +314,7 @@
                 <h1 class="greeting-title" id="user-display-name">Amanda Fernandes</h1>
             </div>
             <div class="header-action-group">
-                <div class="notification-bell" onclick="alert('Novidades da Comunidade: Participe da jornada do Propósito 7 Dias do Evangelho de João!')">
+                <div class="notification-bell" onclick="alert('Novidades FUSE: Participe da jornada do Propósito 7 Dias do Evangelho de João!')">
                     <i data-lucide="bell"></i>
                     <span class="bell-dot"></span>
                 </div>
@@ -778,59 +778,6 @@
                 </div>
             </section>
 
-            <!-- TAB 4: COMUNIDADE (CÍRCULO) -->
-            <section id="tab-community" class="app-tab-panel">
-                <div class="tab-header-section">
-                    <h2 class="tab-heading">Círculo FUSE</h2>
-                    <p class="tab-subheading">Compartilhe sua evolução e celebre as conquistas das outras membras.</p>
-                </div>
-
-                <!-- Write Post Box -->
-                <div class="write-post-card">
-                    <div class="write-header">
-                        <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=150" alt="Avatar Amanda" class="post-user-avatar" id="write-post-avatar">
-                        <input type="text" placeholder="Compartilhe seu ritual de hoje ou conquista..." id="post-input">
-                    </div>
-                    <!-- Image Preview Container -->
-                    <div id="post-image-preview-container" style="display:none; width: 100%; margin-top: 10px; border-radius: 8px; overflow: hidden; position: relative;">
-                        <img id="post-image-preview" src="" style="width: 100%; max-height: 180px; object-fit: cover; border-radius: 8px;">
-                        <button onclick="removePostImagePreview()" style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.6); border: none; border-radius: 50%; width: 26px; height: 26px; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">✕</button>
-                    </div>
-                    <div class="write-actions">
-                        <button class="btn-photo-upload" onclick="document.getElementById('post-image-file').click()">
-                            <i data-lucide="image"></i> Adicionar Foto
-                        </button>
-                        <input type="file" id="post-image-file" style="display:none;" accept="image/*" onchange="previewPostImage(this)">
-                        <button class="btn-publish-post" onclick="createNewPost()">Publicar</button>
-                    </div>
-                </div>
-
-                <!-- Community Feed -->
-                <div class="community-feed-list" id="feed-container">
-                    <!-- Post 1 -->
-                    <div class="community-post-card">
-                        <div class="post-header">
-                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150" alt="Avatar Camila" class="post-user-avatar">
-                            <div>
-                                <span class="post-user-name">Camila Silva</span>
-                                <div class="post-badge-group">
-                                    <span class="user-level-badge">Nível 10</span>
-                                    <span class="post-time">• Há 15 min</span>
-                                </div>
-                            </div>
-                        </div>
-                        <p class="post-content">"Mais um dia pago! Confesso que estava com preguiça, mas completei os 15 min de alongamento e já me sinto outra! Vamos meninas! 💪💖"</p>
-                        <div class="post-actions">
-                            <button class="btn-like" onclick="likePostMock(this)">
-                                <i data-lucide="heart"></i> <span class="like-count">24</span> apoios
-                            </button>
-                            <button class="btn-comment" onclick="alert('Comentários na comunidade liberados no aplicativo final.')">
-                                <i data-lucide="message-circle"></i> Comentar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
             <!-- TAB: PROPÓSITO 7 DIAS — EVANGELHO DE JOÃO -->
             <section id="tab-challenge" class="app-tab-panel">
@@ -1138,10 +1085,7 @@
                 <i data-lucide="apple"></i>
                 <span>Nutrir</span>
             </button>
-            <button class="nav-tab-btn" id="btn-tab-community" onclick="switchTab('community')">
-                <i data-lucide="users"></i>
-                <span>Círculo</span>
-            </button>
+
             <button class="nav-tab-btn" id="btn-tab-challenge" onclick="switchTab('challenge')">
                 <i data-lucide="book-open"></i>
                 <span>Propósito</span>
@@ -1514,41 +1458,6 @@
         </div>
     </div>
 
-    <!-- Modal 2C: Denúncia de Publicação (BottomSheet) -->
-    <div class="modal-backdrop" id="modal-report-post" style="z-index: 120;">
-        <div class="modal-content bottom-sheet" style="max-height: 80%;">
-            <div class="drag-handle"></div>
-            <h2 class="modal-title" style="font-size: 18px; margin-bottom: 4px;">Denunciar Publicação</h2>
-            <p class="modal-text" style="font-size: 11px; margin-bottom: 16px;">Ajude a manter a comunidade FUSE segura e motivadora.</p>
-            
-            <div class="scrollable-sheet-content" style="padding-bottom: 20px; text-align: left;">
-                <input type="hidden" id="report-target-post-id">
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <div class="report-reason-option" onclick="selectReportReason('Não é uma foto de treino', this)" style="padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.01); cursor: pointer; font-size: 13px; color: var(--text-primary);">
-                        🏋️‍♂️ Não é uma foto de treino / fora do contexto
-                    </div>
-                    <div class="report-reason-option" onclick="selectReportReason('Conteúdo impróprio', this)" style="padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.01); cursor: pointer; font-size: 13px; color: var(--text-primary);">
-                        🚫 Conteúdo impróprio ou inadequado
-                    </div>
-                    <div class="report-reason-option" onclick="selectReportReason('Spam', this)" style="padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.01); cursor: pointer; font-size: 13px; color: var(--text-primary);">
-                        ⚠️ Spam, propagandas ou mensagens repetitivas
-                    </div>
-                    <div class="report-reason-option" onclick="selectReportReason('Conteúdo ofensivo', this)" style="padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.01); cursor: pointer; font-size: 13px; color: var(--text-primary);">
-                        🤬 Conteúdo ofensivo, bullying ou discurso de ódio
-                    </div>
-                    <div class="report-reason-option" onclick="selectReportReason('Outro', this)" style="padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.01); cursor: pointer; font-size: 13px; color: var(--text-primary);">
-                        Outros motivos
-                    </div>
-                </div>
-            </div>
-            
-            <div style="display: flex; gap: 10px; margin-top: 16px;">
-                <button class="btn-modal-start" style="flex: 1;" onclick="submitReportPost(false)">Denunciar (+1)</button>
-                <button class="btn-modal-start" style="flex: 1; background: var(--accent-rose); border-color: var(--accent-rose);" onclick="submitReportPost(true)">Testar Remoção (+10)</button>
-            </div>
-            <button class="btn-modal-cancel" onclick="closeModal('modal-report-post')" style="width: 100%; margin-top: 8px;">Cancelar</button>
-        </div>
-    </div>
 
     <!-- Modal 5B: Checkout de Assinatura do Aplicativo (Após Registro) -->
     <div class="modal-backdrop" id="modal-subscription-checkout" style="z-index: 130;">
@@ -1782,6 +1691,6 @@
 
     <!-- Lucide Icons CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="app.js?v=20261004b"></script>
+    <script src="app.js?v=20261004c"></script>
 </body>
 </html>

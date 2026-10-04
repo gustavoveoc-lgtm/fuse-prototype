@@ -629,7 +629,6 @@ function restoreSession() {
     populateNutritionMealsUI();
     updateShoppingListLiveUI();
     renderPropositoUI();
-    renderCommunityFeed();
     renderWeeklyTracker();
 
     // Mostra o container principal
@@ -1088,9 +1087,6 @@ function switchTab(tabId) {
     
     document.querySelector(".app-main-content").scrollTop = 0;
     
-    if (tabId === "community") {
-        renderCommunityFeed();
-    }
     if (tabId === "challenge") {
         renderPropositoUI();
     }
