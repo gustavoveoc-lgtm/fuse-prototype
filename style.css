@@ -38,28 +38,50 @@
 
 body {
     background-color: #0B0609;
+    background-image: 
+        radial-gradient(circle at 50% 12%, rgba(232, 165, 152, 0.08) 0%, rgba(18, 10, 14, 0) 55%),
+        radial-gradient(circle at 85% 85%, rgba(208, 179, 225, 0.06) 0%, rgba(18, 10, 14, 0) 45%),
+        radial-gradient(circle at 15% 80%, rgba(229, 195, 140, 0.04) 0%, rgba(18, 10, 14, 0) 40%);
+    background-attachment: fixed;
     color: var(--text-primary);
     font-family: var(--font-body);
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    min-height: 100dvh;
     overflow-x: hidden;
 }
 
-/* Simulação de Celular (iPhone Frame) */
+/* Simulação de Celular (iPhone Frame no Desktop) */
 .device-container {
     width: 100%;
-    max-width: 412px;
-    height: 840px;
+    max-width: 414px;
+    height: 844px;
     background: linear-gradient(135deg, var(--bg-primary) 0%, #1A0D14 100%);
-    border: 8px solid #2B1D24;
-    border-radius: 40px;
-    box-shadow: 0 25px 60px rgba(0,0,0,0.8);
+    border: 9px solid #2B1D24;
+    border-radius: 44px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.85), 0 0 40px rgba(232, 165, 152, 0.06);
     position: relative;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+}
+
+/* Dynamic Island Indicator no Desktop */
+.device-container::before {
+    content: '';
+    position: absolute;
+    top: 11px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 96px;
+    height: 22px;
+    background: #000000;
+    border-radius: 20px;
+    z-index: 999;
+    pointer-events: none;
+    box-shadow: 0 0 2px rgba(255, 255, 255, 0.08);
 }
 
 /* Custom Scrollbar */
@@ -720,10 +742,13 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid rgba(247, 239, 242, 0.05);
-    background: rgba(18, 10, 14, 0.85);
-    backdrop-filter: blur(10px);
-    z-index: 10;
+    border-bottom: 1px solid rgba(247, 239, 242, 0.08);
+    background: rgba(18, 10, 14, 0.78);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    position: sticky;
+    top: 0;
+    z-index: 30;
 }
 
 .greeting-subtitle {
@@ -1923,14 +1948,16 @@ body {
     left: 0;
     width: 100%;
     height: 70px;
-    background: rgba(18, 10, 14, 0.95);
-    backdrop-filter: blur(15px);
-    border-top: 1px solid rgba(247, 239, 242, 0.06);
+    background: rgba(18, 10, 14, 0.82);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border-top: 1px solid rgba(247, 239, 242, 0.08);
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.45);
     display: flex;
     justify-content: space-around;
     align-items: center;
-    padding-bottom: env(safe-area-inset-bottom);
-    z-index: 10;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    z-index: 50;
 }
 
 .nav-tab-btn {
@@ -1945,7 +1972,11 @@ body {
     flex: 1;
     height: 100%;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: transform 0.15s cubic-bezier(0.2, 0, 0, 1), color 0.2s ease;
+}
+
+.nav-tab-btn:active {
+    transform: scale(0.92);
 }
 
 .nav-tab-btn i {
@@ -2490,22 +2521,64 @@ body {
     opacity: 0.6;
 }
 
-/* RESPONSIVIDADE DE TELA CHEIA PARA DISPOSITIVOS MÓVEIS REAIS */
-@media (max-width: 500px) {
+/* RESPONSIVIDADE DE TELA CHEIA E SAFE AREA PARA DISPOSITIVOS MÓVEIS REAIS */
+@media (max-width: 600px) {
     body {
         align-items: flex-start;
         min-height: 100vh;
-        background-color: #0B0609;
+        min-height: 100dvh;
+        background-color: var(--bg-primary);
+        background-image: none;
         padding: 0;
+        margin: 0;
+        overflow-x: hidden;
     }
     
-    .device-container, .auth-container, .onboarding-container {
+    .device-container {
         max-width: 100%;
-        width: 100vw;
+        width: 100%;
+        min-height: 100vh;
+        min-height: 100dvh;
         height: 100vh;
+        height: 100dvh;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+    }
+
+    .device-container::before {
+        display: none !important;
+    }
+    
+    .auth-container, .onboarding-container, .splash-container {
+        max-width: 100%;
+        width: 100%;
+        min-height: 100vh;
+        min-height: 100dvh;
+        height: 100vh;
+        height: 100dvh;
         border: none;
         border-radius: 0;
         box-shadow: none;
+    }
+    
+    .app-header {
+        padding-top: max(18px, env(safe-area-inset-top));
+        padding-left: max(16px, env(safe-area-inset-left));
+        padding-right: max(16px, env(safe-area-inset-right));
+    }
+
+    .app-main-content {
+        padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+        padding-left: max(16px, env(safe-area-inset-left));
+        padding-right: max(16px, env(safe-area-inset-right));
+    }
+
+    .app-nav-bar {
+        height: calc(66px + env(safe-area-inset-bottom, 0px));
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        padding-left: max(10px, env(safe-area-inset-left));
+        padding-right: max(10px, env(safe-area-inset-right));
     }
     
     .onboarding-card {
@@ -2513,14 +2586,18 @@ body {
         border-radius: 0;
         border: none;
         background: transparent;
-        padding: 16px;
+        padding: max(16px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom, 0px)) 16px;
     }
 
     .auth-card {
         border-radius: 0;
         border: none;
         background: transparent;
-        padding: 16px;
+        padding: max(24px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom, 0px)) 16px;
+    }
+
+    .modal-content, .bottom-sheet {
+        padding-bottom: max(24px, calc(16px + env(safe-area-inset-bottom, 0px)));
     }
 }
 
