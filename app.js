@@ -5183,18 +5183,43 @@ function updateCycleHomeCard() {
     ensureCycleState();
     const status = getCycleStatus();
     
+    // Atualiza Card da Home se existir
     const badgeEl = document.getElementById("cycle-home-badge");
     const descEl = document.getElementById("cycle-home-desc");
-    
     if (badgeEl) {
         badgeEl.innerText = status.phaseName;
     }
     if (descEl) {
         descEl.innerText = `Dia ${status.cycleDay} do ciclo • ${status.phaseIcon} ${status.phaseName}`;
     }
+
+    // Atualiza Botão Flutuante (FAB) no canto inferior direito
+    const fabBadgeEl = document.getElementById("cycle-fab-badge");
+    const fabTooltipTextEl = document.getElementById("cycle-fab-tooltip-text");
+    
+    if (fabBadgeEl) {
+        if (status.isPeriodToday) {
+            fabBadgeEl.innerText = "🩸";
+            fabBadgeEl.style.background = "#E11D48";
+        } else {
+            fabBadgeEl.innerText = `D${status.cycleDay}`;
+            fabBadgeEl.style.background = "#0F172A";
+        }
+    }
+    
+    if (fabTooltipTextEl) {
+        if (status.isPeriodToday) {
+            fabTooltipTextEl.innerText = "Menstruação 🩸";
+        } else {
+            fabTooltipTextEl.innerText = `${status.phaseName} • Dia ${status.cycleDay}`;
+        }
+    }
 }
 
 function openCycleModal() {
+    if (navigator.vibrate) {
+        try { navigator.vibrate(25); } catch(e) {}
+    }
     renderCycleUI();
     openModal("modal-cycle-tracker");
 }

@@ -3242,3 +3242,138 @@ body {
     opacity: 0;
     pointer-events: none;
 }
+
+/* ==========================================
+   FLOATING ACTION BUTTON (FAB) - CICLO MENSTRUAL
+   ========================================== */
+.cycle-fab-wrapper {
+    position: absolute;
+    right: 16px;
+    bottom: 84px;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    pointer-events: none;
+}
+
+/* Balãozinho / Tooltip estilo WhatsApp da referência */
+.cycle-fab-tooltip {
+    pointer-events: auto;
+    background: #FFFFFF;
+    border: 1px solid #FDA4AF;
+    color: #0F172A;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 7px 12px;
+    border-radius: 20px;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08), 0 2px 8px rgba(251, 113, 133, 0.12);
+    position: relative;
+    cursor: pointer;
+    white-space: nowrap;
+    animation: fabTooltipFloat 3s ease-in-out infinite alternate;
+    transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+    user-select: none;
+}
+
+.cycle-fab-tooltip:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent-rose);
+    box-shadow: 0 6px 20px rgba(251, 113, 133, 0.2);
+}
+
+.cycle-fab-tooltip:active {
+    transform: scale(0.96);
+}
+
+/* Seta / Triângulo do balãozinho apontando para o botão redondo */
+.cycle-fab-tooltip-arrow {
+    position: absolute;
+    top: 50%;
+    right: -6px;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 6px solid #FFFFFF;
+}
+
+/* Botão Redondo Flutuante */
+.cycle-fab-btn {
+    pointer-events: auto;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FB7185 0%, #F43F5E 100%);
+    border: 2px solid #FFFFFF;
+    box-shadow: 0 6px 20px rgba(251, 113, 133, 0.45), 0 2px 6px rgba(0, 0, 0, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    padding: 0;
+    outline: none;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+    flex-shrink: 0;
+    user-select: none;
+}
+
+.cycle-fab-btn:hover {
+    transform: scale(1.08) translateY(-2px);
+    box-shadow: 0 8px 25px rgba(251, 113, 133, 0.55), 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cycle-fab-btn:active {
+    transform: scale(0.92);
+}
+
+.cycle-fab-icon {
+    width: 24px;
+    height: 24px;
+    display: block;
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.15));
+    transition: transform 0.2s ease;
+}
+
+.cycle-fab-btn:hover .cycle-fab-icon {
+    transform: scale(1.08);
+}
+
+/* Badge de Notificação / Dia no topo direito do botão */
+.cycle-fab-badge {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    background: #0F172A;
+    color: #FFFFFF;
+    border: 2px solid #FFFFFF;
+    border-radius: 12px;
+    font-size: 9.5px;
+    font-weight: 800;
+    padding: 1px 5px;
+    min-width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    letter-spacing: -0.2px;
+}
+
+@keyframes fabTooltipFloat {
+    0% {
+        transform: translateY(0px);
+    }
+    100% {
+        transform: translateY(-3px);
+    }
+}
+
+@media (max-width: 600px) {
+    .cycle-fab-wrapper {
+        bottom: calc(76px + env(safe-area-inset-bottom, 0px) + 8px);
+        right: 14px;
+    }
+}
