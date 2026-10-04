@@ -3275,3 +3275,45 @@ body {
     background: rgba(255, 255, 255, 0.05);
     color: rgba(255, 255, 255, 0.2);
 }
+
+/* 6. WATER TRACKER INTERATIVO & REST TIMER FX */
+.btn-water-action:active {
+    transform: scale(0.93);
+}
+
+.water-bottle-visual {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.water-bottle-visual.filled {
+    border-color: #9CE3B3 !important;
+    box-shadow: 0 0 16px rgba(156, 227, 179, 0.35) !important;
+}
+
+.water-wave-anim {
+    position: absolute;
+    top: -4px;
+    left: -20px;
+    right: -20px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 40%;
+    animation: waterWaveSweep 3s infinite linear;
+}
+
+@keyframes waterWaveSweep {
+    0% { transform: translateX(0) rotate(0deg); }
+    50% { transform: translateX(6px) rotate(180deg); }
+    100% { transform: translateX(0) rotate(360deg); }
+}
+
+@keyframes timerPulseEnd {
+    0% { transform: scale(1); text-shadow: 0 0 20px rgba(156, 227, 179, 0.6); }
+    50% { transform: scale(1.08); text-shadow: 0 0 35px rgba(156, 227, 179, 0.9); }
+    100% { transform: scale(1); text-shadow: 0 0 20px rgba(156, 227, 179, 0.6); }
+}
+
+.timer-finished-fx {
+    color: #9CE3B3 !important;
+    animation: timerPulseEnd 1s infinite ease-in-out;
+}

@@ -177,7 +177,12 @@ const defaultState = {
     // Treinos Redesenhados FUSE
     workoutSelectedDay: (new Date().getDay() + 6) % 7,
     exerciseStats: {},
-    workoutSessionProgress: {}
+    workoutSessionProgress: {},
+
+    // Hidratação Consciente FUSE
+    waterIntake: 0,
+    waterTarget: 2200,
+    waterDate: ""
 };
 
 // Banco de Dados de Usuárias Cadastradas (Simula banco de dados na nuvem)
@@ -634,6 +639,7 @@ function restoreSession() {
     
     populateDudaWelcomeMessage();
     updateProgressUI();
+    updateWaterUI();
 
     // Restaura observações do dia atual se existirem
     const obsTextarea = document.getElementById("daily-observations");
@@ -1146,6 +1152,113 @@ function updateProgressUI() {
     
     // Salva o estado de forma persistente
     saveStateToStorage();
+}
+
+// ==========================================
+// RASTREADOR DE HIDRATAÇÃO CONSCIENTE (FUSE WATER TRACKER)
+// ==========================================
+function getDailyWaterTarget() {
+    const weight = parseFloat(userState.weight) || 62.5;
+    return Math.round((weight * 35) / 50) * 50;
+}
+
+function checkWaterDailyReset() {
+    const today = getTodayStr();
+    if (!userState.waterDate || userState.waterDate !== today) {
+        userState.waterDate = today;
+        userState.waterIntake = 0;
+        userState.waterTarget = getDailyWaterTarget();
+        saveStateToStorage();
+    }
+}
+
+function addWaterIntake(amount) {
+    checkWaterDailyReset();
+    const target = userState.waterTarget || getDailyWaterTarget();
+    userState.waterTarget = target;
+    
+    const previousIntake = userState.waterIntake || 0;
+    const newIntake = Math.max(0, previousIntake + amount);
+    userState.waterIntake = newIntake;
+    
+    if (amount > 0) {
+        playWaterSound();
+        triggerHaptic([40]);
+    } else {
+        triggerHaptic([20]);
+    }
+    
+    // Se atingiu ou ultrapassou a meta pela primeira vez no dia
+    if (newIntake >= target && previousIntake < target) {
+        // Marca o hábito "Bebi água" (índice 2) se ainda não estava marcado
+        if (!userState.habitsCompleted[2]) {
+            userState.habitsCompleted[2] = true;
+            addXP(10);
+            updateProgressUI();
+        }
+        playRestCompletedChime();
+        triggerHaptic([120, 60, 200]);
+    } else if (newIntake < target && previousIntake >= target) {
+        // Se desfez para baixo da meta
+        if (userState.habitsCompleted[2]) {
+            userState.habitsCompleted[2] = false;
+            addXP(-10);
+            updateProgressUI();
+        }
+    }
+    
+    updateWaterUI();
+    saveStateToStorage();
+}
+
+function updateWaterUI() {
+    checkWaterDailyReset();
+    const target = userState.waterTarget || getDailyWaterTarget();
+    userState.waterTarget = target;
+    const current = userState.waterIntake || 0;
+    const pct = Math.min(100, Math.round((current / target) * 100));
+    
+    const currentEl = document.getElementById("water-current-amount");
+    if (currentEl) currentEl.innerText = current.toLocaleString('pt-BR');
+    
+    const targetEl = document.getElementById("water-target-amount");
+    if (targetEl) targetEl.innerText = target.toLocaleString('pt-BR');
+    
+    const targetDescEl = document.getElementById("water-target-desc");
+    if (targetDescEl) targetDescEl.innerText = `Meta calculada: ${target.toLocaleString('pt-BR')} ml / dia (${Math.round(userState.weight || 62)} kg × 35ml)`;
+    
+    const badgeEl = document.getElementById("water-percent-badge");
+    if (badgeEl) badgeEl.innerText = `${pct}%`;
+    
+    const fillEl = document.getElementById("water-bottle-fill");
+    if (fillEl) fillEl.style.height = `${pct}%`;
+    
+    const bottleLabel = document.getElementById("water-bottle-label");
+    if (bottleLabel) bottleLabel.innerText = `${pct}%`;
+    
+    const bottleVisual = document.querySelector(".water-bottle-visual");
+    if (bottleVisual) {
+        if (pct >= 100) {
+            bottleVisual.classList.add("filled");
+        } else {
+            bottleVisual.classList.remove("filled");
+        }
+    }
+    
+    const msgEl = document.getElementById("water-status-message");
+    if (msgEl) {
+        if (pct === 0) {
+            msgEl.innerText = "Comece com 1 copo d'água ao acordar para ativar o corpo e a mente.";
+        } else if (pct < 35) {
+            msgEl.innerText = "Bom começo! Mantenha uma garrafa por perto para manter o ritmo.";
+        } else if (pct < 70) {
+            msgEl.innerText = "Quase na metade! Sua pele, disposição e digestão agradecem.";
+        } else if (pct < 100) {
+            msgEl.innerText = `Faltam apenas ${target - current} ml para cumprir sua meta diária!`;
+        } else {
+            msgEl.innerText = "🎉 Meta batida com perfeição! Corpo nutrido e hidratado.";
+        }
+    }
 }
 
 function addXP(amount) {
@@ -2198,16 +2311,141 @@ function toggleExecutionGuide() {
     }
 }
 
+// ==========================================
+// FUSE AUDIO & HAPTIC SYNTHESIZER (WEB AUDIO API)
+// ==========================================
+let fuseAudioCtx = null;
+let timerSoundEnabled = true;
+
+function getAudioContext() {
+    if (!fuseAudioCtx) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtx) fuseAudioCtx = new AudioCtx();
+    }
+    if (fuseAudioCtx && fuseAudioCtx.state === 'suspended') {
+        fuseAudioCtx.resume();
+    }
+    return fuseAudioCtx;
+}
+
+function triggerHaptic(pattern = [50]) {
+    if (window.navigator && window.navigator.vibrate) {
+        try {
+            window.navigator.vibrate(pattern);
+        } catch (e) {}
+    }
+}
+
+// Som suave de gota d'água para o Water Tracker
+function playWaterSound() {
+    if (!timerSoundEnabled) return;
+    try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(450, now);
+        osc.frequency.exponentialRampToValueAtTime(1150, now + 0.08);
+        
+        gain.gain.setValueAtTime(0.22, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+        
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.13);
+    } catch (e) {
+        console.warn("Audio fx error:", e);
+    }
+}
+
+// Beep suave de contagem regressiva para 3s, 2s, 1s
+function playRestBeep(frequency = 600) {
+    if (!timerSoundEnabled) return;
+    try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(frequency, now);
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.09);
+    } catch (e) {
+        console.warn("Audio fx error:", e);
+    }
+}
+
+// Chime harmônico de conclusão (acorde D maior)
+function playRestCompletedChime() {
+    if (!timerSoundEnabled) return;
+    try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        const notes = [587.33, 739.99, 880.00]; // D5, F#5, A5
+        notes.forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+            gain.gain.setValueAtTime(0.2, now + idx * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.45);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now + idx * 0.08);
+            osc.stop(now + idx * 0.08 + 0.5);
+        });
+    } catch (e) {
+        console.warn("Audio fx error:", e);
+    }
+}
+
+function toggleTimerSound() {
+    timerSoundEnabled = !timerSoundEnabled;
+    const txt = document.getElementById("txt-timer-sound");
+    const icon = document.getElementById("icon-timer-sound");
+    if (txt) {
+        txt.innerText = timerSoundEnabled ? "Sons & Vibração ativos" : "Silenciado";
+    }
+    if (icon) {
+        icon.setAttribute("data-lucide", timerSoundEnabled ? "volume-2" : "volume-x");
+        if (window.lucide && lucide.createIcons) lucide.createIcons();
+    }
+    if (timerSoundEnabled) {
+        playRestBeep(650);
+        triggerHaptic([40]);
+    }
+}
+
 let workoutRestInterval = null;
 let workoutRestSecondsRemaining = 90;
+let workoutRestTotalSeconds = 90;
 
 function startRestTimer(seconds = 90) {
     if (workoutRestInterval) clearInterval(workoutRestInterval);
     workoutRestSecondsRemaining = seconds;
+    workoutRestTotalSeconds = Math.max(1, seconds);
     
     const overlay = document.getElementById("ded-rest-overlay");
     if (!overlay) return;
     
+    const timerDisplay = document.getElementById("ded-rest-timer-display");
+    if (timerDisplay) {
+        timerDisplay.classList.remove("timer-finished-fx");
+    }
+    const statusTxt = document.getElementById("ded-rest-timer-status");
+    if (statusTxt) {
+        statusTxt.innerText = "Regra FUSE: 1m30s de descanso para máxima resposta muscular";
+    }
+
     updateRestTimerDisplay();
     overlay.style.display = "flex";
     if (window.lucide && lucide.createIcons) lucide.createIcons();
@@ -2215,24 +2453,65 @@ function startRestTimer(seconds = 90) {
     workoutRestInterval = setInterval(() => {
         workoutRestSecondsRemaining--;
         if (workoutRestSecondsRemaining <= 0) {
-            stopRestTimer();
+            handleRestTimerFinished();
         } else {
+            if (workoutRestSecondsRemaining <= 3) {
+                playRestBeep(workoutRestSecondsRemaining === 1 ? 750 : 600);
+                triggerHaptic([35]);
+            }
             updateRestTimerDisplay();
         }
     }, 1000);
 }
 
+function handleRestTimerFinished() {
+    if (workoutRestInterval) {
+        clearInterval(workoutRestInterval);
+        workoutRestInterval = null;
+    }
+    workoutRestSecondsRemaining = 0;
+    updateRestTimerDisplay();
+    
+    const timerDisplay = document.getElementById("ded-rest-timer-display");
+    if (timerDisplay) {
+        timerDisplay.classList.add("timer-finished-fx");
+    }
+    const statusTxt = document.getElementById("ded-rest-timer-status");
+    if (statusTxt) {
+        statusTxt.innerText = "✨ Descanso concluído! Pronta para a próxima série!";
+    }
+    
+    playRestCompletedChime();
+    triggerHaptic([150, 80, 250]);
+    
+    setTimeout(() => {
+        const overlay = document.getElementById("ded-rest-overlay");
+        if (overlay && overlay.style.display === "flex" && workoutRestSecondsRemaining === 0) {
+            stopRestTimer();
+        }
+    }, 2800);
+}
+
 function updateRestTimerDisplay() {
     const timerDisplay = document.getElementById("ded-rest-timer-display");
-    if (!timerDisplay) return;
-    const mins = Math.floor(workoutRestSecondsRemaining / 60);
-    const secs = workoutRestSecondsRemaining % 60;
-    timerDisplay.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    if (timerDisplay) {
+        const mins = Math.floor(workoutRestSecondsRemaining / 60);
+        const secs = workoutRestSecondsRemaining % 60;
+        timerDisplay.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    
+    const progressBar = document.getElementById("ded-rest-progress-bar");
+    if (progressBar) {
+        const pct = Math.max(0, Math.min(100, (workoutRestSecondsRemaining / workoutRestTotalSeconds) * 100));
+        progressBar.style.width = `${pct}%`;
+    }
 }
 
 function adjustRestTimer(delta) {
     workoutRestSecondsRemaining = Math.max(0, workoutRestSecondsRemaining + delta);
+    workoutRestTotalSeconds = Math.max(workoutRestTotalSeconds, workoutRestSecondsRemaining);
     updateRestTimerDisplay();
+    triggerHaptic([25]);
 }
 
 function stopRestTimer() {
@@ -2242,6 +2521,10 @@ function stopRestTimer() {
     }
     const overlay = document.getElementById("ded-rest-overlay");
     if (overlay) overlay.style.display = "none";
+    const timerDisplay = document.getElementById("ded-rest-timer-display");
+    if (timerDisplay) {
+        timerDisplay.classList.remove("timer-finished-fx");
+    }
 }
 
 function completeCurrentSet() {
