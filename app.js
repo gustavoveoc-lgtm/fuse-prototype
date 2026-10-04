@@ -1097,6 +1097,9 @@ function switchTab(tabId) {
     
     document.querySelector(".app-main-content").scrollTop = 0;
     
+    if (tabId === "home") {
+        updateCycleHomeCard();
+    }
     if (tabId === "nutrition") {
         updateNutritionFilterChipsUI();
         updateNutritionMindfulTracker();
