@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20261004d">
+    <link rel="stylesheet" href="style.css?v=20261004e">
 </head>
 <body>
 
@@ -475,6 +475,26 @@
                         <button type="button" class="btn-water-action" onclick="addWaterIntake(-250)" title="Desfazer 250ml" style="width: 38px; border-radius: 12px; background: #F1F5F9; border: 1px solid #E2E8F0; color: var(--text-secondary); font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s ease;">
                             ↺
                         </button>
+                    </div>
+                </div>
+
+                <!-- Card Solto: Acompanhamento do Ciclo Menstrual -->
+                <div class="section-card cycle-tracker-card" onclick="openCycleModal()" style="margin-top: 14px; margin-bottom: 6px; padding: 14px 16px; background: linear-gradient(135deg, #FFF1F2 0%, #FFFFFF 100%); border: 1px solid #FDA4AF; border-radius: var(--radius-lg); cursor: pointer; transition: all 0.25s ease; box-shadow: 0 2px 10px rgba(251, 113, 133, 0.05); display: flex; align-items: center; justify-content: space-between;" onmouseover="this.style.transform='translateY(-2px)'; this.style.borderColor='#FB7185';" onmouseout="this.style.transform='none'; this.style.borderColor='#FDA4AF';">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div class="cycle-icon-pill" style="width: 44px; height: 44px; border-radius: 50%; background: #FFE4E6; border: 1.5px solid #FDA4AF; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--accent-rose); flex-shrink: 0; box-shadow: 0 2px 8px rgba(251, 113, 133, 0.15);">
+                            🌸
+                        </div>
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                                <h3 style="font-size: 13.5px; font-weight: 700; color: #0F172A; margin: 0;">Meu Ciclo Feminino</h3>
+                                <span id="cycle-home-badge" style="font-size: 9.5px; font-weight: 700; color: var(--accent-rose); background: #FFF1F2; border: 1px solid #FDA4AF; padding: 2px 8px; border-radius: 12px; text-transform: uppercase;">Fase Folicular</span>
+                            </div>
+                            <p id="cycle-home-desc" style="font-size: 11px; color: var(--text-secondary); margin: 3px 0 0 0; line-height: 1.35;">Dia 9 do ciclo • Energia em alta para treinar ✨</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 4px; color: var(--accent-rose); flex-shrink: 0;">
+                        <span style="font-size: 11px; font-weight: 700;">Acompanhar</span>
+                        <i data-lucide="chevron-right" style="width: 16px; height: 16px;"></i>
                     </div>
                 </div>
 
@@ -1442,6 +1462,134 @@
         </div>
     </div>
 
+    <!-- MODAL / BOTTOM SHEET: RASTREADOR DO CICLO MENSTRUAL FUSE -->
+    <div class="modal-backdrop" id="modal-cycle-tracker" style="z-index: 125;">
+        <div class="modal-content bottom-sheet" style="position: relative; max-height: 92vh; height: 92vh; padding: 0; display: flex; flex-direction: column; overflow: hidden; background: #FFFFFF; border-top: 1px solid #E2E8F0;">
+            <div class="drag-handle" style="margin-top: 12px; margin-bottom: 6px;"></div>
+            
+            <!-- Header do Modal -->
+            <div style="padding: 12px 20px 14px 20px; border-bottom: 1px solid #F1F5F9; display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 20px;">🌸</span>
+                    <div>
+                        <h2 style="font-size: 16px; font-weight: 700; color: #0F172A; margin: 0;">Ciclo & Fases Femininas</h2>
+                        <span style="font-size: 10.5px; color: var(--text-secondary);">Sincronize sua rotina com o seu corpo</span>
+                    </div>
+                </div>
+                <button type="button" onclick="closeModal('modal-cycle-tracker')" style="background: #F8FAFC; border: 1px solid #E2E8F0; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-secondary);">
+                    <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+                </button>
+            </div>
+
+            <!-- Conteúdo Scrollável -->
+            <div class="scrollable-sheet-content" style="padding: 16px 20px 30px 20px; overflow-y: auto; text-align: left; display: flex; flex-direction: column; gap: 16px;">
+                
+                <!-- Card Destaque da Fase Atual -->
+                <div style="background: linear-gradient(135deg, #FFF1F2 0%, #FFFFFF 100%); border: 1px solid #FDA4AF; border-radius: 16px; padding: 18px; text-align: center; position: relative;">
+                    <div style="display: inline-flex; align-items: center; gap: 6px; background: #FFE4E6; border: 1px solid #FDA4AF; padding: 3px 12px; border-radius: 20px; margin-bottom: 8px;">
+                        <span id="cycle-modal-phase-icon">🌱</span>
+                        <span id="cycle-modal-phase-name" style="font-size: 11px; font-weight: 800; color: var(--accent-rose); text-transform: uppercase; letter-spacing: 0.5px;">Fase Folicular</span>
+                    </div>
+                    <h3 id="cycle-modal-day-txt" style="font-size: 24px; font-weight: 800; font-family: var(--font-header); color: #0F172A; margin: 2px 0 6px 0;">Dia 9 de 28</h3>
+                    <p id="cycle-modal-phase-desc" style="font-size: 12px; color: #475569; max-width: 320px; margin: 0 auto; line-height: 1.45;">O estrogênio está subindo. Excelente momento para treinos com mais carga, foco em projetos e disposição elevada.</p>
+                    
+                    <div style="margin-top: 14px; padding-top: 12px; border-top: 1px dashed #FDA4AF; display: flex; justify-content: space-around; font-size: 11px;">
+                        <div>
+                            <span style="color: var(--text-secondary); display: block; font-size: 10px;">Próxima Menstruação:</span>
+                            <strong id="cycle-modal-next-period" style="color: #0F172A; font-size: 12px;">Em ~19 dias</strong>
+                        </div>
+                        <div style="width: 1px; background: #F1F5F9;"></div>
+                        <div>
+                            <span style="color: var(--text-secondary); display: block; font-size: 10px;">Duração do Ciclo:</span>
+                            <strong id="cycle-modal-cycle-len-txt" style="color: #0F172A; font-size: 12px;">28 dias</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botão de Ação Rápida de Menstruação -->
+                <button type="button" id="btn-period-today" onclick="togglePeriodToday()" style="width: 100%; padding: 13px; border-radius: 14px; background: linear-gradient(135deg, #FB7185 0%, #F43F5E 100%); color: #FFFFFF; font-size: 13px; font-weight: 800; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 14px rgba(251, 113, 133, 0.25); transition: transform 0.15s ease;">
+                    <span>🩸 Menstruação Desceu Hoje</span>
+                </button>
+
+                <!-- Mini Calendário Mensal do Ciclo -->
+                <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 16px; padding: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <h4 style="font-size: 13px; font-weight: 700; color: #0F172A; margin: 0;">Calendário de Marcação</h4>
+                        <span id="cycle-cal-month-title" style="font-size: 11px; font-weight: 600; color: var(--accent-rose);">Outubro 2026</span>
+                    </div>
+                    
+                    <!-- Dias da Semana Header -->
+                    <div style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 10px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px;">
+                        <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
+                    </div>
+
+                    <!-- Grade dos Dias do Mês -->
+                    <div id="cycle-calendar-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px;">
+                        <!-- Inserido dinamicamente via JS -->
+                    </div>
+
+                    <div style="display: flex; justify-content: center; gap: 14px; margin-top: 14px; font-size: 10px; color: var(--text-secondary);">
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <span style="width: 8px; height: 8px; border-radius: 50%; background: #FB7185;"></span>
+                            <span>Menstruação 🩸</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <span style="width: 8px; height: 8px; border-radius: 50%; background: #A7F3D0;"></span>
+                            <span>Fértil / Ovulação</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <span style="width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid #0F172A;"></span>
+                            <span>Hoje</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Orientações do FUSE para Esta Fase -->
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <h4 style="font-size: 13px; font-weight: 700; color: #0F172A; margin: 4px 0 0 0;">Orientações para o seu Corpo Hoje:</h4>
+                    
+                    <!-- Dica Treino -->
+                    <div style="display: flex; gap: 12px; background: #FAFAFA; border: 1px solid #E2E8F0; padding: 12px 14px; border-radius: 12px;">
+                        <div style="font-size: 20px; flex-shrink: 0;">🏋️‍♀️</div>
+                        <div>
+                            <strong style="font-size: 12px; color: #0F172A; display: block; margin-bottom: 2px;">Como treinar nesta fase:</strong>
+                            <p id="cycle-advice-workout" style="font-size: 11px; color: var(--text-secondary); margin: 0; line-height: 1.4;">Aproveite a alta de energia! Período ideal para tentar cargas maiores e treinos dinâmicos com boa recuperação muscular.</p>
+                        </div>
+                    </div>
+
+                    <!-- Dica Nutrição -->
+                    <div style="display: flex; gap: 12px; background: #FAFAFA; border: 1px solid #E2E8F0; padding: 12px 14px; border-radius: 12px;">
+                        <div style="font-size: 20px; flex-shrink: 0;">🥗</div>
+                        <div>
+                            <strong style="font-size: 12px; color: #0F172A; display: block; margin-bottom: 2px;">Como nutrir nesta fase:</strong>
+                            <p id="cycle-advice-diet" style="font-size: 11px; color: var(--text-secondary); margin: 0; line-height: 1.4;">Metabolismo eficiente com carboidratos limpos e proteínas magras. Boa sensibilidade à insulina.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configuração de Duração do Ciclo -->
+                <div style="background: #FAFAFA; border: 1px solid #E2E8F0; border-radius: 12px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <span style="font-size: 12px; font-weight: 600; color: #0F172A; display: block;">Duração média do seu ciclo:</span>
+                        <span style="font-size: 10px; color: var(--text-secondary);">Geralmente varia de 25 a 35 dias</span>
+                    </div>
+                    <select id="cycle-select-length" onchange="updateCycleLengthFromSelect(this.value)" style="padding: 6px 10px; border-radius: 8px; border: 1px solid #E2E8F0; background: #FFFFFF; color: #0F172A; font-size: 12px; font-weight: 600; outline: none;">
+                        <option value="26">26 dias</option>
+                        <option value="27">27 dias</option>
+                        <option value="28" selected>28 dias (Padrão)</option>
+                        <option value="29">29 dias</option>
+                        <option value="30">30 dias</option>
+                        <option value="31">31 dias</option>
+                        <option value="32">32 dias</option>
+                    </select>
+                </div>
+
+                <button class="btn-modal-cancel" onclick="closeModal('modal-cycle-tracker')" style="width: 100%; margin-top: 4px;">Fechar</button>
+
+            </div>
+        </div>
+    </div>
+
 
     <!-- Modal 5B: Checkout de Assinatura do Aplicativo (Após Registro) -->
     <div class="modal-backdrop" id="modal-subscription-checkout" style="z-index: 130;">
@@ -1675,6 +1823,6 @@
 
     <!-- Lucide Icons CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="app.js?v=20261004d"></script>
+    <script src="app.js?v=20261004e"></script>
 </body>
 </html>

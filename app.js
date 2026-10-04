@@ -147,6 +147,12 @@ const defaultState = {
     // Refeições Ativas do Plano
     currentMeals: [],
     dailyEatenMeals: {},
+    menstrualCycle: {
+        lastPeriodDate: "2026-09-26",
+        cycleLength: 28,
+        periodDuration: 5,
+        periodDates: ["2026-09-26", "2026-09-27", "2026-09-28", "2026-09-29", "2026-09-30"]
+    },
     hasLoggedIn: false,
     anamneseConcluida: false,
     // Identificação e Registro de Compras
@@ -642,6 +648,7 @@ function restoreSession() {
     populateDudaWelcomeMessage();
     updateProgressUI();
     updateWaterUI();
+    updateCycleHomeCard();
 
     // Restaura observações do dia atual se existirem
     const obsTextarea = document.getElementById("daily-observations");
@@ -5077,3 +5084,285 @@ document.addEventListener("DOMContentLoaded", () => {
         obsTextarea.addEventListener("input", autoSaveDailyRecord);
     }
 });
+
+// ==========================================
+// RASTREADOR DO CICLO MENSTRUAL FEMININO FUSE
+// ==========================================
+
+function ensureCycleState() {
+    if (!userState.menstrualCycle) {
+        userState.menstrualCycle = {
+            lastPeriodDate: "2026-09-26",
+            cycleLength: 28,
+            periodDuration: 5,
+            periodDates: ["2026-09-26", "2026-09-27", "2026-09-28", "2026-09-29", "2026-09-30"]
+        };
+    }
+}
+
+function getCycleStatus(dateStr) {
+    ensureCycleState();
+    const cycle = userState.menstrualCycle;
+    const refDate = dateStr ? new Date(dateStr + "T12:00:00") : new Date();
+    const lastDate = new Date(cycle.lastPeriodDate + "T12:00:00");
+    
+    // Diferença em dias
+    const diffTime = refDate.getTime() - lastDate.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    const cycleLength = cycle.cycleLength || 28;
+    const periodDuration = cycle.periodDuration || 5;
+    
+    // Dia do ciclo normalizado (1 a cycleLength)
+    let cycleDay = (diffDays % cycleLength);
+    if (cycleDay < 0) cycleDay += cycleLength;
+    cycleDay += 1; // 1-indexed
+    
+    const daysUntilNextPeriod = cycleLength - cycleDay + 1;
+    
+    // Determinação da fase
+    let phaseKey = "follicular";
+    let phaseName = "Fase Folicular";
+    let phaseIcon = "🌱";
+    let phaseDesc = "O estrogênio está subindo. Excelente momento para treinos com mais carga, foco em projetos e disposição elevada.";
+    let workoutAdvice = "Aproveite a alta de energia! Período ideal para tentar cargas maiores e treinos dinâmicos com boa recuperação muscular.";
+    let dietAdvice = "Metabolismo eficiente com carboidratos limpos e proteínas magras. Boa sensibilidade à insulina.";
+    
+    // Se a data for dia de menstruação registrado explicitamente OU se estiver nos primeiros dias do ciclo
+    const checkDateStr = dateStr || getTodayStr();
+    const isExplicitPeriodDay = cycle.periodDates && cycle.periodDates.includes(checkDateStr);
+    
+    if (isExplicitPeriodDay || cycleDay <= periodDuration) {
+        phaseKey = "menstrual";
+        phaseName = "Fase Menstrual";
+        phaseIcon = "🩸";
+        phaseDesc = "Os níveis hormonais estão baixos e o corpo está se renovando. Priorize descanso, conforto e hidratação.";
+        workoutAdvice = "Alongamentos suaves, caminhadas leves e respeito aos limites do corpo se houver cólica.";
+        dietAdvice = "Alimentos ricos em ferro (carnes magras, feijão, folhas escuras), chás quentes e bastante água.";
+    } else if (cycleDay >= periodDuration + 1 && cycleDay <= 13) {
+        phaseKey = "follicular";
+        phaseName = "Fase Folicular";
+        phaseIcon = "🌱";
+        phaseDesc = "O estrogênio está subindo. Excelente momento para treinos com mais carga, foco em projetos e disposição elevada.";
+        workoutAdvice = "Aproveite a alta de energia! Período ideal para tentar cargas maiores e treinos dinâmicos com boa recuperação muscular.";
+        dietAdvice = "Metabolismo eficiente com carboidratos limpos e proteínas magras. Boa sensibilidade à insulina.";
+    } else if (cycleDay >= 14 && cycleDay <= 17) {
+        phaseKey = "ovulatory";
+        phaseName = "Fase Ovulatória";
+        phaseIcon = "✨";
+        phaseDesc = "Pico de vigor físico e fertilidade. Máxima autoconfiança, magnetismo e disposição.";
+        workoutAdvice = "Energia máxima! Treinos metabólicos, sprints e treinos pesados de glúteos e pernas respondem muito bem.";
+        dietAdvice = "Alimentos antioxidantes, fibras abundantes e hidratação redobrada para apoiar o fígado.";
+    } else {
+        phaseKey = "luteal";
+        phaseName = "Fase Lútea (TPM)";
+        phaseIcon = "🌙";
+        phaseDesc = "A progesterona sobe. A taxa metabólica aumenta naturalmente (+100 a +200 kcal/dia) e o corpo pede acolhimento.";
+        workoutAdvice = "Mantenha a rotina com cargas moderadas no início, mas desacelere nos últimos dias com treinos restaurativos e pilates.";
+        dietAdvice = "Aporte de gorduras boas (abacate, castanhas), magnésio (cacau 70%, sementes) e docinhos saudáveis sem culpa!";
+    }
+    
+    return {
+        cycleDay,
+        cycleLength,
+        daysUntilNextPeriod,
+        phaseKey,
+        phaseName,
+        phaseIcon,
+        phaseDesc,
+        workoutAdvice,
+        dietAdvice,
+        isPeriodToday: isExplicitPeriodDay || cycleDay <= periodDuration
+    };
+}
+
+function updateCycleHomeCard() {
+    ensureCycleState();
+    const status = getCycleStatus();
+    
+    const badgeEl = document.getElementById("cycle-home-badge");
+    const descEl = document.getElementById("cycle-home-desc");
+    
+    if (badgeEl) {
+        badgeEl.innerText = status.phaseName;
+    }
+    if (descEl) {
+        descEl.innerText = `Dia ${status.cycleDay} do ciclo • ${status.phaseIcon} ${status.phaseName}`;
+    }
+}
+
+function openCycleModal() {
+    renderCycleUI();
+    openModal("modal-cycle-tracker");
+}
+
+function renderCycleUI() {
+    ensureCycleState();
+    const status = getCycleStatus();
+    const cycle = userState.menstrualCycle;
+    
+    // Atualiza Textos do Modal
+    const phaseIconEl = document.getElementById("cycle-modal-phase-icon");
+    const phaseNameEl = document.getElementById("cycle-modal-phase-name");
+    const dayTxtEl = document.getElementById("cycle-modal-day-txt");
+    const descEl = document.getElementById("cycle-modal-phase-desc");
+    const nextPeriodEl = document.getElementById("cycle-modal-next-period");
+    const cycleLenTxtEl = document.getElementById("cycle-modal-cycle-len-txt");
+    const adviceWorkoutEl = document.getElementById("cycle-advice-workout");
+    const adviceDietEl = document.getElementById("cycle-advice-diet");
+    const selectLengthEl = document.getElementById("cycle-select-length");
+    const btnPeriodToday = document.getElementById("btn-period-today");
+    
+    if (phaseIconEl) phaseIconEl.innerText = status.phaseIcon;
+    if (phaseNameEl) phaseNameEl.innerText = status.phaseName;
+    if (dayTxtEl) dayTxtEl.innerText = `Dia ${status.cycleDay} de ${status.cycleLength}`;
+    if (descEl) descEl.innerText = status.phaseDesc;
+    if (nextPeriodEl) {
+        nextPeriodEl.innerText = status.daysUntilNextPeriod === 1 ? "Amanhã" : `Em ~${status.daysUntilNextPeriod} dias`;
+    }
+    if (cycleLenTxtEl) cycleLenTxtEl.innerText = `${status.cycleLength} dias`;
+    if (adviceWorkoutEl) adviceWorkoutEl.innerText = status.workoutAdvice;
+    if (adviceDietEl) adviceDietEl.innerText = status.dietAdvice;
+    if (selectLengthEl) selectLengthEl.value = String(status.cycleLength);
+    
+    const today = getTodayStr();
+    const isMarkedPeriodToday = cycle.periodDates && cycle.periodDates.includes(today);
+    
+    if (btnPeriodToday) {
+        if (isMarkedPeriodToday) {
+            btnPeriodToday.innerHTML = `<span>✓ Menstruação Marcada Hoje 🩸</span>`;
+            btnPeriodToday.style.background = "#FFF1F2";
+            btnPeriodToday.style.color = "var(--accent-rose)";
+            btnPeriodToday.style.border = "1px solid #FDA4AF";
+        } else {
+            btnPeriodToday.innerHTML = `<span>🩸 Menstruação Desceu Hoje</span>`;
+            btnPeriodToday.style.background = "linear-gradient(135deg, #FB7185 0%, #F43F5E 100%)";
+            btnPeriodToday.style.color = "#FFFFFF";
+            btnPeriodToday.style.border = "none";
+        }
+    }
+    
+    renderCycleMiniCalendar();
+    updateCycleHomeCard();
+    if (window.lucide) {
+        lucide.createIcons();
+    }
+}
+
+function togglePeriodToday() {
+    ensureCycleState();
+    const today = getTodayStr();
+    const cycle = userState.menstrualCycle;
+    if (!cycle.periodDates) cycle.periodDates = [];
+    
+    const idx = cycle.periodDates.indexOf(today);
+    if (idx >= 0) {
+        cycle.periodDates.splice(idx, 1);
+    } else {
+        cycle.periodDates.push(today);
+        cycle.lastPeriodDate = today; // Inicia um novo ciclo hoje!
+        addXP(15);
+        if (navigator.vibrate) {
+            try { navigator.vibrate([30, 50, 30]); } catch(e) {}
+        }
+    }
+    
+    saveStateToStorage();
+    renderCycleUI();
+    updateProgressUI();
+}
+
+function togglePeriodDate(dateStr) {
+    ensureCycleState();
+    const cycle = userState.menstrualCycle;
+    if (!cycle.periodDates) cycle.periodDates = [];
+    
+    const idx = cycle.periodDates.indexOf(dateStr);
+    if (idx >= 0) {
+        cycle.periodDates.splice(idx, 1);
+    } else {
+        cycle.periodDates.push(dateStr);
+        const sorted = [...cycle.periodDates].sort();
+        if (sorted.length > 0) {
+            cycle.lastPeriodDate = sorted[0];
+        }
+    }
+    
+    saveStateToStorage();
+    renderCycleUI();
+}
+
+function updateCycleLengthFromSelect(val) {
+    ensureCycleState();
+    userState.menstrualCycle.cycleLength = parseInt(val, 10) || 28;
+    saveStateToStorage();
+    renderCycleUI();
+}
+
+function renderCycleMiniCalendar() {
+    const grid = document.getElementById("cycle-calendar-grid");
+    if (!grid) return;
+    grid.innerHTML = "";
+    
+    ensureCycleState();
+    const cycle = userState.menstrualCycle;
+    const periodDates = cycle.periodDates || [];
+    const today = getTodayStr();
+    
+    // Mês atual
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth(); // 0-indexed
+    
+    const monthTitleEl = document.getElementById("cycle-cal-month-title");
+    if (monthTitleEl) {
+        const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+        monthTitleEl.innerText = `${monthNames[month]} ${year}`;
+    }
+    
+    const firstDayIndex = new Date(year, month, 1).getDay(); // 0 = Domingo
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    
+    // Espaços vazios antes do 1º dia
+    for (let i = 0; i < firstDayIndex; i++) {
+        const emptyCell = document.createElement("div");
+        emptyCell.className = "cycle-cal-day-item is-empty";
+        grid.appendChild(emptyCell);
+    }
+    
+    // Dias do mês
+    for (let d = 1; d <= daysInMonth; d++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        const dayCell = document.createElement("div");
+        dayCell.className = "cycle-cal-day-item";
+        dayCell.innerText = d;
+        
+        const isPeriod = periodDates.includes(dateStr);
+        const isToday = (dateStr === today);
+        
+        // Verifica se é janela fértil/ovulação estimada
+        const dayStatus = getCycleStatus(dateStr);
+        const isOvulation = (dayStatus.cycleDay === 14);
+        const isFertile = (dayStatus.cycleDay >= 12 && dayStatus.cycleDay <= 16 && !isPeriod);
+        
+        if (isPeriod) {
+            dayCell.classList.add("is-period");
+        } else if (isOvulation) {
+            dayCell.classList.add("is-ovulation");
+            dayCell.title = "Ovulação Prevista";
+        } else if (isFertile) {
+            dayCell.classList.add("is-fertile");
+            dayCell.title = "Janela Fértil";
+        }
+        
+        if (isToday) {
+            dayCell.classList.add("is-today");
+        }
+        
+        dayCell.onclick = () => {
+            togglePeriodDate(dateStr);
+        };
+        
+        grid.appendChild(dayCell);
+    }
+}
