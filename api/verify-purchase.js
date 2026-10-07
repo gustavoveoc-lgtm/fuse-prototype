@@ -30,14 +30,19 @@ export default async function handler(req, res) {
         'fernanda@fuse.com.br',
         'amanda@fuse.com.br',
         'fer@gmail.com',
-        'pratsroberta@gmail.com'
+        'pratsroberta@gmail.com',
+        'fernandagomesdebrito@hotmail.com',
+        'paulalfiamoncini@gmail.com',
+        'rafhaella2009@gmail.com'
     ];
 
     if (trustedEmails.includes(emailClean) || emailClean.endsWith('@fuse.com') || emailClean.endsWith('@fuse.com.br')) {
+        const custName = (VERIFIED_CUSTOMERS[emailClean] && VERIFIED_CUSTOMERS[emailClean].name) ? VERIFIED_CUSTOMERS[emailClean].name : emailClean.split('@')[0].toUpperCase();
         return res.status(200).json({
             success: true,
+            isCanceled: false,
             message: 'Compra premium aprovada encontrada (Lista de Confiança)!',
-            customerName: emailClean.split('@')[0].toUpperCase(),
+            customerName: custName,
             email: emailClean,
             status: 'paid',
             orderId: 'trusted_' + Date.now(),
@@ -48,6 +53,11 @@ export default async function handler(req, res) {
 
     // CATÁLOGO OFICIAL DE CLIENTES DA CAKTO (Fallback / Alta Disponibilidade)
     const VERIFIED_CUSTOMERS = {
+        // Clientes liberadas e ativadas
+        "fernandagomesdebrito@hotmail.com": { name: "Fernanda Gomes de Brito", status: "active" },
+        "paulalfiamoncini@gmail.com": { name: "Paula Fiamoncini", status: "active" },
+        "rafhaella2009@gmail.com": { name: "Rafhaella", status: "active" },
+
         // Clientes com assinatura ativa confirmada
         "pricilaoliveiras21@gmail.com": { name: "Pricila Oliveira Rocha", status: "active" },
         "camillyleticiaramos@gmail.com": { name: "Camilly Gerhardt Gerhardt", status: "active" },

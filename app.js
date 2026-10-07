@@ -249,10 +249,18 @@ const TRUSTED_EMAILS = [
     'fernanda@fuse.com.br',
     'amanda@fuse.com.br',
     'fer@gmail.com',
-    'pratsroberta@gmail.com'
+    'pratsroberta@gmail.com',
+    'fernandagomesdebrito@hotmail.com',
+    'paulalfiamoncini@gmail.com',
+    'rafhaella2009@gmail.com'
 ];
 
 const VERIFIED_CUSTOMERS = {
+    // Clientes liberadas e ativadas
+    "fernandagomesdebrito@hotmail.com": { name: "Fernanda Gomes de Brito", status: "active" },
+    "paulalfiamoncini@gmail.com": { name: "Paula Fiamoncini", status: "active" },
+    "rafhaella2009@gmail.com": { name: "Rafhaella", status: "active" },
+
     // Clientes com assinatura ativa confirmada
     "pricilaoliveiras21@gmail.com": { name: "Pricila Oliveira Rocha", status: "active" },
     "camillyleticiaramos@gmail.com": { name: "Camilly Gerhardt Gerhardt", status: "active" },
@@ -760,7 +768,7 @@ async function checkCaktoPurchaseAPI(email) {
         return {
             success: true,
             isCanceled: false,
-            customerName: emailClean.split('@')[0].toUpperCase(),
+            customerName: (VERIFIED_CUSTOMERS[emailClean] && VERIFIED_CUSTOMERS[emailClean].name) ? VERIFIED_CUSTOMERS[emailClean].name : emailClean.split('@')[0].toUpperCase(),
             email: emailClean,
             status: 'paid'
         };
