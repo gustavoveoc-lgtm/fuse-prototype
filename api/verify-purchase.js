@@ -28,6 +28,7 @@ export default async function handler(req, res) {
         "fernandagomesdebrito@hotmail.com": { name: "Fernanda Gomes de Brito", status: "active" },
         "paulalfiamoncini@gmail.com": { name: "Paula Fiamoncini", status: "active" },
         "rafhaella2009@gmail.com": { name: "Rafhaella", status: "active" },
+        "contatorosanapersonal@gmail.com": { name: "Rosana Personal", status: "active" },
 
         // Clientes com assinatura ativa confirmada
         "pricilaoliveiras21@gmail.com": { name: "Pricila Oliveira Rocha", status: "active" },
@@ -96,7 +97,8 @@ export default async function handler(req, res) {
         'pratsroberta@gmail.com',
         'fernandagomesdebrito@hotmail.com',
         'paulalfiamoncini@gmail.com',
-        'rafhaella2009@gmail.com'
+        'rafhaella2009@gmail.com',
+        'contatorosanapersonal@gmail.com'
     ];
 
     if (trustedEmails.includes(emailClean) || emailClean.endsWith('@fuse.com') || emailClean.endsWith('@fuse.com.br')) {

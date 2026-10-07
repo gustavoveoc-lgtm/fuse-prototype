@@ -246,6 +246,7 @@ const defaultVerifiedUsers = {
     "fernandagomesdebrito@hotmail.com": { name: "Fernanda Gomes de Brito", pass: "123456" },
     "paulalfiamoncini@gmail.com": { name: "Paula Fiamoncini", pass: "123456" },
     "rafhaella2009@gmail.com": { name: "Rafhaella", pass: "123456" },
+    "contatorosanapersonal@gmail.com": { name: "Rosana Personal", pass: "123456" },
     "gabioff1234@gmail.com": { name: "Gabriela  Nascimento de Carvalho", pass: "123456" }
 };
 
@@ -287,7 +288,8 @@ const TRUSTED_EMAILS = [
     'pratsroberta@gmail.com',
     'fernandagomesdebrito@hotmail.com',
     'paulalfiamoncini@gmail.com',
-    'rafhaella2009@gmail.com'
+    'rafhaella2009@gmail.com',
+    'contatorosanapersonal@gmail.com'
 ];
 
 const VERIFIED_CUSTOMERS = {
@@ -295,6 +297,7 @@ const VERIFIED_CUSTOMERS = {
     "fernandagomesdebrito@hotmail.com": { name: "Fernanda Gomes de Brito", status: "active" },
     "paulalfiamoncini@gmail.com": { name: "Paula Fiamoncini", status: "active" },
     "rafhaella2009@gmail.com": { name: "Rafhaella", status: "active" },
+    "contatorosanapersonal@gmail.com": { name: "Rosana Personal", status: "active" },
 
     // Clientes com assinatura ativa confirmada
     "pricilaoliveiras21@gmail.com": { name: "Pricila Oliveira Rocha", status: "active" },
