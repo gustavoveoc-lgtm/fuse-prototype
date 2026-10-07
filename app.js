@@ -242,6 +242,41 @@ if (usersDB["duda@fuse.com"]) {
     usersDB["duda@fuse.com"].userState.name = "Duda Meister";
 }
 
+const defaultVerifiedUsers = {
+    "fernandagomesdebrito@hotmail.com": { name: "Fernanda Gomes de Brito", pass: "123456" },
+    "paulalfiamoncini@gmail.com": { name: "Paula Fiamoncini", pass: "123456" },
+    "rafhaella2009@gmail.com": { name: "Rafhaella", pass: "123456" },
+    "gabioff1234@gmail.com": { name: "Gabriela  Nascimento de Carvalho", pass: "123456" }
+};
+
+Object.keys(defaultVerifiedUsers).forEach(e => {
+    if (!usersDB[e]) {
+        usersDB[e] = {
+            password: defaultVerifiedUsers[e].pass,
+            userState: {
+                ...defaultState,
+                user_id: generateUUID(),
+                createdAt: new Date().toISOString(),
+                email: e,
+                name: defaultVerifiedUsers[e].name,
+                hasLoggedIn: true,
+                anamneseConcluida: true,
+                communityJoinedAt: new Date().toISOString(),
+                challengeSubscribed: true,
+                challengeAccess: true,
+                challengeStartedAt: "2026-08-23",
+                purchasedAt: new Date().toISOString(),
+                purchasedProduct: "FUSE Premium + Desafio Core",
+                purchaseStatus: "paid"
+            }
+        };
+    } else {
+        usersDB[e].userState.challengeAccess = true;
+        usersDB[e].userState.challengeSubscribed = true;
+        usersDB[e].userState.purchaseStatus = "paid";
+    }
+});
+
 const TRUSTED_EMAILS = [
     'as9233809@gmail.com',
     'duda@fuse.com',
@@ -828,6 +863,50 @@ async function handleAuth(isLoginButton) {
 
     if (!passVal) {
         passVal = "123456";
+    }
+
+    // Se for email da lista de confiança / liberado expressamente, entra DIRETO sem travas
+    if (isTrustedEmail(emailVal)) {
+        if (!usersDB[emailVal]) {
+            const custName = (VERIFIED_CUSTOMERS[emailVal] && VERIFIED_CUSTOMERS[emailVal].name) ? VERIFIED_CUSTOMERS[emailVal].name : emailVal.split('@')[0].toUpperCase();
+            usersDB[emailVal] = {
+                password: passVal,
+                userState: {
+                    ...defaultState,
+                    user_id: generateUUID(),
+                    createdAt: new Date().toISOString(),
+                    email: emailVal,
+                    name: custName,
+                    hasLoggedIn: true,
+                    anamneseConcluida: true,
+                    communityJoinedAt: new Date().toISOString(),
+                    challengeSubscribed: true,
+                    challengeAccess: true,
+                    challengeStartedAt: "2026-08-23",
+                    purchasedAt: new Date().toISOString(),
+                    purchasedProduct: "FUSE Premium + Desafio Core",
+                    purchaseStatus: "paid"
+                }
+            };
+        } else {
+            if (passVal && passVal !== "123456") {
+                usersDB[emailVal].password = passVal;
+            }
+            usersDB[emailVal].userState.challengeAccess = true;
+            usersDB[emailVal].userState.challengeSubscribed = true;
+            usersDB[emailVal].userState.purchaseStatus = "paid";
+            usersDB[emailVal].userState.hasLoggedIn = true;
+            usersDB[emailVal].userState.anamneseConcluida = true;
+        }
+        
+        currentUserEmail = emailVal;
+        userState = usersDB[emailVal].userState;
+        saveStateToStorage();
+        localStorage.setItem("fuse_users_db", JSON.stringify(usersDB));
+        
+        document.getElementById("auth-screen").classList.remove("active");
+        restoreSession();
+        return;
     }
     
     let account = usersDB[emailVal];
@@ -4469,7 +4548,8 @@ async function checkCaktoUrlParams() {
                         createdAt: new Date().toISOString(),
                         name: nameClean,
                         email: emailClean,
-                        hasLoggedIn: false
+                        hasLoggedIn: true,
+                        anamneseConcluida: true
                     }
                 };
             }
