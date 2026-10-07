@@ -22,35 +22,6 @@ export default async function handler(req, res) {
 
     const emailClean = email.toLowerCase().trim();
 
-    // LISTA DE EMAILS AUTOMATICAMENTE APROVADOS (Confiança / Liberação Rápida)
-    const trustedEmails = [
-        'as9233809@gmail.com',
-        'duda@fuse.com',
-        'fernanda@fuse.com',
-        'fernanda@fuse.com.br',
-        'amanda@fuse.com.br',
-        'fer@gmail.com',
-        'pratsroberta@gmail.com',
-        'fernandagomesdebrito@hotmail.com',
-        'paulalfiamoncini@gmail.com',
-        'rafhaella2009@gmail.com'
-    ];
-
-    if (trustedEmails.includes(emailClean) || emailClean.endsWith('@fuse.com') || emailClean.endsWith('@fuse.com.br')) {
-        const custName = (VERIFIED_CUSTOMERS[emailClean] && VERIFIED_CUSTOMERS[emailClean].name) ? VERIFIED_CUSTOMERS[emailClean].name : emailClean.split('@')[0].toUpperCase();
-        return res.status(200).json({
-            success: true,
-            isCanceled: false,
-            message: 'Compra premium aprovada encontrada (Lista de Confiança)!',
-            customerName: custName,
-            email: emailClean,
-            status: 'paid',
-            orderId: 'trusted_' + Date.now(),
-            paidAt: new Date().toISOString(),
-            purchasedProducts: ['FUSE', 'Desafio Core']
-        });
-    }
-
     // CATÁLOGO OFICIAL DE CLIENTES DA CAKTO (Fallback / Alta Disponibilidade)
     const VERIFIED_CUSTOMERS = {
         // Clientes liberadas e ativadas
@@ -113,6 +84,35 @@ export default async function handler(req, res) {
         "franciara_fran@hotmail.com": { name: "Franciara Lima", status: "canceled" },
         "rayanemeneses70@gmail.com": { name: "RAIANE ALINE SILVA DE MENESES", status: "canceled" }
     };
+
+    // LISTA DE EMAILS AUTOMATICAMENTE APROVADOS (Confiança / Liberação Rápida)
+    const trustedEmails = [
+        'as9233809@gmail.com',
+        'duda@fuse.com',
+        'fernanda@fuse.com',
+        'fernanda@fuse.com.br',
+        'amanda@fuse.com.br',
+        'fer@gmail.com',
+        'pratsroberta@gmail.com',
+        'fernandagomesdebrito@hotmail.com',
+        'paulalfiamoncini@gmail.com',
+        'rafhaella2009@gmail.com'
+    ];
+
+    if (trustedEmails.includes(emailClean) || emailClean.endsWith('@fuse.com') || emailClean.endsWith('@fuse.com.br')) {
+        const custName = (VERIFIED_CUSTOMERS[emailClean] && VERIFIED_CUSTOMERS[emailClean].name) ? VERIFIED_CUSTOMERS[emailClean].name : emailClean.split('@')[0].toUpperCase();
+        return res.status(200).json({
+            success: true,
+            isCanceled: false,
+            message: 'Compra premium aprovada encontrada (Lista de Confiança)!',
+            customerName: custName,
+            email: emailClean,
+            status: 'paid',
+            orderId: 'trusted_' + Date.now(),
+            paidAt: new Date().toISOString(),
+            purchasedProducts: ['FUSE', 'Desafio Core']
+        });
+    }
 
     // Chaves de API do Cakto: lê das variáveis de ambiente primeiro, depois usa fallback hardcoded
     const clientId = process.env.CAKTO_CLIENT_ID || '7JcKQV6uMuLEBKLxYL2jD2CyqFuuvsGCJEE8j6bx';
