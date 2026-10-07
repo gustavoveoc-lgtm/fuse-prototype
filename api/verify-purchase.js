@@ -59,7 +59,7 @@ export default async function handler(req, res) {
         "ehriikaa17@hotmail.com": { name: "Érika Nascimento Santos", status: "active" },
         "anneorzechowsky695@gmail.com": { name: "Anne Orzechowsky", status: "active" },
         "mariaanaviann7@gmail.com": { name: "Mariaana Klein Viana", status: "active" },
-        "gabioff1234@gmail.com": { name: "Gabriela  Nascimento de Carvalho", status: "active" },
+        "gabioff1234@gmail.com": { name: "Gabriela  Nascimento de Carvalho", status: "active", validUntil: "2026-10-22T23:59:59-03:00" },
         "bruninhavidal25@hotmail.com": { name: "Bruna A Vidal", status: "active" },
         "luanacosta.2619@gmail.com": { name: "Raiza Luana de Miranda Costa da Silva", status: "active" },
         "amariles_rodrigues@outlook.com": { name: "Amariles Paloma Rodrigues", status: "active" },
@@ -242,27 +242,58 @@ export default async function handler(req, res) {
             }
         });
 
-        // REGRAS DE REVOGAÇÃO DE ACESSO:
-        // Quem cancelou o mês, estornou ou não renovou perde o acesso imediatamente
+        // REGRAS DE REVOGAÇÃO E VALIDADE DO ACESSO:
         let isCanceled = false;
         let cancelReason = '';
+        let periodEndDate = null;
 
-        if (hasSubscriptions && !hasActiveSubscription) {
-            isCanceled = true;
-            cancelReason = 'Sua assinatura mensal foi cancelada na Cakto.';
-        } else if (hasRefundOrChargeback && !hasActiveSubscription) {
+        if (latestPaidOrder) {
+            const lastPaidDate = new Date(latestPaidOrder.paidAt || latestPaidOrder.createdAt);
+            // Prazo padrão do ciclo mensal: 31 dias a partir do pagamento aprovado
+            periodEndDate = new Date(lastPaidDate.getTime() + (31 * 24 * 60 * 60 * 1000));
+
+            // Se houver ordens da assinatura com data de vencimento (due_date), usa para saber o fim exato do ciclo
+            orders.forEach(o => {
+                if (o.due_date) {
+                    const d = new Date(o.due_date);
+                    if (d > periodEndDate) {
+                        periodEndDate = d;
+                    }
+                }
+            });
+        }
+
+        // Validação de validade garantida configurada para clientes específicos (ex: gabioff1234@gmail.com até 22 de outubro)
+        if (VERIFIED_CUSTOMERS[emailClean] && VERIFIED_CUSTOMERS[emailClean].validUntil) {
+            const customDate = new Date(VERIFIED_CUSTOMERS[emailClean].validUntil);
+            if (!periodEndDate || customDate > periodEndDate) {
+                periodEndDate = customDate;
+            }
+        }
+
+        const now = new Date();
+
+        if (hasRefundOrChargeback && !hasActiveSubscription) {
+            // Estorno ou contestação bancária: revoga imediatamente
             isCanceled = true;
             cancelReason = 'O pagamento da sua assinatura foi estornado ou cancelado.';
+        } else if (hasSubscriptions && !hasActiveSubscription) {
+            // Assinatura foi cancelada/não renovará automaticamente na Cakto:
+            // Se o período já pago ainda está vigente (dentro dos 31 dias ou data de vencimento), mantém o acesso liberado!
+            if (latestPaidOrder && periodEndDate && now <= periodEndDate) {
+                isCanceled = false;
+            } else {
+                isCanceled = true;
+                cancelReason = 'O período da sua assinatura mensal expirou e não foi renovado na Cakto.';
+            }
         } else if (latestPaidOrder && latestPaidOrder.type === 'subscription' && !hasActiveSubscription) {
-            const lastPaidDate = new Date(latestPaidOrder.paidAt || latestPaidOrder.createdAt);
-            const daysSince = (Date.now() - lastPaidDate.getTime()) / (1000 * 60 * 60 * 24);
-            if (daysSince > 32) {
+            if (periodEndDate && now > periodEndDate) {
                 isCanceled = true;
                 cancelReason = 'O período da sua assinatura mensal expirou e não foi renovado.';
             }
         }
 
-        // Se a assinatura foi cancelada, bloqueia o acesso
+        // Se a assinatura foi cancelada e o período pago já encerrou, bloqueia o acesso
         if (isCanceled) {
             return res.status(200).json({
                 success: false,
@@ -274,8 +305,8 @@ export default async function handler(req, res) {
             });
         }
 
-        // Se possui assinatura ativa ou pagamento vigente aprovado, libera os acessos
-        if (hasActiveSubscription || latestPaidOrder) {
+        // Se possui assinatura ativa OU pagamento vigente dentro do período pago, libera os acessos
+        if (hasActiveSubscription || (latestPaidOrder && !isCanceled)) {
             return res.status(200).json({
                 success: true,
                 isCanceled: false,
@@ -285,6 +316,7 @@ export default async function handler(req, res) {
                 status: 'paid',
                 orderId: latestPaidOrder ? (latestPaidOrder.refId || latestPaidOrder.id) : 'sub_' + Date.now(),
                 paidAt: latestPaidOrder ? (latestPaidOrder.paidAt || latestPaidOrder.createdAt) : new Date().toISOString(),
+                validUntil: periodEndDate ? periodEndDate.toISOString() : undefined,
                 purchasedProducts: ['FUSE', 'Desafio Core']
             });
         }
@@ -292,16 +324,24 @@ export default async function handler(req, res) {
         // Fallback usando o catálogo de clientes confirmados do mês
         const verified = VERIFIED_CUSTOMERS[emailClean];
         if (verified) {
-            if (verified.status === 'canceled' || verified.status === 'inactive') {
+            let customerActive = verified.status === 'active';
+            if (verified.validUntil) {
+                const expiry = new Date(verified.validUntil);
+                if (new Date() > expiry) {
+                    customerActive = false;
+                }
+            }
+
+            if (!customerActive || verified.status === 'canceled' || verified.status === 'inactive') {
                 return res.status(200).json({
                     success: false,
                     isCanceled: true,
-                    message: 'Sua assinatura mensal foi cancelada na Cakto.',
+                    message: 'Sua assinatura mensal foi cancelada ou expirou na Cakto.',
                     customerName: verified.name,
                     email: emailClean,
                     purchasedProducts: []
                 });
-            } else if (verified.status === 'active') {
+            } else {
                 return res.status(200).json({
                     success: true,
                     isCanceled: false,
@@ -311,6 +351,7 @@ export default async function handler(req, res) {
                     status: 'paid',
                     orderId: 'catalog_' + Date.now(),
                     paidAt: new Date().toISOString(),
+                    validUntil: verified.validUntil,
                     purchasedProducts: ['FUSE', 'Desafio Core']
                 });
             }
@@ -329,16 +370,24 @@ export default async function handler(req, res) {
         // Fallback de contingência se a API externa da Cakto estiver indisponível
         const verified = VERIFIED_CUSTOMERS[emailClean];
         if (verified) {
-            if (verified.status === 'canceled' || verified.status === 'inactive') {
+            let customerActive = verified.status === 'active';
+            if (verified.validUntil) {
+                const expiry = new Date(verified.validUntil);
+                if (new Date() > expiry) {
+                    customerActive = false;
+                }
+            }
+
+            if (!customerActive || verified.status === 'canceled' || verified.status === 'inactive') {
                 return res.status(200).json({
                     success: false,
                     isCanceled: true,
-                    message: 'Sua assinatura mensal foi cancelada na Cakto.',
+                    message: 'Sua assinatura mensal foi cancelada ou expirou na Cakto.',
                     customerName: verified.name,
                     email: emailClean,
                     purchasedProducts: []
                 });
-            } else if (verified.status === 'active') {
+            } else {
                 return res.status(200).json({
                     success: true,
                     isCanceled: false,
@@ -348,6 +397,7 @@ export default async function handler(req, res) {
                     status: 'paid',
                     orderId: 'offline_' + Date.now(),
                     paidAt: new Date().toISOString(),
+                    validUntil: verified.validUntil,
                     purchasedProducts: ['FUSE', 'Desafio Core']
                 });
             }

@@ -264,7 +264,7 @@ const VERIFIED_CUSTOMERS = {
     "ehriikaa17@hotmail.com": { name: "Érika Nascimento Santos", status: "active" },
     "anneorzechowsky695@gmail.com": { name: "Anne Orzechowsky", status: "active" },
     "mariaanaviann7@gmail.com": { name: "Mariaana Klein Viana", status: "active" },
-    "gabioff1234@gmail.com": { name: "Gabriela  Nascimento de Carvalho", status: "active" },
+    "gabioff1234@gmail.com": { name: "Gabriela  Nascimento de Carvalho", status: "active", validUntil: "2026-10-22T23:59:59-03:00" },
     "bruninhavidal25@hotmail.com": { name: "Bruna A Vidal", status: "active" },
     "luanacosta.2619@gmail.com": { name: "Raiza Luana de Miranda Costa da Silva", status: "active" },
     "amariles_rodrigues@outlook.com": { name: "Amariles Paloma Rodrigues", status: "active" },
@@ -761,15 +761,23 @@ async function checkCaktoPurchaseAPI(email) {
     // Fallback de alta disponibilidade com catálogo verificado do mês
     if (typeof VERIFIED_CUSTOMERS !== 'undefined' && VERIFIED_CUSTOMERS[emailClean]) {
         const v = VERIFIED_CUSTOMERS[emailClean];
-        if (v.status === 'canceled' || v.status === 'inactive') {
+        let isActive = v.status === 'active';
+        if (v.validUntil) {
+            const expiry = new Date(v.validUntil);
+            if (new Date() > expiry) {
+                isActive = false;
+            }
+        }
+
+        if (!isActive || v.status === 'canceled' || v.status === 'inactive') {
             return {
                 success: false,
                 isCanceled: true,
-                message: 'Sua assinatura mensal foi cancelada na Cakto.',
+                message: 'Sua assinatura mensal foi cancelada ou expirou na Cakto.',
                 customerName: v.name,
                 email: emailClean
             };
-        } else if (v.status === 'active') {
+        } else {
             return {
                 success: true,
                 isCanceled: false,
