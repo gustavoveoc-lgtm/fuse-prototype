@@ -251,24 +251,11 @@ export default async function handler(req, res) {
             const lastPaidDate = new Date(latestPaidOrder.paidAt || latestPaidOrder.createdAt);
             // Prazo padrão do ciclo mensal: 31 dias a partir do pagamento aprovado
             periodEndDate = new Date(lastPaidDate.getTime() + (31 * 24 * 60 * 60 * 1000));
-
-            // Se houver ordens da assinatura com data de vencimento (due_date), usa para saber o fim exato do ciclo
-            orders.forEach(o => {
-                if (o.due_date) {
-                    const d = new Date(o.due_date);
-                    if (d > periodEndDate) {
-                        periodEndDate = d;
-                    }
-                }
-            });
         }
 
-        // Validação de validade garantida configurada para clientes específicos (ex: gabioff1234@gmail.com até 22 de outubro)
+        // Validação de validade expressa configurada para clientes específicos (ex: gabioff1234@gmail.com até 22 de outubro)
         if (VERIFIED_CUSTOMERS[emailClean] && VERIFIED_CUSTOMERS[emailClean].validUntil) {
-            const customDate = new Date(VERIFIED_CUSTOMERS[emailClean].validUntil);
-            if (!periodEndDate || customDate > periodEndDate) {
-                periodEndDate = customDate;
-            }
+            periodEndDate = new Date(VERIFIED_CUSTOMERS[emailClean].validUntil);
         }
 
         const now = new Date();
