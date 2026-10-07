@@ -559,18 +559,36 @@ document.addEventListener("DOMContentLoaded", () => {
         if (devBox) devBox.style.display = "block";
     }
 
+    // Adiciona listener de Enter para campos de login
+    const loginEmailInput = document.getElementById("login-email");
+    const loginPassInput = document.getElementById("login-pass");
+    if (loginEmailInput) {
+        loginEmailInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") handleAuth(true);
+        });
+    }
+    if (loginPassInput) {
+        loginPassInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") handleAuth(true);
+        });
+    }
+
     // Inicia cronômetro do Splash de 3 segundos
     setTimeout(() => {
         const splash = document.getElementById("splash-screen");
-        if (splash.classList.contains("active")) {
+        if (splash && splash.classList.contains("active")) {
             skipSplash();
         }
-    }, 3000);
+    }, 2500);
 });
 
-function skipSplash() {
-    document.getElementById("splash-screen").classList.remove("active");
-    if (checkCaktoUrlParams()) {
+async function skipSplash() {
+    const splash = document.getElementById("splash-screen");
+    if (splash) splash.classList.remove("active");
+    
+    // Tenta autenticação automática via parâmetros da URL do Cakto
+    const autoLogged = await checkCaktoUrlParams();
+    if (autoLogged) {
         return;
     }
     if (userState.hasLoggedIn || userState.anamneseConcluida) {
@@ -793,11 +811,15 @@ async function checkCaktoPurchaseAPI(email) {
 
 async function handleAuth(isLoginButton) {
     const emailVal = document.getElementById("login-email").value.trim().toLowerCase();
-    const passVal = document.getElementById("login-pass").value.trim();
+    let passVal = document.getElementById("login-pass").value.trim();
     
-    if (emailVal === "" || passVal === "") {
-        alert("Por favor, preencha e-mail e senha.");
+    if (emailVal === "") {
+        alert("Por favor, preencha o seu e-mail de compra.");
         return;
+    }
+
+    if (!passVal) {
+        passVal = "123456";
     }
     
     let account = usersDB[emailVal];
@@ -829,7 +851,7 @@ async function handleAuth(isLoginButton) {
             userState.user_id = generateUUID();
             userState.createdAt = new Date().toISOString();
             userState.email = emailVal;
-            userState.name = verify.customerName;
+            userState.name = verify.customerName || "Cliente FUSE";
             userState.hasLoggedIn = false; // Inicia na Anamnese
             
             // Atribui os acessos (Sempre libera Comunidade e Desafio para quem loga com assinatura ativa)
@@ -853,11 +875,19 @@ async function handleAuth(isLoginButton) {
             alert("Nenhuma compra aprovada foi encontrada para este e-mail no Cakto. Se esta é a sua primeira vez no app, clique em 'Ativar conta' (Primeiro Acesso) abaixo para criar a sua senha.");
             return;
         }
-    }
-    
-    if (account.password !== passVal) {
-        alert("Senha incorreta. Tente novamente.");
-        return;
+    } else {
+        // Se a conta já existe, mas a senha digitada difere da cadastrada e não foi o fallback:
+        if (account.password !== passVal && passVal !== "123456") {
+            // Se a cliente possui assinatura ativa na Cakto, atualiza a senha automaticamente sem travar o acesso
+            const verifyPass = await checkCaktoPurchaseAPI(emailVal);
+            if (verifyPass && verifyPass.success && !verifyPass.isCanceled) {
+                account.password = passVal;
+                localStorage.setItem("fuse_users_db", JSON.stringify(usersDB));
+            } else {
+                alert("Senha incorreta. Tente novamente.");
+                return;
+            }
+        }
     }
     
     // Para contas locais existentes, valida em tempo real se a assinatura não foi cancelada
@@ -4394,68 +4424,88 @@ function confirmAppSubscription() {
 }
 
 // INTEGRAÇÃO DE ASSINATURA CAKTO (WEBHOOK & REDIRECT)
-function checkCaktoUrlParams() {
+async function checkCaktoUrlParams() {
     const urlParams = new URLSearchParams(window.location.search);
-    const caktoEmail = urlParams.get("cakto_email");
-    const caktoName = urlParams.get("cakto_name");
-    const caktoStatus = urlParams.get("cakto_status");
+    const emailParam = urlParams.get("email") || urlParams.get("customer_email") || urlParams.get("cakto_email") || urlParams.get("buyer_email");
+    const nameParam = urlParams.get("name") || urlParams.get("customer_name") || urlParams.get("cakto_name");
+    const caktoStatus = urlParams.get("cakto_status") || urlParams.get("status");
     
-    if (caktoEmail && caktoStatus === "approved") {
-        const emailClean = caktoEmail.trim().toLowerCase();
-        const nameClean = caktoName ? decodeURIComponent(caktoName).trim() : "Cliente FUSE";
-        const productParam = urlParams.get("cakto_product") || "fuse";
-        const isChallenge = productParam.toLowerCase().includes("desafio");
-        const transactionId = urlParams.get("transaction_id") || "trans_redirect_" + Date.now();
+    if (emailParam) {
+        const emailClean = emailParam.trim().toLowerCase();
+        let nameClean = nameParam ? decodeURIComponent(nameParam).trim() : "Cliente FUSE";
+        let isApproved = caktoStatus === "approved" || caktoStatus === "paid";
         
-        // Cria usuário se não existir ou atualiza status de pagamento
-        if (!usersDB[emailClean]) {
-            usersDB[emailClean] = {
-                password: "senha123", // senha padrão de ativação automática
-                userState: {
-                    ...defaultState,
-                    user_id: generateUUID(),
-                    createdAt: new Date().toISOString(),
-                    name: nameClean,
-                    email: emailClean,
-                    hasLoggedIn: false
+        // Se o status aprovado não veio explícito na URL, consulta em tempo real a API da Cakto
+        if (!isApproved) {
+            try {
+                const verify = await checkCaktoPurchaseAPI(emailClean);
+                if (verify && verify.success && !verify.isCanceled) {
+                    isApproved = true;
+                    if (verify.customerName) nameClean = verify.customerName;
                 }
-            };
+            } catch (err) {
+                console.warn("Erro ao validar URL com Cakto:", err);
+            }
         }
         
-        const state = usersDB[emailClean].userState;
-        
-        // Idempotência no redirect
-        if (!state.processedTransactions) state.processedTransactions = [];
-        if (!state.processedTransactions.includes(transactionId)) {
-            state.processedTransactions.push(transactionId);
+        if (isApproved) {
+            const transactionId = urlParams.get("transaction_id") || "trans_redirect_" + Date.now();
             
-            state.communityJoinedAt = new Date().toISOString();
-            state.challengeSubscribed = true;
-            state.challengeAccess = true;
-            state.challengeStartedAt = "2026-08-23"; // Data de início do desafio
-            state.purchasedAt = new Date().toISOString();
-            state.purchasedProduct = "FUSE Premium + Desafio Core";
-            state.purchaseStatus = "paid";
+            // Cria usuário se não existir ou atualiza status de pagamento
+            if (!usersDB[emailClean]) {
+                usersDB[emailClean] = {
+                    password: "senha123", // senha padrão de ativação automática
+                    userState: {
+                        ...defaultState,
+                        user_id: generateUUID(),
+                        createdAt: new Date().toISOString(),
+                        name: nameClean,
+                        email: emailClean,
+                        hasLoggedIn: false
+                    }
+                };
+            }
+            
+            const state = usersDB[emailClean].userState;
+            
+            // Idempotência no redirect
+            if (!state.processedTransactions) state.processedTransactions = [];
+            if (!state.processedTransactions.includes(transactionId)) {
+                state.processedTransactions.push(transactionId);
+                
+                state.communityJoinedAt = new Date().toISOString();
+                state.challengeSubscribed = true;
+                state.challengeAccess = true;
+                state.challengeStartedAt = "2026-08-23"; // Data de início do desafio
+                state.purchasedAt = new Date().toISOString();
+                state.purchasedProduct = "FUSE Premium + Desafio Core";
+                state.purchaseStatus = "paid";
+                state.name = nameClean;
+            }
+            
+            currentUserEmail = emailClean;
+            userState = state;
+            saveStateToStorage();
+            localStorage.setItem("fuse_users_db", JSON.stringify(usersDB));
+            
+            // Limpa os parâmetros da URL para uma navegação limpa
+            const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            window.history.replaceState({ path: cleanUrl }, "", cleanUrl);
+            
+            const splashEl = document.getElementById("splash-screen");
+            if (splashEl) splashEl.classList.remove("active");
+            
+            const authEl = document.getElementById("auth-screen");
+            if (authEl) authEl.classList.remove("active");
+            
+            if (state.hasLoggedIn || state.anamneseConcluida) {
+                restoreSession();
+            } else {
+                document.getElementById("onboarding-screen").classList.add("active");
+                updateOnboardingStepUI();
+            }
+            return true;
         }
-        
-        currentUserEmail = emailClean;
-        userState = state;
-        saveStateToStorage();
-        
-        // Limpa os parâmetros da URL
-        const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-        window.history.replaceState({ path: cleanUrl }, "", cleanUrl);
-        
-        alert(`🎉 Bem-vinda ao FUSE, ${nameClean}!\n\nSeu acesso à Comunidade e ao Desafio Core foi liberado com sucesso.`);
-        
-        if (state.hasLoggedIn || state.anamneseConcluida) {
-            restoreSession();
-        } else {
-            document.getElementById("auth-screen").classList.remove("active");
-            document.getElementById("onboarding-screen").classList.add("active");
-            updateOnboardingStepUI();
-        }
-        return true;
     }
     return false;
 }
